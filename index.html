@@ -1368,9 +1368,10 @@ const POOL_ION     = POOL_GOLVAL.filter(e=> e.valensi!==4);
 // =====================================================================================
 const state = {
   user: null, xp: 0, progress: {},
-  papan: { z: 11, lumbung: 11, shells: [0,0,0,0,0,0,0], sourceQuiz: null },
+  papan: { z: 11, lumbung: 11, shells: [0,0,0,0,0,0,0], sourceQuiz: null, solved: false },
   soundOn: (localStorage.getItem('chemclak_sound') ?? '1') === '1',
   quizTarget: { tebak:null, valensi:null, ion:null, sifat:null },
+  quizAnswered: { tebak:false, valensi:false, ion:false, sifat:false },
   unsubDoc: null
 };
 
@@ -1429,10 +1430,11 @@ const sfx = {
 // =====================================================================================
 function muatUnsurKePapan(z, sourceQuiz=null){
   const el = byZ(z);
-  state.papan = { z, lumbung: z, shells: [0,0,0,0,0,0,0], sourceQuiz };
+  state.papan = { z, lumbung: z, shells: [0,0,0,0,0,0,0], sourceQuiz, solved: false };
   $('#headerSimbol').textContent = el.sym;
   $('#headerNama').textContent = el.nama;
   $('#headerNomorAtom').textContent = el.z;
+  const btnCek = $('#btnCek'); if(btnCek) btnCek.disabled = false;
   renderPapan();
 }
 
@@ -1487,9 +1489,12 @@ function hintPapan(){
   toast('💡 Konfigurasimu tepat! Klik Cek Jawaban.','hint');
 }
 function cekJawabanPapan(){
-  const p = state.papan; const target = hitungKulit(p.z);
+  const p = state.papan;
+  if(p.solved) return;
+  const target = hitungKulit(p.z);
   const benar = target.every((v,i)=> v===p.shells[i]) && p.lumbung===0;
   if(benar){
+    p.solved = true; $('#btnCek').disabled = true;
     sfx.correct(); confetti();
     toast(`✅ Luar biasa! Presisi: ${byZ(p.z).nama} = ${konfigString(target)}`, 'success');
     tambahPoin(25, 'papan');
@@ -1604,13 +1609,18 @@ $('#btnMulaiSusun').addEventListener('click', ()=>{
 
 function soalTebak(){
   const el = pilihAcak(POOL_PAPAN); state.quizTarget.tebak = el;
+  state.quizAnswered.tebak = false;
   for(let i=0;i<4;i++) $('#tebak-'+i).textContent = el.shells[i] || 0;
   $('#inputNamaUnsur').value = ''; $('#tebakResult').className = 'quiz-result'; $('#tebakResult').innerHTML = '';
+  $('#inputNamaUnsur').disabled = false; $('#btnCekTebak').disabled = false;
 }
 $('#btnCekTebak').addEventListener('click', ()=>{
+  if(state.quizAnswered.tebak) return;
   const el = state.quizTarget.tebak; const jawab = $('#inputNamaUnsur').value.trim().toLowerCase();
   const resEl = $('#tebakResult');
   if(!jawab){ toast('Masukkan nama/simbol elemennya!','error'); return; }
+  state.quizAnswered.tebak = true;
+  $('#btnCekTebak').disabled = true; $('#inputNamaUnsur').disabled = true;
   if(jawab===el.nama.toLowerCase() || jawab===el.sym.toLowerCase()){
     sfx.correct(); tambahPoin(15, 'tebak'); resEl.className = 'quiz-result benar'; resEl.innerHTML = `✅ Analisa Valid! Elemen: ${el.nama} (${el.sym}).`;
   } else {
@@ -1621,15 +1631,20 @@ $('#btnCekTebak').addEventListener('click', ()=>{
 
 function soalValensi(){
   const el = pilihAcak(POOL_GOLVAL); state.quizTarget.valensi = el;
+  state.quizAnswered.valensi = false;
   $('#valensiConfigDisplay').textContent = `${el.config} (${el.sym})`;
   $('#inputValensi').value = ''; $('#inputGolongan').value = '';
   $('#valensiResult').className = 'quiz-result'; $('#valensiResult').innerHTML = '';
+  $('#inputValensi').disabled = false; $('#inputGolongan').disabled = false; $('#btnCekValensi').disabled = false;
 }
 $('#btnCekValensi').addEventListener('click', ()=>{
+  if(state.quizAnswered.valensi) return;
   const el = state.quizTarget.valensi; 
   const jVal = parseInt($('#inputValensi').value, 10); const jGol = $('#inputGolongan').value.trim().toUpperCase();
   const resEl = $('#valensiResult');
   if(isNaN(jVal) || !jGol){ toast('Masukkan valensi dan golongan!','error'); return; }
+  state.quizAnswered.valensi = true;
+  $('#btnCekValensi').disabled = true; $('#inputValensi').disabled = true; $('#inputGolongan').disabled = true;
   if(jVal === el.valensi && jGol === el.golongan){
     sfx.correct(); tambahPoin(15, 'valensi'); resEl.className = 'quiz-result benar'; resEl.innerHTML = `✅ Tepat! Elektron aktif: ${el.valensi}, Berada di Golongan ${el.golongan}.`;
   } else {
@@ -1647,14 +1662,19 @@ function soalIon(){
   const opsi = Math.random()<0.5 ? [labelBenar, labelSalah] : [labelSalah, labelBenar];
   $('#ionLabelA').textContent = opsi[0]; $('#ionLabelB').textContent = opsi[1];
   state.quizTarget.ionJawaban = { benarLabel: labelBenar, benarMuatan: muatanBenar, opsi };
+  state.quizAnswered.ion = false;
   $('#ionOptionA').checked = false; $('#ionOptionB').checked = false; $('#inputMuatan').value = '';
   $('#ionResult').className = 'quiz-result'; $('#ionResult').innerHTML = '';
+  $('#ionOptionA').disabled = false; $('#ionOptionB').disabled = false; $('#inputMuatan').disabled = false; $('#btnCekIon').disabled = false;
 }
 $('#btnCekIon').addEventListener('click', ()=>{
+  if(state.quizAnswered.ion) return;
   const info = state.quizTarget.ionJawaban; const resEl = $('#ionResult');
   const pilihan = $('#ionOptionA').checked ? 0 : ($('#ionOptionB').checked ? 1 : -1);
   const jMuatan = parseInt($('#inputMuatan').value, 10);
   if(pilihan===-1 || isNaN(jMuatan)){ toast('Pilih jenis ion dan ketik muatannya!','error'); return; }
+  state.quizAnswered.ion = true;
+  $('#btnCekIon').disabled = true; $('#ionOptionA').disabled = true; $('#ionOptionB').disabled = true; $('#inputMuatan').disabled = true;
   if(info.opsi[pilihan] === info.benarLabel && jMuatan === info.benarMuatan){
     sfx.correct(); tambahPoin(15, 'ion'); resEl.className = 'quiz-result benar'; resEl.innerHTML = `✅ Analisa Ion Tepat! Terbentuk ${info.benarLabel} (Muatan stasioner ${info.benarMuatan>0?'+':''}${info.benarMuatan}).`;
   } else {
@@ -1665,16 +1685,21 @@ $('#btnCekIon').addEventListener('click', ()=>{
 
 function soalSifat(){
   const el = pilihAcak(POOL_SIFAT); state.quizTarget.sifat = el;
+  state.quizAnswered.sifat = false;
   $('#sifatConfigDisplay').textContent = `${el.config} (${el.sym})`;
   $('#btnLogam').classList.remove('selected'); $('#btnNonlogam').classList.remove('selected');
   $('#sifatResult').className = 'quiz-result'; $('#sifatResult').innerHTML = '';
+  $('#btnLogam').disabled = false; $('#btnNonlogam').disabled = false; $('#btnCekSifat').disabled = false;
 }
-$('#btnLogam').addEventListener('click', ()=>{ $('#btnLogam').classList.add('selected'); $('#btnNonlogam').classList.remove('selected'); sfx.click(); });
-$('#btnNonlogam').addEventListener('click', ()=>{ $('#btnNonlogam').classList.add('selected'); $('#btnLogam').classList.remove('selected'); sfx.click(); });
+$('#btnLogam').addEventListener('click', ()=>{ if(state.quizAnswered.sifat) return; $('#btnLogam').classList.add('selected'); $('#btnNonlogam').classList.remove('selected'); sfx.click(); });
+$('#btnNonlogam').addEventListener('click', ()=>{ if(state.quizAnswered.sifat) return; $('#btnNonlogam').classList.add('selected'); $('#btnLogam').classList.remove('selected'); sfx.click(); });
 $('#btnCekSifat').addEventListener('click', ()=>{
+  if(state.quizAnswered.sifat) return;
   const el = state.quizTarget.sifat; const resEl = $('#sifatResult');
   const pilihLogam = $('#btnLogam').classList.contains('selected'); const pilihNonlogam = $('#btnNonlogam').classList.contains('selected');
   if(!pilihLogam && !pilihNonlogam){ toast('Tentukan spesifikasi sifat (Logam/Nonlogam)!','error'); return; }
+  state.quizAnswered.sifat = true;
+  $('#btnCekSifat').disabled = true; $('#btnLogam').disabled = true; $('#btnNonlogam').disabled = true;
   if(el.isLogam === pilihLogam){
     sfx.correct(); tambahPoin(10, 'sifat'); resEl.className = 'quiz-result benar'; resEl.innerHTML = `✅ Klasifikasi Valid! Karakteristik: ${el.isLogam?'Logam':'Nonlogam'} (${KATEGORI_LABEL[el.cat]}).`;
   } else {
