@@ -307,16 +307,40 @@ a:focus-visible, button:focus-visible, input:focus-visible, [tabindex]:focus-vis
 
 /* ---------- PAPAN CONGKLAK ---------- */
 main { padding: 28px 32px 60px; max-width: 1440px; margin: 0 auto; width: 100%; flex: 1; }
-.board-panel { display: grid; grid-template-columns: 1fr 300px; gap: 24px; align-items: start; }
-.board-wrap { background: linear-gradient(180deg, var(--surface-2), var(--surface-1)); border: 1px solid var(--border-soft); border-radius: var(--radius-lg); padding: 26px; box-shadow: var(--shadow-md); }
+.board-panel { display: grid; grid-template-columns: minmax(0,1fr) 300px; gap: 24px; align-items: start; }
+.board-wrap { background: linear-gradient(180deg, var(--surface-2), var(--surface-1)); border: 1px solid var(--border-soft); border-radius: var(--radius-lg); padding: 26px; box-shadow: var(--shadow-md); min-width: 0; position: relative; }
+
+.papan-congklak-outer { position: relative; min-width: 0; }
+.papan-congklak-outer::before, .papan-congklak-outer::after {
+  content: ""; position: absolute; top: 8px; bottom: 8px; width: 34px; z-index: 5; pointer-events: none;
+  opacity: 0; transition: opacity .25s ease; border-radius: 30px;
+}
+.papan-congklak-outer::before { left: 0; background: linear-gradient(90deg, rgba(20,12,4,.55), transparent); }
+.papan-congklak-outer::after  { right: 0; background: linear-gradient(270deg, rgba(20,12,4,.55), transparent); }
+.papan-congklak-outer.scroll-left::before { opacity: 1; }
+.papan-congklak-outer.scroll-right::after { opacity: 1; }
+.papan-congklak-outer.is-scrollable .papan-congklak { cursor: grab; }
+.papan-congklak-outer.is-scrollable.dragging .papan-congklak { cursor: grabbing; }
+.scroll-hint {
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  font-size: .68rem; font-weight: 700; color: var(--text-muted); text-align: center;
+  margin-top: 0; opacity: 0; max-height: 0; overflow: hidden; transition: opacity .3s ease, max-height .3s ease, margin .3s ease;
+}
+.scroll-hint svg { width: 13px; height: 13px; animation: scrollHintNudge 1.4s ease-in-out infinite; }
+.scroll-hint.show { opacity: 1; max-height: 20px; margin-top: 10px; }
+@keyframes scrollHintNudge { 0%,100% { transform: translateX(0); } 50% { transform: translateX(4px); } }
 
 .papan-congklak {
   display: flex; align-items: stretch; gap: 0;
   background: repeating-linear-gradient(100deg, rgba(217,164,65,0.05) 0px, rgba(217,164,65,0.05) 2px, transparent 2px, transparent 26px), linear-gradient(160deg, var(--wood-4), var(--wood-2) 55%, var(--wood-1));
   border-radius: 30px; padding: 22px 26px; border: 1px solid rgba(217,164,65,.25);
   box-shadow: inset 0 3px 0 rgba(255,255,255,.18), inset 0 -10px 26px rgba(0,0,0,.35), 0 18px 34px rgba(60, 30, 5, .35);
-  position: relative; overflow-x: auto; gap: 18px;
+  position: relative; overflow-x: auto; gap: 18px; scrollbar-width: thin; scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
 }
+.papan-congklak::-webkit-scrollbar { height: 8px; }
+.papan-congklak::-webkit-scrollbar-thumb { background: rgba(217,164,65,.45); border-radius: 10px; }
+.papan-congklak::-webkit-scrollbar-track { background: rgba(0,0,0,.15); border-radius: 10px; }
 .papan-congklak::before { content: ""; position: absolute; inset: 8px; border: 2px solid rgba(217,164,65,.16); border-radius: 24px; pointer-events: none; box-shadow: 0 0 30px rgba(217,164,65,.12) inset; }
 
 .lumbung {
@@ -331,7 +355,7 @@ main { padding: 28px 32px 60px; max-width: 1440px; margin: 0 auto; width: 100%; 
 .lumbung-label { font-family: var(--font-display); font-size: .58rem; letter-spacing: .1em; color: rgba(255,233,184,.75); position: absolute; top: 46px; z-index: 2; }
 .lumbung-balls { display: flex; flex-wrap: wrap; gap: 5px; justify-content: center; align-content: flex-end; width: 100%; padding-top: 44px; position: relative; z-index: 3; }
 
-.kulit-row { display: flex; gap: 12px; flex: 1; min-width: 620px; }
+.kulit-row { display: flex; gap: 12px; flex: 1; min-width: min(620px, 88vw); }
 .kulit-hole { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 10px; min-width: 74px; }
 .kulit-label { font-family: var(--font-display); font-weight: 700; font-size: .78rem; color: #fff; background: var(--kulit-color, var(--blue)); padding: 5px 10px; border-radius: var(--radius-pill); box-shadow: 0 3px 8px rgba(0,0,0,.25), inset 0 -2px 0 rgba(0,0,0,.15); white-space: nowrap; }
 .kulit-label em { font-style: normal; opacity: .85; font-size: .72em; }
@@ -556,6 +580,12 @@ main { padding: 28px 32px 60px; max-width: 1440px; margin: 0 auto; width: 100%; 
 .page-footer p { font-size: .74rem; color: var(--text-faint); }
 
 /* ---------- RESPONSIVE ---------- */
+@media (max-width: 1340px) {
+  .lumbung { flex: 0 0 108px; min-height: 210px; }
+  .papan-congklak { padding: 20px 20px; gap: 14px; }
+  .kulit-row { gap: 9px; min-width: min(560px, 88vw); }
+  .kulit-hole { min-width: 66px; }
+}
 @media (max-width: 1000px) {
   .board-panel, .quiz-page-wrap, .progres-grid { grid-template-columns: 1fr; }
   .side-panel { flex-direction: row; }
@@ -862,6 +892,7 @@ main { padding: 28px 32px 60px; max-width: 1440px; margin: 0 auto; width: 100%; 
 
         <div class="board-panel">
           <div class="board-wrap">
+            <div class="papan-congklak-outer" id="papanCongklakOuter">
             <div class="papan-congklak" id="papanCongklak">
               <div class="lumbung" id="lumbungHole" tabindex="0" role="button" aria-label="Lumbung elektron">
                 <span class="lumbung-count" id="lumbungCount">11</span>
@@ -900,6 +931,11 @@ main { padding: 28px 32px 60px; max-width: 1440px; margin: 0 auto; width: 100%; 
                 </div>
               </div>
             </div>
+            </div>
+            <p class="scroll-hint" id="scrollHint">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+              Geser papan untuk melihat semua kulit
+            </p>
 
             <div class="board-controls">
               <button class="btn btn-blue" id="btnReset">
@@ -1831,6 +1867,50 @@ function initStarfield(){
   resize(); window.addEventListener('resize', resize); frame();
 }
 
+function initPapanScrollUX(){
+  const outer = document.getElementById('papanCongklakOuter');
+  const scroller = document.getElementById('papanCongklak');
+  const hint = document.getElementById('scrollHint');
+  if(!outer || !scroller || !hint) return;
+
+  function updateEdges(){
+    const scrollable = scroller.scrollWidth - scroller.clientWidth > 4;
+    outer.classList.toggle('is-scrollable', scrollable);
+    outer.classList.toggle('scroll-left', scrollable && scroller.scrollLeft > 4);
+    outer.classList.toggle('scroll-right', scrollable && scroller.scrollLeft < scroller.scrollWidth - scroller.clientWidth - 4);
+    hint.classList.toggle('show', scrollable);
+  }
+
+  scroller.addEventListener('scroll', () => {
+    updateEdges();
+    hint.style.opacity = Math.max(0, 1 - scroller.scrollLeft / 80);
+  }, { passive: true });
+
+  window.addEventListener('resize', updateEdges);
+  // Recompute setelah render awal & setiap kali papan diisi ulang (elektron/lumbung berubah ukuran)
+  const ro = new ResizeObserver(updateEdges);
+  ro.observe(scroller);
+
+  // Drag-to-scroll pakai mouse (memudahkan pengguna desktop tanpa trackpad)
+  let isDown = false, startX = 0, startScroll = 0, moved = false;
+  scroller.addEventListener('mousedown', (e) => {
+    if(e.target.closest('.elektron-bola') || e.target.closest('.lumbung')) return;
+    isDown = true; moved = false; outer.classList.add('dragging');
+    startX = e.pageX; startScroll = scroller.scrollLeft;
+  });
+  window.addEventListener('mousemove', (e) => {
+    if(!isDown) return;
+    const dx = e.pageX - startX;
+    if(Math.abs(dx) > 4) moved = true;
+    scroller.scrollLeft = startScroll - dx;
+  });
+  window.addEventListener('mouseup', () => { isDown = false; outer.classList.remove('dragging'); });
+  // Cegah klik elektron ter-trigger tak sengaja saat baru saja drag
+  scroller.addEventListener('click', (e) => { if(moved){ e.stopPropagation(); moved = false; } }, true);
+
+  updateEdges();
+}
+
 function init(){
   muatProgresLokal();
   muatUnsurKePapan(11);
@@ -1839,6 +1919,7 @@ function init(){
   renderGamifikasi(); renderProgres();
   showView('beranda', { noScroll: true });
   initStarfield();
+  initPapanScrollUX();
 }
 init();
 </script>
