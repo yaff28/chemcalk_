@@ -918,15 +918,15 @@ main { padding: 28px 32px 60px; max-width: 1440px; margin: 0 auto; width: 100%; 
                   <div class="kulit-slot" id="slot-3" role="button" tabindex="0"></div>
                 </div>
                 <div class="kulit-hole" data-index="4" data-kulit="O">
-                  <span class="kulit-label" style="--kulit-color:var(--kulit-o)">O <em>(32)</em></span>
+                  <span class="kulit-label" style="--kulit-color:var(--kulit-o)">O <em>(50)</em></span>
                   <div class="kulit-slot" id="slot-4" role="button" tabindex="0"></div>
                 </div>
                 <div class="kulit-hole" data-index="5" data-kulit="P">
-                  <span class="kulit-label" style="--kulit-color:var(--kulit-p)">P <em>(18)</em></span>
+                  <span class="kulit-label" style="--kulit-color:var(--kulit-p)">P <em>(72)</em></span>
                   <div class="kulit-slot" id="slot-5" role="button" tabindex="0"></div>
                 </div>
                 <div class="kulit-hole" data-index="6" data-kulit="Q">
-                  <span class="kulit-label" style="--kulit-color:var(--kulit-q)">Q <em>(8)</em></span>
+                  <span class="kulit-label" style="--kulit-color:var(--kulit-q)">Q <em>(98)</em></span>
                   <div class="kulit-slot" id="slot-6" role="button" tabindex="0"></div>
                 </div>
               </div>
@@ -963,9 +963,9 @@ main { padding: 28px 32px 60px; max-width: 1440px; margin: 0 auto; width: 100%; 
                   <tr><td><span class="dot" style="--d:var(--kulit-l)"></span>L (n=2)</td><td>8</td></tr>
                   <tr><td><span class="dot" style="--d:var(--kulit-m)"></span>M (n=3)</td><td>18</td></tr>
                   <tr><td><span class="dot" style="--d:var(--kulit-n)"></span>N (n=4)</td><td>32</td></tr>
-                  <tr><td><span class="dot" style="--d:var(--kulit-o)"></span>O (n=5)</td><td>32</td></tr>
-                  <tr><td><span class="dot" style="--d:var(--kulit-p)"></span>P (n=6)</td><td>18</td></tr>
-                  <tr><td><span class="dot" style="--d:var(--kulit-q)"></span>Q (n=7)</td><td>8</td></tr>
+                  <tr><td><span class="dot" style="--d:var(--kulit-o)"></span>O (n=5)</td><td>50</td></tr>
+                  <tr><td><span class="dot" style="--d:var(--kulit-p)"></span>P (n=6)</td><td>72</td></tr>
+                  <tr><td><span class="dot" style="--d:var(--kulit-q)"></span>Q (n=7)</td><td>98</td></tr>
                 </tbody>
               </table>
             </div>
@@ -1160,6 +1160,9 @@ main { padding: 28px 32px 60px; max-width: 1440px; margin: 0 auto; width: 100%; 
                 <tr><td>L (n=2)</td><td>8 elektron</td></tr>
                 <tr><td>M (n=3)</td><td>18 elektron</td></tr>
                 <tr><td>N (n=4)</td><td>32 elektron</td></tr>
+                <tr><td>O (n=5)</td><td>50 elektron</td></tr>
+                <tr><td>P (n=6)</td><td>72 elektron</td></tr>
+                <tr><td>Q (n=7)</td><td>98 elektron</td></tr>
               </tbody>
             </table>
           </div>
@@ -1198,7 +1201,7 @@ main { padding: 28px 32px 60px; max-width: 1440px; margin: 0 auto; width: 100%; 
           <div class="materi-block">
             <h3><span class="materi-num">5</span>Lembar Cepat (Cheat-Sheet) </h3>
             <div class="materi-cheatsheet">
-              <div class="cheat-item"><strong>Kapasitas Absolut (2n²)</strong>K=2, L=8, M=18, N=32</div>
+              <div class="cheat-item"><strong>Kapasitas Absolut (2n²)</strong>K=2, L=8, M=18, N=32, O=50, P=72, Q=98</div>
               <div class="cheat-item"><strong>Elektron Valensi</strong>Elektron aktif penentu Golongan (A)</div>
               <div class="cheat-item"><strong>Jumlah Kulit Terisi</strong>Penentu baris Periode di Tabel Periodik</div>
               <div class="cheat-item"><strong>Anomali Kestabilan</strong>Cr (3d⁵) dan Cu (3d¹⁰) dari 4s¹</div>
@@ -1303,7 +1306,7 @@ try {
 // =====================================================================================
 const FILL_ORDER = [ [1,0,2],[2,0,2],[2,1,6],[3,0,2],[3,1,6],[4,0,2],[3,2,10],[4,1,6], [5,0,2],[4,2,10],[5,1,6],[6,0,2],[4,3,14],[5,2,10],[6,1,6], [7,0,2],[5,3,14],[6,2,10],[7,1,6] ];
 const KULIT_LABEL = ['K','L','M','N','O','P','Q'];
-const KULIT_MAKS  = [2,8,18,32,32,18,8];
+const KULIT_MAKS  = [2,8,18,32,50,72,98];
 
 function hitungKulit(z){
   const shells = [0,0,0,0,0,0,0];
