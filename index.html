@@ -198,6 +198,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, [tabindex]:focus-vis
 .auth-form input:focus { border-color: var(--blue); }
 .auth-form .btn { margin-top: 18px; }
 .auth-error { color: var(--red); font-size: .82rem; font-weight: 700; min-height: 1.1em; margin-top: 6px; }
+.auth-success { color: var(--green); font-size: .82rem; font-weight: 700; min-height: 1.1em; margin-top: 6px; line-height: 1.4; }
 .auth-switch { text-align: center; font-size: .85rem; color: var(--text-muted); margin-top: 14px; line-height: 1.5; }
 
 .btn-spinner { width: 16px; height: 16px; border-radius: 50%; border: 2.5px solid rgba(255,255,255,.4); border-top-color: #fff; animation: spin .7s linear infinite; }
@@ -776,7 +777,21 @@ main { padding: 28px 32px 60px; max-width: 1440px; margin: 0 auto; width: 100%; 
       <button type="submit" class="btn btn-primary btn-block" id="loginBtn">
         <span class="btn-label">Masuk</span><span class="btn-spinner" hidden></span>
       </button>
-      <p class="auth-switch">Lupa password atau kendala login?<br><button type="button" class="link-btn" data-goto="guest">Lewati & Bermain sebagai Tamu</button></p>
+      <p class="auth-switch">Lupa password atau kendala login?<br><button type="button" class="link-btn" data-goto="forgot">Lupa Kata Sandi?</button> &nbsp;·&nbsp; <button type="button" class="link-btn" data-goto="guest">Lewati & Bermain sebagai Tamu</button></p>
+    </form>
+
+    <form class="auth-form" id="forgotForm" novalidate>
+      <label for="forgotEmail">Email akun terdaftar</label>
+      <input type="email" id="forgotEmail" placeholder="nama@email.com" autocomplete="email" required>
+      <p style="font-size:.8rem;color:var(--text-muted);margin-top:8px;line-height:1.5;">
+        Masukkan email akun CHEMCLAK kamu. Kami akan mengirim tautan reset password resmi dari Firebase ke email tersebut. Periksa juga folder Spam/Promosi jika belum muncul dalam beberapa menit.
+      </p>
+      <p class="auth-error" id="forgotError"></p>
+      <p class="auth-success" id="forgotSuccess"></p>
+      <button type="submit" class="btn btn-primary btn-block" id="forgotBtn">
+        <span class="btn-label">Kirim Tautan Reset</span><span class="btn-spinner" hidden></span>
+      </button>
+      <p class="auth-switch">Sudah ingat kata sandinya?<br><button type="button" class="link-btn" data-goto="login">Kembali ke Halaman Masuk</button></p>
     </form>
 
     <form class="auth-form" id="registerForm" novalidate>
@@ -1450,7 +1465,7 @@ main { padding: 28px 32px 60px; max-width: 1440px; margin: 0 auto; width: 100%; 
 // =====================================================================================
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
-import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
+import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
 import { getFirestore, doc, setDoc, getDoc, updateDoc, onSnapshot, collection, query, orderBy, limit, increment, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
 
 // ---------- 1. FIREBASE INIT (Aman / Fallback) ----------
@@ -2090,7 +2105,7 @@ const VIEW_INFO = {
   valensi:  { title: 'Modul Latihan 3: Analisa Golongan', subtitle: 'Simpulkan elektron penentu ikatan molekuler.' },
   ion:      { title: 'Modul Latihan 4: Kesetimbangan Ion', subtitle: 'Observasi kecenderungan pelepasan kinetik ikatan.' },
   sifat:    { title: 'Modul Latihan 5: Klasifikasi Sifat', subtitle: 'Pahami perilaku bahan secara fundamental.' },
-  materi:   { title: 'Referensi Materi Latihan', subtitle: 'Eksplorasi Aturan Aufbau & Pengecualian Stabilitas.' },
+  materi:   { title: 'Referensi Level Olimpiade', subtitle: 'Eksplorasi Aturan Aufbau & Pengecualian Stabilitas.' },
   progres:  { title: 'Metrik Evaluasi', subtitle: 'Pantau kemajuan tingkat penguasaan konseptual Anda.' },
 };
 
@@ -2136,17 +2151,64 @@ function loginTamu() {
 $('#guestBtn').addEventListener('click', (e)=>{ e.preventDefault(); loginTamu(); });
 $('#closeAuth').addEventListener('click', ()=> loginTamu());
 
+// Bersihkan semua pesan error/sukses tiap kali pindah tab/form auth,
+// supaya pesan lama (mis. "Kredensial ditolak") tidak nyangkut & bikin bingung
+// saat user pindah ke form Lupa Password atau sebaliknya.
+function bersihkanPesanAuth(){
+  $$('.auth-error, .auth-success').forEach(p => p.textContent = '');
+}
+
 $$('.auth-tab').forEach(btn => btn.addEventListener('click', (e)=>{
   const tab = e.target.dataset.tab;
+  bersihkanPesanAuth();
   $$('.auth-tab').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
   $$('.auth-form').forEach(f => f.classList.remove('active'));
   document.getElementById(tab + 'Form').classList.add('active');
 }));
 $$('.link-btn[data-goto]').forEach(b=> b.addEventListener('click', ()=>{
+  bersihkanPesanAuth();
   $$('.auth-tab').forEach(btn => btn.classList.toggle('active', btn.dataset.tab === b.dataset.goto));
   $$('.auth-form').forEach(f => f.classList.remove('active'));
   document.getElementById(b.dataset.goto + 'Form').classList.add('active');
 }));
+
+// ---------- FITUR RESET PASSWORD (Lupa Kata Sandi) ----------
+// Didaftarkan di scope global (bukan hanya di dalam blok firebaseAvailable)
+// supaya kalau Firebase gagal dimuat, tombol tetap aman diklik (preventDefault
+// + pesan yang jelas) alih-alih mereload halaman secara tak terduga.
+$('#forgotForm').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const btn = $('#forgotBtn');
+  const errEl = $('#forgotError'), okEl = $('#forgotSuccess');
+  errEl.textContent = ''; okEl.textContent = '';
+
+  const email = $('#forgotEmail').value.trim();
+  if(!email){ errEl.textContent = 'Masukkan email akun kamu terlebih dahulu.'; return; }
+
+  if(!firebaseAvailable){
+    errEl.textContent = 'Reset password butuh koneksi ke server. Periksa koneksi internetmu lalu muat ulang halaman.';
+    return;
+  }
+
+  const originalLabel = btn.querySelector('.btn-label');
+  btn.disabled = true; originalLabel.hidden = true; btn.querySelector('.btn-spinner').hidden = false;
+  try{
+    await sendPasswordResetEmail(auth, email);
+    okEl.textContent = '✅ Tautan reset password telah dikirim! Silakan buka email kamu (cek juga folder Spam/Promosi) dan ikuti instruksinya.';
+    $('#forgotForm').reset();
+  }catch(err){
+    let pesan = 'Gagal mengirim tautan reset. Silakan coba lagi sesaat lagi.';
+    switch(err && err.code){
+      case 'auth/invalid-email': pesan = 'Format email tidak valid. Periksa kembali penulisannya.'; break;
+      case 'auth/user-not-found': pesan = 'Email ini belum terdaftar sebagai akun CHEMCLAK.'; break;
+      case 'auth/too-many-requests': pesan = 'Terlalu banyak percobaan dalam waktu singkat. Tunggu beberapa menit lalu coba lagi.'; break;
+      case 'auth/network-request-failed': pesan = 'Koneksi internet bermasalah. Periksa jaringanmu lalu coba lagi.'; break;
+    }
+    errEl.textContent = pesan;
+  }finally{
+    btn.disabled = false; originalLabel.hidden = false; btn.querySelector('.btn-spinner').hidden = true;
+  }
+});
 
 if (firebaseAvailable) {
   function setBtnLoading(btn, loading){ btn.disabled = loading; btn.querySelector('.btn-label').hidden = loading; btn.querySelector('.btn-spinner').hidden = !loading; }
