@@ -1720,6 +1720,37 @@ function muatProgresLokal(){
   }catch(e){ state.progress = {}; state.xp = 0; }
 }
 
+// Reset TOTAL saat logout — memastikan progres/XP/lencana/foto/nama akun
+// sebelumnya tidak "nyangkut" ke sesi berikutnya (baik itu tamu baru
+// maupun akun lain). Tanpa ini, data lama tetap ada di localStorage &
+// di object `state` walau usernya sudah ganti/keluar.
+function resetKeAwalSaatLogout(){
+  try{
+    localStorage.removeItem('chemclak_progress');
+    localStorage.removeItem('chemclak_xp');
+    localStorage.removeItem('chemclak_photo');
+    localStorage.removeItem('chemclak_guest_name');
+  }catch(e){}
+  if(state.unsubDoc){ try{ state.unsubDoc(); }catch(e){} state.unsubDoc = null; }
+  state.user = null;
+  state.xp = 0;
+  state.progress = {};
+  state.photoURL = null;
+  state.currentRank = null;
+  localXpAtLoad = 0;
+  localProgressAtLoad = {};
+
+  // Bersihkan tampilan supaya benar-benar mulai dari nol, bukan cuma datanya.
+  applyAvatar(null, { persist:false, sync:false });
+  $('#profileNama').textContent = 'Tamu';
+  const accName = $('#accName'); if(accName) accName.textContent = 'Tamu';
+  const accNameInput = $('#accNameInput'); if(accNameInput) accNameInput.value = '';
+  const guestNameInput = $('#guestName'); if(guestNameInput) guestNameInput.value = '';
+  renderGamifikasi();
+  renderProgres();
+  renderAccPopover();
+}
+
 async function tambahPoin(jumlah, modul=null){
   const before = levelInfo(state.xp).level;
   state.xp += jumlah;
@@ -2211,16 +2242,24 @@ if (firebaseAvailable) {
   $('#btnAccLogout').addEventListener('click', ()=>{
     sfx.click(); closeAccPopover();
     if(state.user && state.user.uid === 'guest') {
-       $('#authModal').classList.remove('hidden'); state.user = null; // Logout for guest
+       resetKeAwalSaatLogout();
+       $('#authModal').classList.remove('hidden'); // Logout for guest
     } else {
-       signOut(auth);
+       signOut(auth).finally(()=>{
+         resetKeAwalSaatLogout();
+         $('#authModal').classList.remove('hidden');
+       });
     }
   });
 
 } else {
   // Jika Firebase sama sekali mati (Misal buka offline lokal)
   $('#leaderboardBody').innerHTML = '<tr><td colspan="3" class="leaderboard-loading">Mode Offline Aktif.<br>Leaderboard tidak tersedia.</td></tr>';
-  $('#btnAccLogout').addEventListener('click', ()=>{ sfx.click(); closeAccPopover(); $('#authModal').classList.remove('hidden'); state.user = null; });
+  $('#btnAccLogout').addEventListener('click', ()=>{
+    sfx.click(); closeAccPopover();
+    resetKeAwalSaatLogout();
+    $('#authModal').classList.remove('hidden');
+  });
 }
 
 // =====================================================================================
