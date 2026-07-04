@@ -1699,6 +1699,8 @@ function renderGamifikasi(){
   $('#sbXpFill').style.width = pct + '%';
 }
 
+let localXpAtLoad = 0;
+let localProgressAtLoad = {};
 function simpanProgresLokal(){
   try{
     localStorage.setItem('chemclak_progress', JSON.stringify(state.progress));
@@ -1709,6 +1711,8 @@ function muatProgresLokal(){
   try{
     state.progress = JSON.parse(localStorage.getItem('chemclak_progress')||'{}');
     state.xp = parseInt(localStorage.getItem('chemclak_xp')||'0', 10);
+    localXpAtLoad = state.xp;
+    localProgressAtLoad = { ...state.progress };
     const savedPhoto = localStorage.getItem('chemclak_photo');
     if(savedPhoto) applyAvatar(savedPhoto, { persist:false });
     const savedGuestName = localStorage.getItem('chemclak_guest_name');
@@ -1720,14 +1724,25 @@ async function tambahPoin(jumlah, modul=null){
   const before = levelInfo(state.xp).level;
   state.xp += jumlah;
   if(modul) state.progress[modul] = (state.progress[modul]||0) + 1;
-  simpanProgresLokal(); renderGamifikasi(); renderProgres();
+  simpanProgresLokal(); renderGamifikasi(); renderProgres(); renderAccPopover();
   
   const after = levelInfo(state.xp).level;
   if(after>before){ sfx.levelup(); toast(`🎉 Level Up! Peringkat Akademik naik ke Level ${after}!`,'success'); levelUpBurst(after); }
   
   // Sinkronisasi Firebase hanya jika aktif dan login resmi (bukan guest)
+  // PENTING: progres per-modul (papan/susun/tebak/dst) juga dikirim, bukan cuma XP —
+  // agar lencana & statistik konsisten sama persis di semua perangkat/browser untuk akun yang sama.
   if(firebaseAvailable && auth.currentUser && state.user.uid !== 'guest'){
-    try{ await updateDoc(doc(db,'users',state.user.uid), { xp: increment(jumlah) }); }catch(e){}
+    try{
+      const payload = { xp: increment(jumlah) };
+      if(modul) payload[`progress.${modul}`] = increment(1);
+      await updateDoc(doc(db,'users',state.user.uid), payload);
+    }catch(e){
+      // Jika dokumen belum punya field progress sama sekali (akun lama), buat dulu lalu ulangi.
+      try{
+        await setDoc(doc(db,'users',state.user.uid), { progress: state.progress, xp: state.xp }, { merge:true });
+      }catch(e2){}
+    }
   }
 }
 
@@ -2116,7 +2131,7 @@ if (firebaseAvailable) {
       const nama = $('#registerName').value.trim() || 'Siswa';
       const cred = await createUserWithEmailAndPassword(auth, $('#registerEmail').value.trim(), $('#registerPassword').value);
       await updateProfile(cred.user, { displayName: nama });
-      await setDoc(doc(db,'users',cred.user.uid), { name: nama, xp: state.xp || 0, createdAt: serverTimestamp() });
+      await setDoc(doc(db,'users',cred.user.uid), { name: nama, xp: state.xp || 0, progress: state.progress || {}, createdAt: serverTimestamp() });
     }
     catch(err){ $('#registerError').textContent = 'Kredensial ditolak (Mungkin sandi < 6 huruf atau email telah terdaftar).'; }
     finally{ setBtnLoading(btn, false); }
@@ -2129,13 +2144,48 @@ if (firebaseAvailable) {
       $('#authModal').classList.add('hidden'); applyName(state.user.name);
       if(user.photoURL) applyAvatar(user.photoURL, { sync:false });
       const uRef = doc(db,'users',user.uid);
-      state.unsubDoc = onSnapshot(uRef, d=>{
+      let sudahBackfill = false;
+      state.unsubDoc = onSnapshot(uRef, async d=>{
         if(d.exists()){
           const data = d.data();
-          state.xp = Math.max(state.xp, data.xp || 0); // Gabungkan progres jika ada
+          const remoteProgress = data.progress || {};
+
+          // Gabungkan progres cloud & lokal memakai nilai TERBESAR per-modul
+          // (bukan cuma XP) supaya lencana, statistik soal terjawab, dan
+          // ranking identik di semua perangkat/browser untuk akun yang sama.
+          const semuaModul = new Set([...Object.keys(remoteProgress), ...Object.keys(state.progress||{})]);
+          const progresGabungan = {};
+          semuaModul.forEach(k=>{ progresGabungan[k] = Math.max(state.progress?.[k]||0, remoteProgress[k]||0); });
+          state.progress = progresGabungan;
+          state.xp = Math.max(state.xp, data.xp || 0);
+
           if(data.name) applyName(data.name);
           if(data.photoURL && data.photoURL !== state.photoURL) applyAvatar(data.photoURL, { sync:false });
-          renderGamifikasi(); renderAccPopover(); simpanProgresLokal();
+          renderGamifikasi(); renderProgres(); renderAccPopover(); simpanProgresLokal();
+
+          // BACKFILL SEKALI: kalau perangkat ini (mis. HP/laptop lama) ternyata
+          // punya progres/XP lebih tinggi daripada yang tersimpan di cloud
+          // (karena sebelumnya progres modul belum pernah disinkronkan),
+          // dorong nilai lokal itu ke Firestore supaya semua perangkat lain
+          // ikut ter-update dan tidak ada lagi data yang "hilang"/beda-beda.
+          if(!sudahBackfill){
+            sudahBackfill = true;
+            const perluUpdate = {};
+            let ada = false;
+            if(localXpAtLoad > (data.xp||0)){ perluUpdate.xp = localXpAtLoad; ada = true; }
+            Object.keys(localProgressAtLoad).forEach(k=>{
+              if((localProgressAtLoad[k]||0) > (remoteProgress[k]||0)){
+                perluUpdate[`progress.${k}`] = localProgressAtLoad[k]; ada = true;
+              }
+            });
+            if(ada){
+              try{ await updateDoc(uRef, perluUpdate); }
+              catch(e){ try{ await setDoc(uRef, { xp: state.xp, progress: state.progress }, { merge:true }); }catch(e2){} }
+            }
+          }
+        } else {
+          // Dokumen belum ada sama sekali (kasus langka) — buat dari data lokal.
+          try{ await setDoc(uRef, { name: state.user.name, xp: state.xp, progress: state.progress, createdAt: serverTimestamp() }); }catch(e){}
         }
       });
       // Sinkronisasi Leaderboard
