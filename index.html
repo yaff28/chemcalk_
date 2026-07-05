@@ -1107,6 +1107,7 @@ main { padding: 28px 32px 60px; max-width: 1440px; margin: 0 auto; width: 100%; 
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="iconSuaraOn"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/><path d="M19.2 6a8.5 8.5 0 0 1 0 12"/></svg>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="iconSuaraOff" hidden><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16 9l5 6M21 9l-5 6"/></svg>
         </button>
+        <button id="btnPortalGuru" title="Portal Guru" style="display:none;align-items:center;gap:6px;padding:8px 16px;border:none;border-radius:10px;background:linear-gradient(135deg,#1a2a4a,#0d1626);color:#f2c94c;font-weight:700;font-size:.85rem;letter-spacing:.3px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.25);">🔑 Portal Guru</button>
       </div>
 
       <button class="profile-card" id="profileCard" aria-haspopup="true" aria-expanded="false" aria-label="Buka pratinjau akun">
@@ -2502,6 +2503,7 @@ function showView(id, opts={}){
 $$('.nav-item[data-view]').forEach(btn=> btn.addEventListener('click', ()=>{ sfx.click(); showView(btn.dataset.view); }));
 $$('[data-goto-view]').forEach(btn=> btn.addEventListener('click', ()=>{ sfx.click(); showView(btn.dataset.gotoView); }));
 $('#navPanduan') && $('#navPanduan').addEventListener('click', ()=> $('#helpModal').classList.remove('hidden'));
+$('#btnPortalGuru') && $('#btnPortalGuru').addEventListener('click', ()=>{ window.location.href = 'guru.html'; });
 $('#btnBantuan').addEventListener('click', ()=> $('#helpModal').classList.remove('hidden'));
 $('#closeHelp').addEventListener('click', ()=> $('#helpModal').classList.add('hidden'));
 
@@ -2621,6 +2623,11 @@ if (firebaseAvailable) {
       state.unsubDoc = onSnapshot(uRef, async d=>{
         if(d.exists()){
           const data = d.data();
+
+          // ===== CEK ROLE GURU: tampilkan/sembunyikan Portal Guru =====
+          const btnGuru = $('#btnPortalGuru');
+          if(btnGuru) btnGuru.style.display = (data.role === 'guru') ? 'inline-flex' : 'none';
+
           const remoteProgress = data.progress || {};
 
           // Gabungkan progres cloud & lokal memakai nilai TERBESAR per-modul
@@ -2697,6 +2704,8 @@ if (firebaseAvailable) {
         renderAccPopover();
       });
     } else {
+      const btnGuru = $('#btnPortalGuru');
+      if(btnGuru) btnGuru.style.display = 'none';
       if(state.user && state.user.uid === 'guest') return; // Pertahankan mode Guest jika dipilih
       $('#authModal').classList.remove('hidden');
     }
