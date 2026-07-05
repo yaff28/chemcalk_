@@ -684,6 +684,45 @@ main { padding: 28px 32px 60px; max-width: 1440px; margin: 0 auto; width: 100%; 
 .badge.unlocked .badge-icon { filter: none; }
 .badge strong { display: block; font-size: .78rem; color: var(--text-dark); margin-bottom: 3px; }
 .badge span { font-size: .66rem; color: var(--text-faint); line-height: 1.3; display: block; }
+
+/* ---------- DUEL MODE (Real-time Multiplayer) ---------- */
+.duel-card {
+  background: linear-gradient(150deg, rgba(139,90,140,.16), var(--card-white));
+  border: 1px solid rgba(139,90,140,.35); border-radius: var(--radius-lg);
+  padding: 22px; margin-bottom: 22px; box-shadow: var(--shadow-md);
+}
+.duel-card-head { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+.duel-card-head .duel-icon { font-size: 1.5rem; filter: drop-shadow(0 0 8px rgba(178,110,220,.6)); }
+.duel-card-head h3 { font-size: 1.05rem; color: var(--text-dark); }
+.duel-actions-row { display: flex; gap: 14px; flex-wrap: wrap; }
+.duel-action-box { flex: 1; min-width: 220px; background: var(--surface-2); border-radius: var(--radius-md); padding: 16px; border: 1px solid var(--border-soft); }
+.duel-action-box h4 { font-size: .82rem; color: var(--purple); text-transform: uppercase; letter-spacing: .04em; margin-bottom: 10px; }
+.duel-join-row { display: flex; gap: 8px; }
+.duel-join-row input { flex: 1; background: var(--surface-1); border: 1px solid var(--border-soft); border-radius: var(--radius-sm); padding: 10px 12px; color: var(--text-dark); font-family: var(--font-mono); letter-spacing: .12em; text-transform: uppercase; text-align: center; font-size: 1rem; }
+.duel-join-row input:focus { outline: none; border-color: var(--purple); box-shadow: 0 0 0 3px rgba(139,90,140,.2); }
+.duel-room-code { font-family: var(--font-mono); font-size: 2rem; letter-spacing: .18em; color: var(--purple); text-shadow: 0 0 16px rgba(178,110,220,.5); text-align: center; padding: 10px 0; }
+.duel-status-line { display: flex; align-items: center; gap: 8px; font-size: .82rem; color: var(--text-muted); margin-top: 10px; }
+.duel-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--text-faint); flex-shrink: 0; }
+.duel-dot.live { background: var(--green); box-shadow: 0 0 8px var(--green); animation: duelPulse 1.4s ease-in-out infinite; }
+@keyframes duelPulse { 0%,100%{ opacity:1; } 50%{ opacity:.4; } }
+.duel-vs-panel { margin-top: 18px; display: none; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 14px; background: var(--surface-1); border-radius: var(--radius-md); padding: 18px; border: 1px solid rgba(139,90,140,.3); }
+.duel-vs-panel.show { display: grid; }
+.duel-player { text-align: center; }
+.duel-player-name { font-size: .78rem; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: .03em; }
+.duel-player-score { font-family: var(--font-display); font-size: 2.1rem; font-weight: 800; color: var(--text-dark); }
+.duel-player.me .duel-player-score { color: var(--green); text-shadow: 0 0 14px rgba(76,174,127,.5); }
+.duel-player.opp .duel-player-score { color: var(--orange); text-shadow: 0 0 14px rgba(217,114,59,.5); }
+.duel-vs-badge { font-family: var(--font-display); font-weight: 800; color: var(--purple); font-size: 1.1rem; opacity: .8; }
+.duel-leave-btn { margin-top: 14px; }
+
+
+/* ---------- BADGE UNLOCK TOAST ---------- */
+.toast.badge-unlock {
+  background: linear-gradient(135deg, var(--purple), var(--purple-dark));
+  box-shadow: var(--shadow-lg), 0 0 26px rgba(139,90,140,.55);
+  display: flex; align-items: center; gap: 10px; text-align: left;
+}
+.toast.badge-unlock .badge-toast-icon { font-size: 1.4rem; filter: drop-shadow(0 0 6px rgba(255,255,255,.7)); }
 .page-footer { text-align: center; margin-top: 30px; }
 .page-footer p { font-size: .74rem; color: var(--text-faint); }
 
@@ -866,6 +905,11 @@ main { padding: 28px 32px 60px; max-width: 1440px; margin: 0 auto; width: 100%; 
         <span>Papan Konfigurasi</span>
       </button>
 
+      <button class="nav-item" data-view="duel">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 6.5 17.5 17.5"/><path d="M17.5 6.5 6.5 17.5"/><circle cx="6.5" cy="6.5" r="2.6"/><circle cx="17.5" cy="17.5" r="2.6"/></svg>
+        <span>Mode Duel</span>
+      </button>
+
       <span class="nav-group-label">Modul Pelatihan</span>
       <button class="nav-item" data-view="susun">
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10"/><path d="M12 20V4"/><path d="M20 20v-7"/></svg>
@@ -1024,6 +1068,11 @@ main { padding: 28px 32px 60px; max-width: 1440px; margin: 0 auto; width: 100%; 
         </div>
 
         <div class="home-grid">
+          <button class="home-card" data-goto-view="duel" style="border-color:rgba(139,90,140,.45);">
+            <span class="home-card-icon icon-b4"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 6.5 17.5 17.5"/><path d="M17.5 6.5 6.5 17.5"/><circle cx="6.5" cy="6.5" r="2.6"/><circle cx="17.5" cy="17.5" r="2.6"/></svg></span>
+            <h4>⚔️ Mode Duel</h4>
+            <p>Adu cepat dan tepat lawan temanmu secara real-time di Ruang Duel.</p>
+          </button>
           <button class="home-card" data-goto-view="papan">
             <span class="home-card-icon icon-b1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="1.8" fill="currentColor" stroke="none"/><ellipse cx="12" cy="12" rx="9.2" ry="3.8"/><ellipse cx="12" cy="12" rx="9.2" ry="3.8" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="9.2" ry="3.8" transform="rotate(120 12 12)"/></svg></span>
             <h4>Papan Congklak</h4>
@@ -1175,6 +1224,58 @@ main { padding: 28px 32px 60px; max-width: 1440px; margin: 0 auto; width: 100%; 
           <button class="btn acak-btn btn-block" id="btnAcakKartu">
             <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 4l4 3-4 3"/><path d="M3 7h18"/><path d="M17 20l4-3-4-3"/><path d="M3 17h18"/></svg> Acak 118 Unsur
           </button>
+        </div>
+      </section>
+
+      <section class="view" id="view-duel" aria-label="Mode Duel real-time">
+        <div class="view-header">
+          <span class="view-eyebrow">Kompetisi Langsung</span>
+          <h2>Ruang Duel — Adu Skor Real-time</h2>
+          <p>Buat ruang lalu bagikan kodenya, atau gabung ke ruang temanmu. Skor dari modul kuis & papan congklak akan tersinkron otomatis tanpa refresh.</p>
+        </div>
+
+        <div class="duel-card" id="duelSetupCard">
+          <div class="duel-card-head"><span class="duel-icon">⚔️</span><h3>Mulai Duel Baru</h3></div>
+          <div class="duel-actions-row">
+            <div class="duel-action-box">
+              <h4>Buat Ruang (Host)</h4>
+              <p style="font-size:.82rem;color:var(--text-muted);margin-bottom:12px;">Jadi host dan bagikan kode 4 digit ke lawanmu.</p>
+              <button class="btn btn-blue btn-block" id="btnBuatRuang">
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg> Buat Ruang
+              </button>
+            </div>
+            <div class="duel-action-box">
+              <h4>Gabung Ruang (Challenger)</h4>
+              <p style="font-size:.82rem;color:var(--text-muted);margin-bottom:12px;">Masukkan kode 4 digit dari temanmu.</p>
+              <div class="duel-join-row">
+                <input type="text" id="inputKodeRuang" maxlength="4" placeholder="0000">
+                <button class="btn btn-green" id="btnGabungRuang">Gabung</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="duel-card" id="duelActiveCard" style="display:none;">
+          <div class="duel-card-head"><span class="duel-icon">🎮</span><h3>Ruang Aktif</h3></div>
+          <div class="duel-room-code" id="duelRoomCodeDisplay">----</div>
+          <div class="duel-status-line">
+            <span class="duel-dot" id="duelStatusDot"></span>
+            <span id="duelStatusText">Menunggu lawan bergabung…</span>
+          </div>
+
+          <div class="duel-vs-panel" id="duelVsPanel">
+            <div class="duel-player me">
+              <div class="duel-player-name">Skor Saya</div>
+              <div class="duel-player-score" id="duelSkorSaya">0</div>
+            </div>
+            <div class="duel-vs-badge">VS</div>
+            <div class="duel-player opp">
+              <div class="duel-player-name" id="duelLawanNama">Skor Lawan</div>
+              <div class="duel-player-score" id="duelSkorLawan">0</div>
+            </div>
+          </div>
+
+          <button class="btn btn-gray duel-leave-btn" id="btnKeluarRuang">Tinggalkan Ruang</button>
         </div>
       </section>
 
@@ -1559,7 +1660,11 @@ const state = {
   soundOn: (localStorage.getItem('chemclak_sound') ?? '1') === '1',
   quizTarget: { tebak:null, valensi:null, ion:null, sifat:null },
   quizAnswered: { tebak:false, valensi:false, ion:false, sifat:false },
-  unsubDoc: null
+  unsubDoc: null,
+  // --- Mode Duel (Real-time Multiplayer) ---
+  duel: { roomId: null, role: null, myScore: 0, oppScore: 0, oppName: 'Lawan', unsub: null, active: false },
+  // --- Sistem Achievement tambahan ---
+  achv: { firstConfigDone: false, multiplayerPlayed: false, quizStreak: 0, unlocked: [] }
 };
 
 const $ = sel => document.querySelector(sel);
@@ -1684,6 +1789,7 @@ function cekJawabanPapan(){
     p.solved = true; $('#btnCek').disabled = true;
     sfx.correct(); confetti();
     toast(`✅ Luar biasa! Presisi: ${byZ(p.z).nama} = ${konfigString(target)}`, 'success');
+    state.achv.firstConfigDone = true; simpanAchvLokal();
     tambahPoin(25, 'papan');
     if(p.sourceQuiz==='susun') selesaikanSusun(true);
     setTimeout(()=>{ muatUnsurKePapan(pilihAcak(POOL_PAPAN).z); }, 1400);
@@ -1694,6 +1800,13 @@ function cekJawabanPapan(){
   }
 }
 function pilihAcak(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+
+// Melacak rentetan jawaban benar berturut-turut di modul kuis (Tebak/Valensi/Ion/Sifat)
+// untuk lencana "Flawless Chemist". Salah satu jawaban salah akan mereset hitungan ke 0.
+function catatStreak(benar){
+  state.achv.quizStreak = benar ? (state.achv.quizStreak + 1) : 0;
+  simpanAchvLokal();
+}
 
 // =====================================================================================
 // 5. XP, LEVEL, GUEST MODE & PENYIMPANAN LOKAL
@@ -1732,6 +1845,7 @@ function muatProgresLokal(){
     if(savedPhoto) applyAvatar(savedPhoto, { persist:false });
     const savedGuestName = localStorage.getItem('chemclak_guest_name');
     if(savedGuestName) applyName(savedGuestName);
+    muatAchvLokal();
   }catch(e){ state.progress = {}; state.xp = 0; }
 }
 
@@ -1745,13 +1859,16 @@ function resetKeAwalSaatLogout(){
     localStorage.removeItem('chemclak_xp');
     localStorage.removeItem('chemclak_photo');
     localStorage.removeItem('chemclak_guest_name');
+    localStorage.removeItem('chemclak_achv');
   }catch(e){}
   if(state.unsubDoc){ try{ state.unsubDoc(); }catch(e){} state.unsubDoc = null; }
+  keluarDariRuangDuel();
   state.user = null;
   state.xp = 0;
   state.progress = {};
   state.photoURL = null;
   state.currentRank = null;
+  state.achv = { firstConfigDone: false, multiplayerPlayed: false, quizStreak: 0, unlocked: [] };
   localXpAtLoad = 0;
   localProgressAtLoad = {};
 
@@ -1771,6 +1888,7 @@ async function tambahPoin(jumlah, modul=null){
   state.xp += jumlah;
   if(modul) state.progress[modul] = (state.progress[modul]||0) + 1;
   simpanProgresLokal(); renderGamifikasi(); renderProgres(); renderAccPopover();
+  sinkronSkorDuel(jumlah); // dorong skor real-time ke lawan jika sedang berduel
   
   const after = levelInfo(state.xp).level;
   if(after>before){ sfx.levelup(); toast(`🎉 Level Up! Peringkat Akademik naik ke Level ${after}!`,'success'); levelUpBurst(after); }
@@ -1801,7 +1919,62 @@ const BADGES = [
   { id:'ion5',   icon:'⚡', label:'Prediktor Ion', desc:'Akurat 5x di Modul Ion', check:(p)=> (p.ion||0) >= 5 },
   { id:'sifat5', icon:'🧪', label:'Katalis Klasifikasi',desc:'Akurat 5x di Modul Sifat', check:(p)=> (p.sifat||0) >= 5 },
   { id:'level5', icon:'🏆', label:'Elite Akademik', desc:'Mencapai Level Akademik 5', check:(p, xp)=> levelInfo(xp).level >= 5 },
+  { id:'firstblood', icon:'🩸', label:'First Blood', desc:'Selesaikan konfigurasi elektron untuk pertama kalinya', check:(p, xp, a)=> !!(a && a.firstConfigDone) },
+  { id:'flawless', icon:'💎', label:'Flawless Chemist', desc:'Jawab kuis benar 3x berturut-turut tanpa salah', check:(p, xp, a)=> !!(a && a.quizStreak >= 3) },
+  { id:'social', icon:'🦋', label:'Social Butterfly', desc:'Bermain Mode Duel untuk pertama kalinya', check:(p, xp, a)=> !!(a && a.multiplayerPlayed) },
 ];
+
+// Cek lencana baru yang baru terbuka dibanding sebelumnya, lalu tampilkan toast + suara "ting"
+// khusus supaya juri/pengguna langsung tahu pencapaian barunya tanpa harus buka profil.
+function evaluasiBadgeBaru(){
+  const p = state.progress || {};
+  const sekarangUnlocked = BADGES.filter(b=> b.check(p, state.xp, state.achv)).map(b=> b.id);
+  const baru = sekarangUnlocked.filter(id=> !state.achv.unlocked.includes(id));
+  if(baru.length){
+    state.achv.unlocked = sekarangUnlocked;
+    baru.forEach(id=>{
+      const b = BADGES.find(x=> x.id===id);
+      if(b) toastBadge(b);
+    });
+    simpanAchvLokal();
+    if(firebaseAvailable && auth.currentUser && state.user && state.user.uid !== 'guest'){
+      updateDoc(doc(db,'users',state.user.uid), { achievements: state.achv.unlocked }).catch(()=>{
+        setDoc(doc(db,'users',state.user.uid), { achievements: state.achv.unlocked }, { merge:true }).catch(()=>{});
+      });
+    }
+  } else {
+    state.achv.unlocked = sekarangUnlocked;
+  }
+}
+function toastBadge(b){
+  const cont = $('#toastContainer');
+  if(cont){
+    const el = document.createElement('div');
+    el.className = 'toast badge-unlock';
+    el.innerHTML = `<span class="badge-toast-icon">${b.icon}</span><span>Lencana Baru: <strong>${b.label}</strong>!</span>`;
+    cont.appendChild(el);
+    setTimeout(()=> el.remove(), 3400);
+  }
+  playTone(880,0.09,'sine'); playTone(1318.5,0.16,'sine',0.09); // efek suara "ting!"
+}
+function simpanAchvLokal(){
+  try{
+    localStorage.setItem('chemclak_achv', JSON.stringify({
+      firstConfigDone: state.achv.firstConfigDone,
+      multiplayerPlayed: state.achv.multiplayerPlayed,
+      unlocked: state.achv.unlocked
+    }));
+  }catch(e){}
+}
+function muatAchvLokal(){
+  try{
+    const raw = JSON.parse(localStorage.getItem('chemclak_achv')||'{}');
+    state.achv.firstConfigDone = !!raw.firstConfigDone;
+    state.achv.multiplayerPlayed = !!raw.multiplayerPlayed;
+    state.achv.unlocked = raw.unlocked || [];
+  }catch(e){}
+}
+
 function renderProgres(){
   const p = state.progress || {};
   ['Papan','Susun','Tebak','Valensi','Ion','Sifat'].forEach(m=> {
@@ -1809,7 +1982,8 @@ function renderProgres(){
     if(el) el.textContent = p[m.toLowerCase()] || 0;
   });
   const grid = $('#badgeGrid');
-  if(grid) grid.innerHTML = BADGES.map(b=> `<div class="badge ${b.check(p, state.xp)?'unlocked':''}"> <div class="badge-icon">${b.icon}</div> <strong>${b.label}</strong> <span>${b.desc}</span> </div>`).join('');
+  if(grid) grid.innerHTML = BADGES.map(b=> `<div class="badge ${b.check(p, state.xp, state.achv)?'unlocked':''}"> <div class="badge-icon">${b.icon}</div> <strong>${b.label}</strong> <span>${b.desc}</span> </div>`).join('');
+  evaluasiBadgeBaru();
 }
 
 function levelUpBurst(level){
@@ -1940,10 +2114,10 @@ function renderAccPopover(){
   $('#accStatModul').textContent = modulDisentuh;
   $('#accStatRank').textContent = state.currentRank ? ('#'+state.currentRank) : (firebaseAvailable ? '–' : 'N/A');
 
-  const unlockedCount = BADGES.filter(b=> b.check(p, state.xp)).length;
+  const unlockedCount = BADGES.filter(b=> b.check(p, state.xp, state.achv)).length;
   $('#accBadgeCount').textContent = `${unlockedCount}/${BADGES.length}`;
   const grid = $('#accBadgesMini');
-  if(grid) grid.innerHTML = BADGES.map(b=> `<div class="acc-badge-mini ${b.check(p, state.xp)?'unlocked':''}" data-label="${b.label}">${b.icon}</div>`).join('');
+  if(grid) grid.innerHTML = BADGES.map(b=> `<div class="acc-badge-mini ${b.check(p, state.xp, state.achv)?'unlocked':''}" data-label="${b.label}">${b.icon}</div>`).join('');
 
   const isGuest = state.user && state.user.uid === 'guest';
   $('#accGuestTag').classList.toggle('hidden', !isGuest);
@@ -2008,9 +2182,9 @@ $('#btnCekTebak').addEventListener('click', ()=>{
   state.quizAnswered.tebak = true;
   $('#btnCekTebak').disabled = true; $('#inputNamaUnsur').disabled = true;
   if(jawab===el.nama.toLowerCase() || jawab===el.sym.toLowerCase()){
-    sfx.correct(); tambahPoin(15, 'tebak'); resEl.className = 'quiz-result benar'; resEl.innerHTML = `✅ Analisa Valid! Elemen: ${el.nama} (${el.sym}).`;
+    sfx.correct(); catatStreak(true); tambahPoin(15, 'tebak'); resEl.className = 'quiz-result benar'; resEl.innerHTML = `✅ Analisa Valid! Elemen: ${el.nama} (${el.sym}).`;
   } else {
-    sfx.wrong(); resEl.className = 'quiz-result salah'; resEl.innerHTML = `❌ Deviasi Deteksi. Elemen yang benar adalah <strong>${el.nama} (${el.sym})</strong>.`;
+    sfx.wrong(); catatStreak(false); resEl.className = 'quiz-result salah'; resEl.innerHTML = `❌ Deviasi Deteksi. Elemen yang benar adalah <strong>${el.nama} (${el.sym})</strong>.`;
   }
   attachNextLink(resEl, soalTebak);
 });
@@ -2032,9 +2206,9 @@ $('#btnCekValensi').addEventListener('click', ()=>{
   state.quizAnswered.valensi = true;
   $('#btnCekValensi').disabled = true; $('#inputValensi').disabled = true; $('#inputGolongan').disabled = true;
   if(jVal === el.valensi && jGol === el.golongan){
-    sfx.correct(); tambahPoin(15, 'valensi'); resEl.className = 'quiz-result benar'; resEl.innerHTML = `✅ Tepat! Elektron aktif: ${el.valensi}, Berada di Golongan ${el.golongan}.`;
+    sfx.correct(); catatStreak(true); tambahPoin(15, 'valensi'); resEl.className = 'quiz-result benar'; resEl.innerHTML = `✅ Tepat! Elektron aktif: ${el.valensi}, Berada di Golongan ${el.golongan}.`;
   } else {
-    sfx.wrong(); resEl.className = 'quiz-result salah'; resEl.innerHTML = `❌ Kesalahan Kalkulasi. Yang presisi: Valensi = <strong>${el.valensi}</strong>, Golongan = <strong>${el.golongan}</strong>.`;
+    sfx.wrong(); catatStreak(false); resEl.className = 'quiz-result salah'; resEl.innerHTML = `❌ Kesalahan Kalkulasi. Yang presisi: Valensi = <strong>${el.valensi}</strong>, Golongan = <strong>${el.golongan}</strong>.`;
   }
   attachNextLink(resEl, soalValensi);
 });
@@ -2062,9 +2236,9 @@ $('#btnCekIon').addEventListener('click', ()=>{
   state.quizAnswered.ion = true;
   $('#btnCekIon').disabled = true; $('#ionOptionA').disabled = true; $('#ionOptionB').disabled = true; $('#inputMuatan').disabled = true;
   if(info.opsi[pilihan] === info.benarLabel && jMuatan === info.benarMuatan){
-    sfx.correct(); tambahPoin(15, 'ion'); resEl.className = 'quiz-result benar'; resEl.innerHTML = `✅ Analisa Ion Tepat! Terbentuk ${info.benarLabel} (Muatan stasioner ${info.benarMuatan>0?'+':''}${info.benarMuatan}).`;
+    sfx.correct(); catatStreak(true); tambahPoin(15, 'ion'); resEl.className = 'quiz-result benar'; resEl.innerHTML = `✅ Analisa Ion Tepat! Terbentuk ${info.benarLabel} (Muatan stasioner ${info.benarMuatan>0?'+':''}${info.benarMuatan}).`;
   } else {
-    sfx.wrong(); resEl.className = 'quiz-result salah'; resEl.innerHTML = `❌ Terjadi Anomali. Hasil stabilnya adalah <strong>${info.benarLabel}</strong> (Muatan ${info.benarMuatan>0?'+':''}${info.benarMuatan}).`;
+    sfx.wrong(); catatStreak(false); resEl.className = 'quiz-result salah'; resEl.innerHTML = `❌ Terjadi Anomali. Hasil stabilnya adalah <strong>${info.benarLabel}</strong> (Muatan ${info.benarMuatan>0?'+':''}${info.benarMuatan}).`;
   }
   attachNextLink(resEl, soalIon);
 });
@@ -2087,9 +2261,9 @@ $('#btnCekSifat').addEventListener('click', ()=>{
   state.quizAnswered.sifat = true;
   $('#btnCekSifat').disabled = true; $('#btnLogam').disabled = true; $('#btnNonlogam').disabled = true;
   if(el.isLogam === pilihLogam){
-    sfx.correct(); tambahPoin(10, 'sifat'); resEl.className = 'quiz-result benar'; resEl.innerHTML = `✅ Klasifikasi Valid! Karakteristik: ${el.isLogam?'Logam':'Nonlogam'} (${KATEGORI_LABEL[el.cat]}).`;
+    sfx.correct(); catatStreak(true); tambahPoin(10, 'sifat'); resEl.className = 'quiz-result benar'; resEl.innerHTML = `✅ Klasifikasi Valid! Karakteristik: ${el.isLogam?'Logam':'Nonlogam'} (${KATEGORI_LABEL[el.cat]}).`;
   } else {
-    sfx.wrong(); resEl.className = 'quiz-result salah'; resEl.innerHTML = `❌ Terdapat bias karakteristik. Yang tepat adalah <strong>${el.isLogam?'Logam':'Nonlogam'}</strong> (${KATEGORI_LABEL[el.cat]}).`;
+    sfx.wrong(); catatStreak(false); resEl.className = 'quiz-result salah'; resEl.innerHTML = `❌ Terdapat bias karakteristik. Yang tepat adalah <strong>${el.isLogam?'Logam':'Nonlogam'}</strong> (${KATEGORI_LABEL[el.cat]}).`;
   }
   attachNextLink(resEl, soalSifat);
 });
@@ -2100,6 +2274,7 @@ $('#btnCekSifat').addEventListener('click', ()=>{
 const VIEW_INFO = {
   beranda:  { title: 'Beranda', subtitle: 'Platform Edukasi Simulasi Kimia' },
   papan:    { title: 'Simulasi Kuantum Interaktif', subtitle: 'Atur elektron pada probabilitas energi absolut' },
+  duel:     { title: 'Ruang Duel', subtitle: 'Kompetisi skor real-time melawan temanmu' },
   susun:    { title: 'Modul Latihan 1: Akurasi Resolusi', subtitle: 'Asah ketelitian meletakkan ikatan elektron.' },
   tebak:    { title: 'Modul Latihan 2: Dekripsi Identitas', subtitle: 'Identifikasi struktur materi berbasis tabel periodik.' },
   valensi:  { title: 'Modul Latihan 3: Analisa Golongan', subtitle: 'Simpulkan elektron penentu ikatan molekuler.' },
@@ -2251,6 +2426,12 @@ if (firebaseAvailable) {
           semuaModul.forEach(k=>{ progresGabungan[k] = Math.max(state.progress?.[k]||0, remoteProgress[k]||0); });
           state.progress = progresGabungan;
           state.xp = Math.max(state.xp, data.xp || 0);
+          if(Array.isArray(data.achievements)){
+            const gabunganAchv = new Set([...(state.achv.unlocked||[]), ...data.achievements]);
+            state.achv.unlocked = Array.from(gabunganAchv);
+            if(state.achv.unlocked.includes('firstblood')) state.achv.firstConfigDone = true;
+            if(state.achv.unlocked.includes('social')) state.achv.multiplayerPlayed = true;
+          }
 
           if(data.name) applyName(data.name);
           if(data.photoURL && data.photoURL !== state.photoURL) applyAvatar(data.photoURL, { sync:false });
@@ -2351,6 +2532,97 @@ function renderKartuUnsur(list){
     row.appendChild(card);
   });
 }
+
+// =====================================================================================
+// FITUR 1: MODE MULTIPLAYER REAL-TIME (RUANG DUEL)
+// =====================================================================================
+function kodeRuangAcak(){ return String(Math.floor(1000 + Math.random()*9000)); }
+
+async function buatRuangDuel(){
+  if(!firebaseAvailable){ toast('Mode Duel butuh koneksi server. Periksa internetmu.', 'error'); return; }
+  if(!state.user){ toast('Masuk/mode tamu dulu sebelum membuat ruang.', 'error'); return; }
+  sfx.click();
+  const kode = kodeRuangAcak();
+  try{
+    await setDoc(doc(db, 'rooms', kode), {
+      hostUid: state.user.uid, hostName: state.user.name || 'Host',
+      hostScore: 0, guestUid: null, guestName: null, guestScore: 0,
+      status: 'waiting', createdAt: serverTimestamp()
+    });
+    masukKeRuangDuel(kode, 'host');
+    toast(`Ruang ${kode} dibuat! Bagikan kodenya ke lawanmu.`, 'success');
+  }catch(e){ toast('Gagal membuat ruang. Coba lagi.', 'error'); }
+}
+
+async function gabungRuangDuel(kode){
+  if(!firebaseAvailable){ toast('Mode Duel butuh koneksi server. Periksa internetmu.', 'error'); return; }
+  if(!state.user){ toast('Masuk/mode tamu dulu sebelum gabung ruang.', 'error'); return; }
+  if(!/^\d{4}$/.test(kode)){ toast('Kode ruang harus 4 digit angka.', 'error'); return; }
+  sfx.click();
+  try{
+    const ref = doc(db, 'rooms', kode);
+    const snap = await getDoc(ref);
+    if(!snap.exists()){ toast('Ruang tidak ditemukan. Periksa kembali kodenya.', 'error'); return; }
+    const data = snap.data();
+    if(data.guestUid && data.guestUid !== state.user.uid){ toast('Ruang ini sudah penuh.', 'error'); return; }
+    await updateDoc(ref, { guestUid: state.user.uid, guestName: state.user.name || 'Challenger', status: 'active' });
+    masukKeRuangDuel(kode, 'guest');
+    toast(`Berhasil gabung ke ruang ${kode}!`, 'success');
+  }catch(e){ toast('Gagal gabung ruang. Coba lagi.', 'error'); }
+}
+
+function masukKeRuangDuel(kode, peran){
+  state.duel.roomId = kode; state.duel.role = peran; state.duel.active = true;
+  state.duel.myScore = 0; state.duel.oppScore = 0;
+
+  $('#duelSetupCard').style.display = 'none';
+  $('#duelActiveCard').style.display = '';
+  $('#duelRoomCodeDisplay').textContent = kode;
+
+  const ref = doc(db, 'rooms', kode);
+  state.duel.unsub = onSnapshot(ref, snap=>{
+    if(!snap.exists()){ toast('Ruang duel telah ditutup.', 'info'); keluarDariRuangDuel(); return; }
+    const d = snap.data();
+    const adaLawan = peran==='host' ? !!d.guestUid : !!d.hostUid;
+    $('#duelVsPanel').classList.toggle('show', adaLawan);
+    $('#duelStatusDot').classList.toggle('live', adaLawan);
+    $('#duelStatusText').textContent = adaLawan ? 'Duel berlangsung — skor tersinkron real-time.' : 'Menunggu lawan bergabung…';
+
+    if(peran==='host'){
+      state.duel.myScore = d.hostScore||0; state.duel.oppScore = d.guestScore||0;
+      $('#duelLawanNama').textContent = d.guestName ? `Skor ${d.guestName}` : 'Skor Lawan';
+    } else {
+      state.duel.myScore = d.guestScore||0; state.duel.oppScore = d.hostScore||0;
+      $('#duelLawanNama').textContent = d.hostName ? `Skor ${d.hostName}` : 'Skor Lawan';
+    }
+    $('#duelSkorSaya').textContent = state.duel.myScore;
+    $('#duelSkorLawan').textContent = state.duel.oppScore;
+
+    if(adaLawan && !state.achv.multiplayerPlayed){
+      state.achv.multiplayerPlayed = true; simpanAchvLokal(); evaluasiBadgeBaru();
+    }
+  });
+}
+
+async function sinkronSkorDuel(tambahan){
+  if(!state.duel.active || !state.duel.roomId) return;
+  const field = state.duel.role === 'host' ? 'hostScore' : 'guestScore';
+  try{ await updateDoc(doc(db,'rooms',state.duel.roomId), { [field]: increment(tambahan) }); }catch(e){}
+}
+
+function keluarDariRuangDuel(){
+  if(state.duel.unsub){ try{ state.duel.unsub(); }catch(e){} }
+  state.duel = { roomId: null, role: null, myScore: 0, oppScore: 0, oppName: 'Lawan', unsub: null, active: false };
+  const setup = $('#duelSetupCard'), active = $('#duelActiveCard');
+  if(setup) setup.style.display = '';
+  if(active) active.style.display = 'none';
+  const vsPanel = $('#duelVsPanel'); if(vsPanel) vsPanel.classList.remove('show');
+}
+
+$('#btnBuatRuang') && $('#btnBuatRuang').addEventListener('click', buatRuangDuel);
+$('#btnGabungRuang') && $('#btnGabungRuang').addEventListener('click', ()=> gabungRuangDuel($('#inputKodeRuang').value.trim()));
+$('#inputKodeRuang') && $('#inputKodeRuang').addEventListener('keydown', (e)=>{ if(e.key==='Enter') gabungRuangDuel($('#inputKodeRuang').value.trim()); });
+$('#btnKeluarRuang') && $('#btnKeluarRuang').addEventListener('click', ()=>{ sfx.click(); keluarDariRuangDuel(); toast('Kamu meninggalkan ruang duel.', 'info'); });
 
 function initStarfield(){
   const canvas = $('#starCanvas'); if(!canvas) return; const ctx = canvas.getContext('2d');
