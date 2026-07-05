@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="id">
 <head>
 <meta charset="UTF-8">
@@ -9,39 +10,49 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,800;9..144,900&family=Nunito:wght@400;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+
+<!-- ============ CDN: Chart.js (grafik batang & donat) ============ -->
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+
+<!-- ============ CDN: jsPDF + jsPDF-AutoTable (cetak rapor PDF) ============ -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+
 <style>
 /* =====================================================================
-   PORTAL ANALITIK GURU — CHEMCLAK
-   Palet: putih bersih + biru admin (identitas favicon CHEMCLAK) + aksen
-   navy pada sidebar, dan aksen emas/hijau untuk elemen peringkat —
-   menyambung bahasa visual "papan peringkat" dari aplikasi siswa.
+   PORTAL ANALITIK GURU — CHEMCLAK — ENTERPRISE / E-RAPOR NASIONAL STYLE
    ===================================================================== */
 * , *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root{
-  --biru: #1E88E5;
-  --biru-dark: #1565C0;
-  --biru-mist: rgba(30,136,229,.10);
-  --navy: #0B2540;
-  --navy-2: #123256;
-  --hijau: #2F8F62;
-  --hijau-mist: rgba(47,143,98,.12);
-  --emas: #D9A441;
-  --emas-mist: rgba(217,164,65,.14);
-  --merah: #D64545;
+  --biru: #1E5FA8;
+  --biru-dark: #123E73;
+  --biru-bright: #1E88E5;
+  --biru-mist: rgba(30,95,168,.10);
+  --navy: #0B1F35;
+  --navy-2: #0F2C4C;
+  --hijau: #1E7A46;
+  --hijau-mist: rgba(30,122,70,.12);
+  --emas: #B8860B;
+  --emas-mist: rgba(184,134,11,.14);
+  --merah: #C0392B;
+  --merah-mist: rgba(192,57,43,.1);
 
-  --bg: #F3F6FA;
+  --bg: #EEF2F7;
   --surface: #FFFFFF;
-  --surface-2: #F8FAFD;
-  --border: #E3E9F1;
-  --text: #16233A;
-  --text-muted: #5B6B82;
-  --text-faint: #93A1B4;
+  --surface-2: #F6F8FB;
+  --border: #DDE4ED;
+  --text: #131C2B;
+  --text-muted: #55647A;
+  --text-faint: #8B97AA;
 
-  --radius: 16px;
-  --radius-sm: 10px;
-  --shadow-sm: 0 1px 2px rgba(16,38,73,.06), 0 1px 1px rgba(16,38,73,.04);
-  --shadow-md: 0 10px 30px -12px rgba(16,38,73,.18);
+  --radius: 14px;
+  --radius-sm: 9px;
+  --shadow-sm: 0 1px 2px rgba(11,31,53,.06), 0 1px 1px rgba(11,31,53,.04);
+  --shadow-md: 0 14px 34px -14px rgba(11,31,53,.22);
   --font-display: 'Fraunces', serif;
   --font-body: 'Nunito', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
@@ -51,6 +62,7 @@ html,body{ height:100%; }
 body{
   font-family: var(--font-body);
   background: var(--bg);
+  background-image: linear-gradient(180deg, #E3EAF3 0%, #EEF2F7 320px);
   color: var(--text);
   -webkit-font-smoothing: antialiased;
 }
@@ -58,11 +70,12 @@ h1,h2,h3{ font-family: var(--font-display); letter-spacing: -.01em; }
 button, input{ font-family: inherit; }
 a{ color: inherit; }
 ::selection{ background: var(--biru-mist); }
-:focus-visible{ outline: 2.5px solid var(--biru); outline-offset: 2px; border-radius: 4px; }
+:focus-visible{ outline: 2.5px solid var(--biru-bright); outline-offset: 2px; border-radius: 4px; }
 
-/* ---------- GERBANG PEMERIKSAAN AKSES (tampil sebelum role terverifikasi) ---------- */
+/* ---------- GERBANG PEMERIKSAAN AKSES ---------- */
 #gateCek{
   position: fixed; inset: 0; z-index: 999; background: var(--navy);
+  background-image: radial-gradient(circle at 20% 10%, var(--navy-2), var(--navy) 65%);
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px;
   color: #EAF2FB;
 }
@@ -77,17 +90,27 @@ a{ color: inherit; }
 
 /* ---------- SIDEBAR ---------- */
 .sidebar{
-  width: 250px; flex-shrink: 0; background: var(--navy);
+  width: 264px; flex-shrink: 0; background: var(--navy);
   background-image: radial-gradient(circle at 15% 0%, var(--navy-2), var(--navy) 60%);
   color: #EAF2FB; display: flex; flex-direction: column;
   position: fixed; inset: 0 auto 0 0; z-index: 60;
   transition: transform .28s ease;
+  border-right: 1px solid rgba(255,255,255,.05);
 }
-.sidebar-brand{ display: flex; align-items: center; gap: 10px; padding: 22px 22px 18px; border-bottom: 1px solid rgba(255,255,255,.08); }
-.sidebar-brand .logo-dot{ width: 34px; height: 34px; border-radius: 10px; background: linear-gradient(150deg, var(--biru), var(--biru-dark)); display: flex; align-items: center; justify-content: center; font-weight: 800; font-family: var(--font-display); box-shadow: 0 4px 14px rgba(30,136,229,.4); }
-.sidebar-brand strong{ font-family: var(--font-display); font-size: 1.02rem; font-weight: 800; display: block; }
-.sidebar-brand span{ font-size: .68rem; color: #8EA5C2; text-transform: uppercase; letter-spacing: .06em; }
-.sidebar-nav{ flex: 1; padding: 18px 12px; display: flex; flex-direction: column; gap: 3px; }
+.sidebar-brand{ display: flex; align-items: center; gap: 10px; padding: 22px 22px 16px; border-bottom: 1px solid rgba(255,255,255,.08); }
+.sidebar-brand .logo-dot{ width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(150deg, var(--biru-bright), var(--biru-dark)); display: flex; align-items: center; justify-content: center; font-weight: 800; font-family: var(--font-display); box-shadow: 0 4px 14px rgba(30,136,229,.4); overflow: hidden; }
+.sidebar-brand .logo-dot img{ width: 100%; height: 100%; object-fit: cover; }
+.sidebar-brand strong{ font-family: var(--font-display); font-size: 1.05rem; font-weight: 800; display: block; }
+.sidebar-brand span{ font-size: .66rem; color: #8EA5C2; text-transform: uppercase; letter-spacing: .06em; }
+
+.sidebar-profile{ display: flex; align-items: center; gap: 10px; padding: 16px 20px; border-bottom: 1px solid rgba(255,255,255,.08); }
+.sp-avatar{ width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(150deg, var(--emas), #8C6508); color: #241606; display: flex; align-items: center; justify-content: center; font-weight: 800; font-family: var(--font-display); flex-shrink: 0; overflow: hidden; font-size: .9rem; }
+.sp-avatar img{ width: 100%; height: 100%; object-fit: cover; }
+.sp-meta{ min-width: 0; line-height: 1.3; }
+.sp-meta strong{ font-size: .82rem; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sp-meta span{ font-size: .66rem; color: #8EA5C2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
+
+.sidebar-nav{ flex: 1; padding: 16px 12px; display: flex; flex-direction: column; gap: 3px; }
 .nav-item{
   display: flex; align-items: center; gap: 11px; padding: 11px 14px; border-radius: 10px;
   color: #B9CBE0; font-weight: 700; font-size: .87rem; cursor: pointer; border: none; background: none;
@@ -95,41 +118,42 @@ a{ color: inherit; }
 }
 .nav-item svg{ width: 18px; height: 18px; flex-shrink: 0; opacity: .85; }
 .nav-item:hover{ background: rgba(255,255,255,.06); color: #fff; }
-.nav-item.is-active{ background: linear-gradient(135deg, var(--biru), var(--biru-dark)); color: #fff; box-shadow: 0 6px 16px -4px rgba(30,136,229,.55); }
-.sidebar-foot{ padding: 16px 22px 20px; border-top: 1px solid rgba(255,255,255,.08); font-size: .68rem; color: #6F86A3; }
+.nav-item.is-active{ background: linear-gradient(135deg, var(--biru-bright), var(--biru-dark)); color: #fff; box-shadow: 0 6px 16px -4px rgba(30,136,229,.55); }
+.sidebar-foot{ padding: 16px 22px 20px; border-top: 1px solid rgba(255,255,255,.08); font-size: .66rem; color: #6F86A3; }
 .sidebar-backdrop{ display: none; }
 
 /* ---------- MAIN ---------- */
-.main-wrap{ flex: 1; margin-left: 250px; display: flex; flex-direction: column; min-width: 0; }
+.main-wrap{ flex: 1; margin-left: 264px; display: flex; flex-direction: column; min-width: 0; }
 .topbar{
-  height: 68px; background: var(--surface); border-bottom: 1px solid var(--border);
+  min-height: 72px; background: var(--surface); border-bottom: 1px solid var(--border);
   display: flex; align-items: center; justify-content: space-between; padding: 0 26px;
   position: sticky; top: 0; z-index: 40; gap: 14px;
 }
 .topbar-left{ display: flex; align-items: center; gap: 14px; min-width: 0; }
-#btnHamburger{ display: none; background: var(--surface-2); border: 1px solid var(--border); border-radius: 9px; width: 38px; height: 38px; cursor: pointer; align-items: center; justify-content: center; }
-#btnHamburger span, #btnHamburger::before, #btnHamburger::after{ display:none; }
-.topbar-title{ font-size: 1rem; font-weight: 800; font-family: var(--font-display); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#btnHamburger{ display: none; background: var(--surface-2); border: 1px solid var(--border); border-radius: 9px; width: 38px; height: 38px; cursor: pointer; align-items: center; justify-content: center; flex-shrink: 0; }
+.topbar-eyebrow{ font-size: .66rem; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; color: var(--text-faint); margin-bottom: 1px; }
+.topbar-title{ font-size: 1.05rem; font-weight: 800; font-family: var(--font-display); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .topbar-right{ display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
 .guru-chip{ display: flex; align-items: center; gap: 9px; }
-.guru-avatar{ width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(150deg, var(--emas), #B9812A); color: #241606; display: flex; align-items: center; justify-content: center; font-weight: 800; font-family: var(--font-display); flex-shrink: 0; }
+.guru-avatar{ width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(150deg, var(--emas), #8C6508); color: #241606; display: flex; align-items: center; justify-content: center; font-weight: 800; font-family: var(--font-display); flex-shrink: 0; overflow: hidden; }
+.guru-avatar img{ width: 100%; height: 100%; object-fit: cover; }
 .guru-meta{ line-height: 1.25; }
 .guru-meta strong{ font-size: .82rem; display: block; }
 .guru-meta span{ font-size: .68rem; color: var(--text-faint); }
 .btn-logout{ background: var(--surface-2); border: 1px solid var(--border); color: var(--merah); font-weight: 800; font-size: .78rem; padding: 8px 14px; border-radius: 9px; cursor: pointer; transition: background .18s ease; }
-.btn-logout:hover{ background: #FCEBEB; }
+.btn-logout:hover{ background: var(--merah-mist); }
 
-.content{ padding: 26px 28px 60px; max-width: 1240px; width: 100%; margin: 0 auto; }
+.content{ padding: 26px 28px 60px; max-width: 1320px; width: 100%; margin: 0 auto; }
 .view{ display: none; animation: viewFade .35s ease; }
 .view.is-active{ display: block; }
 @keyframes viewFade{ from{ opacity:0; transform: translateY(6px); } to{ opacity:1; transform: translateY(0); } }
 
 .view-eyebrow{ font-size: .72rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--biru); }
-.view-heading{ font-size: 1.5rem; font-weight: 800; margin: 4px 0 4px; }
+.view-heading{ font-size: 1.55rem; font-weight: 800; margin: 4px 0 4px; }
 .view-sub{ color: var(--text-muted); font-size: .88rem; margin-bottom: 22px; }
 
 /* ---------- TOP CARDS ---------- */
-.cards-grid{ display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 26px; }
+.cards-grid{ display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 22px; }
 .stat-card{
   background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
   padding: 20px 20px 18px; box-shadow: var(--shadow-sm); position: relative; overflow: hidden;
@@ -144,8 +168,14 @@ a{ color: inherit; }
 .stat-card.c-avg{ --accent: var(--hijau); --accent-mist: var(--hijau-mist); }
 .stat-card.c-top{ --accent: var(--emas); --accent-mist: var(--emas-mist); }
 
-/* ---------- Mini ringkasan Beranda ---------- */
-.panel{ background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 22px; box-shadow: var(--shadow-sm); }
+/* ---------- GRAFIK ---------- */
+.charts-grid{ display: grid; grid-template-columns: 1.4fr 1fr; gap: 16px; margin-bottom: 22px; }
+.chart-panel{ display: flex; flex-direction: column; }
+.chart-canvas-wrap{ position: relative; height: 260px; margin-top: 10px; }
+.chart-canvas-wrap-donut{ height: 260px; max-width: 320px; margin-left: auto; margin-right: auto; }
+
+/* ---------- PANEL GENERIK ---------- */
+.panel{ background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 22px; box-shadow: var(--shadow-sm); margin-bottom: 16px; }
 .panel h3{ font-size: .98rem; font-weight: 800; margin-bottom: 4px; }
 .panel .panel-sub{ font-size: .78rem; color: var(--text-faint); margin-bottom: 14px; }
 .mini-list{ display: flex; flex-direction: column; gap: 8px; }
@@ -153,7 +183,8 @@ a{ color: inherit; }
 .mini-row:hover{ background: var(--surface-2); }
 .mini-rank{ width: 22px; text-align: center; font-family: var(--font-mono); font-weight: 700; color: var(--text-faint); font-size: .82rem; }
 .mini-row.r1 .mini-rank, .mini-row.r2 .mini-rank, .mini-row.r3 .mini-rank{ font-size: 1.05rem; }
-.mini-avatar{ width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: .78rem; color: #fff; background: linear-gradient(150deg, var(--biru), var(--biru-dark)); flex-shrink: 0; }
+.mini-avatar{ width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: .78rem; color: #fff; background: linear-gradient(150deg, var(--biru-bright), var(--biru-dark)); flex-shrink: 0; overflow: hidden; }
+.mini-avatar img{ width: 100%; height: 100%; object-fit: cover; }
 .mini-row.r1 .mini-avatar{ box-shadow: 0 0 0 3px var(--emas-mist), 0 0 0 2px var(--emas); }
 .mini-row.r2 .mini-avatar{ box-shadow: 0 0 0 3px #EEF1F5, 0 0 0 2px #B9C2CE; }
 .mini-row.r3 .mini-avatar{ box-shadow: 0 0 0 3px #F7EADC, 0 0 0 2px #C7924F; }
@@ -162,7 +193,7 @@ a{ color: inherit; }
 .mini-info span{ font-size: .7rem; color: var(--text-faint); }
 .mini-score{ font-family: var(--font-mono); font-weight: 800; color: var(--biru-dark); font-size: .88rem; }
 
-/* ---------- TOOLBAR (search + export) ---------- */
+/* ---------- TOOLBAR ---------- */
 .toolbar{ display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 16px; flex-wrap: wrap; }
 .search-box{ position: relative; flex: 1; min-width: 220px; max-width: 360px; }
 .search-box svg{ position: absolute; left: 13px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(--text-faint); }
@@ -170,15 +201,20 @@ a{ color: inherit; }
   width: 100%; padding: 10px 14px 10px 37px; border-radius: 10px; border: 1.5px solid var(--border);
   background: var(--surface); font-size: .85rem; color: var(--text); transition: border-color .18s ease, box-shadow .18s ease;
 }
-.search-box input:focus{ border-color: var(--biru); box-shadow: 0 0 0 3px var(--biru-mist); outline: none; }
+.search-box input:focus{ border-color: var(--biru-bright); box-shadow: 0 0 0 3px var(--biru-mist); outline: none; }
+.toolbar-actions{ display: flex; gap: 10px; flex-wrap: wrap; }
 .btn-export{
-  display: inline-flex; align-items: center; gap: 8px; background: linear-gradient(135deg, var(--hijau), #2A7A54);
+  display: inline-flex; align-items: center; gap: 8px;
   color: #fff; font-weight: 800; font-size: .84rem; padding: 11px 18px; border-radius: 11px; border: none; cursor: pointer;
-  box-shadow: 0 8px 20px -8px rgba(47,143,98,.65); transition: transform .15s ease, box-shadow .15s ease; flex-shrink: 0;
+  transition: transform .15s ease, box-shadow .15s ease; flex-shrink: 0;
 }
-.btn-export:hover{ transform: translateY(-1px); box-shadow: 0 10px 22px -6px rgba(47,143,98,.75); }
+.btn-export:hover{ transform: translateY(-1px); }
 .btn-export:active{ transform: translateY(0); }
 .btn-export svg{ width: 17px; height: 17px; }
+.btn-export-csv{ background: linear-gradient(135deg, var(--hijau), #145433); box-shadow: 0 8px 20px -8px rgba(30,122,70,.65); }
+.btn-export-csv:hover{ box-shadow: 0 10px 22px -6px rgba(30,122,70,.75); }
+.btn-export-pdf{ background: linear-gradient(135deg, var(--merah), #8E271C); box-shadow: 0 8px 20px -8px rgba(192,57,43,.55); }
+.btn-export-pdf:hover{ box-shadow: 0 10px 22px -6px rgba(192,57,43,.65); }
 
 /* ---------- TABEL ---------- */
 .table-wrap{ background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow-sm); }
@@ -188,59 +224,109 @@ table.tabel-siswa{ width: 100%; border-collapse: collapse; min-width: 640px; }
   text-align: left; font-size: .68rem; text-transform: uppercase; letter-spacing: .05em; color: var(--text-muted);
   font-weight: 800; padding: 13px 16px; background: var(--surface-2); border-bottom: 1px solid var(--border); white-space: nowrap;
 }
+.th-sort{ cursor: pointer; user-select: none; transition: color .15s ease; }
+.th-sort:hover{ color: var(--biru); }
+.sort-ind{ display: inline-block; width: 10px; font-size: .7rem; color: var(--biru); }
 .tabel-siswa td{ padding: 12px 16px; font-size: .85rem; border-bottom: 1px solid var(--border); vertical-align: middle; }
-.tabel-siswa tbody tr{ transition: background .15s ease; }
+.tabel-siswa tbody tr{ transition: background .15s ease; cursor: pointer; }
 .tabel-siswa tbody tr:hover{ background: var(--biru-mist); }
 .tabel-siswa tbody tr:last-child td{ border-bottom: none; }
 .td-no{ font-family: var(--font-mono); color: var(--text-faint); width: 34px; }
 .rank-chip{ display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 7px; font-weight: 800; font-size: .78rem; font-family: var(--font-mono); }
-.rank-chip.r1{ background: var(--emas-mist); color: #A47318; }
+.rank-chip.r1{ background: var(--emas-mist); color: #8C6508; }
 .rank-chip.r2{ background: #EEF1F5; color: #64707D; }
 .rank-chip.r3{ background: #F7EADC; color: #9C6A2E; }
 .td-nama{ display: flex; align-items: center; gap: 10px; font-weight: 700; }
-.td-nama .row-avatar{ width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(150deg, var(--biru), var(--biru-dark)); color: #fff; display: flex; align-items: center; justify-content: center; font-size: .72rem; font-weight: 800; flex-shrink: 0; }
+.td-nama .row-avatar{ width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(150deg, var(--biru-bright), var(--biru-dark)); color: #fff; display: flex; align-items: center; justify-content: center; font-size: .72rem; font-weight: 800; flex-shrink: 0; overflow: hidden; }
+.td-nama .row-avatar img{ width: 100%; height: 100%; object-fit: cover; }
 .td-email{ color: var(--text-muted); }
-.td-level{ font-family: var(--font-mono); font-weight: 700; }
 .badge-level{ display: inline-block; padding: 3px 9px; border-radius: 999px; background: var(--biru-mist); color: var(--biru-dark); font-size: .74rem; font-weight: 800; }
 .td-skor{ font-family: var(--font-mono); font-weight: 800; color: var(--hijau); }
+.badge-aktif{ display: inline-flex; align-items: center; gap: 5px; font-size: .7rem; font-weight: 800; padding: 3px 8px; border-radius: 999px; }
+.badge-aktif.aktif{ background: var(--hijau-mist); color: var(--hijau); }
+.badge-aktif.nonaktif{ background: #EEF1F5; color: var(--text-faint); }
 .btn-aksi{ background: var(--surface-2); border: 1px solid var(--border); color: var(--biru-dark); font-weight: 700; font-size: .74rem; padding: 6px 12px; border-radius: 8px; cursor: pointer; transition: background .15s ease; }
 .btn-aksi:hover{ background: var(--biru-mist); }
 
 .state-row td{ text-align: center; padding: 34px 16px; color: var(--text-faint); font-size: .86rem; }
-.state-row .mini-spinner{ width: 22px; height: 22px; border-radius: 50%; border: 3px solid var(--border); border-top-color: var(--biru); animation: spin .8s linear infinite; margin: 0 auto 10px; }
+.state-row .mini-spinner{ width: 22px; height: 22px; border-radius: 50%; border: 3px solid var(--border); border-top-color: var(--biru-bright); animation: spin .8s linear infinite; margin: 0 auto 10px; }
 
-/* ---------- PENGATURAN ---------- */
-.settings-card{ display: flex; align-items: center; gap: 16px; margin-bottom: 16px; }
-.settings-card .guru-avatar{ width: 52px; height: 52px; font-size: 1.2rem; }
-.settings-card strong{ display: block; font-size: 1rem; }
-.settings-card span{ font-size: .78rem; color: var(--text-faint); }
-.note-box{ background: var(--emas-mist); border: 1px solid rgba(217,164,65,.3); color: #7A5A18; font-size: .82rem; padding: 12px 14px; border-radius: 10px; }
+/* ---------- PAGINATION ---------- */
+.pagination-bar{ display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; border-top: 1px solid var(--border); background: var(--surface-2); flex-wrap: wrap; gap: 10px; }
+.pagination-info{ font-size: .78rem; color: var(--text-muted); font-weight: 600; }
+.pagination-controls{ display: flex; gap: 6px; flex-wrap: wrap; }
+.pg-btn{ min-width: 32px; height: 32px; padding: 0 8px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--text-muted); font-weight: 700; font-size: .78rem; cursor: pointer; transition: background .15s ease, color .15s ease; }
+.pg-btn:hover:not(:disabled){ background: var(--biru-mist); color: var(--biru-dark); }
+.pg-btn.is-active{ background: var(--biru-bright); border-color: var(--biru-bright); color: #fff; }
+.pg-btn:disabled{ opacity: .4; cursor: not-allowed; }
 
-/* ---------- MODAL DETAIL ---------- */
-.modal-backdrop{ position: fixed; inset: 0; background: rgba(11,37,64,.5); display: flex; align-items: center; justify-content: center; z-index: 200; padding: 20px; opacity: 0; pointer-events: none; transition: opacity .2s ease; }
+/* ---------- PENGATURAN PROFIL ---------- */
+.settings-grid{ display: grid; grid-template-columns: 1fr 1.3fr; gap: 16px; align-items: start; }
+.foto-profil-area{ display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+.foto-preview-wrap{ width: 84px; height: 84px; border-radius: 50%; background: linear-gradient(150deg, var(--emas), #8C6508); color: #241606; display: flex; align-items: center; justify-content: center; font-weight: 800; font-family: var(--font-display); font-size: 1.7rem; flex-shrink: 0; overflow: hidden; box-shadow: 0 0 0 4px var(--surface-2); }
+.foto-preview-wrap img{ width: 100%; height: 100%; object-fit: cover; }
+.foto-actions{ display: flex; flex-direction: column; gap: 8px; }
+.btn-upload{ display: inline-flex; align-items: center; gap: 8px; background: var(--biru-mist); color: var(--biru-dark); font-weight: 800; font-size: .82rem; padding: 10px 16px; border-radius: 10px; cursor: pointer; width: fit-content; transition: background .15s ease; }
+.btn-upload:hover{ background: rgba(30,95,168,.18); }
+.btn-upload svg{ width: 16px; height: 16px; }
+.foto-hint{ font-size: .72rem; color: var(--text-faint); }
+
+.form-profil{ display: flex; flex-direction: column; gap: 14px; }
+.form-group{ display: flex; flex-direction: column; gap: 6px; }
+.form-group label{ font-size: .76rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: .03em; }
+.form-group input{ padding: 11px 14px; border-radius: 10px; border: 1.5px solid var(--border); font-size: .88rem; background: var(--surface); color: var(--text); transition: border-color .18s ease, box-shadow .18s ease; }
+.form-group input:focus{ border-color: var(--biru-bright); box-shadow: 0 0 0 3px var(--biru-mist); outline: none; }
+.form-group input:disabled{ background: var(--surface-2); color: var(--text-faint); }
+.btn-simpan-profil{ background: linear-gradient(135deg, var(--biru-bright), var(--biru-dark)); color: #fff; font-weight: 800; font-size: .86rem; padding: 12px; border-radius: 10px; border: none; cursor: pointer; box-shadow: 0 8px 20px -8px rgba(30,95,168,.6); transition: transform .15s ease; }
+.btn-simpan-profil:hover{ transform: translateY(-1px); }
+.btn-simpan-profil:disabled{ opacity: .6; cursor: not-allowed; transform: none; }
+.form-status{ font-size: .78rem; font-weight: 700; min-height: 16px; }
+.form-status.ok{ color: var(--hijau); }
+.form-status.err{ color: var(--merah); }
+
+/* ---------- MODAL RAPOR INDIVIDU ---------- */
+.modal-backdrop{ position: fixed; inset: 0; background: rgba(11,31,53,.55); display: flex; align-items: center; justify-content: center; z-index: 200; padding: 20px; opacity: 0; pointer-events: none; transition: opacity .2s ease; }
 .modal-backdrop.is-open{ opacity: 1; pointer-events: auto; }
-.modal-box{ background: var(--surface); border-radius: var(--radius); padding: 26px; width: 100%; max-width: 360px; box-shadow: var(--shadow-md); transform: translateY(10px) scale(.97); transition: transform .2s ease; }
+.modal-box{ background: var(--surface); border-radius: var(--radius); padding: 26px; width: 100%; max-width: 380px; box-shadow: var(--shadow-md); transform: translateY(10px) scale(.97); transition: transform .2s ease; position: relative; }
+.modal-box-lg{ max-width: 460px; }
 .modal-backdrop.is-open .modal-box{ transform: translateY(0) scale(1); }
+.modal-close-x{ position: absolute; top: 14px; right: 16px; background: var(--surface-2); border: 1px solid var(--border); width: 30px; height: 30px; border-radius: 8px; font-size: 1.1rem; line-height: 1; color: var(--text-muted); cursor: pointer; }
+.modal-rapor-kop{ text-align: center; padding-bottom: 14px; margin-bottom: 16px; border-bottom: 2px solid var(--biru-dark); display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.modal-rapor-kop-badge{ font-family: var(--font-mono); font-size: .68rem; font-weight: 700; color: var(--biru-dark); letter-spacing: .1em; background: var(--biru-mist); padding: 3px 10px; border-radius: 999px; margin-bottom: 4px; }
+.modal-rapor-kop strong{ font-size: 1.05rem; font-family: var(--font-display); font-weight: 800; }
+.modal-rapor-kop span{ font-size: .72rem; color: var(--text-faint); }
 .modal-head{ display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
-.modal-head .guru-avatar{ width: 46px; height: 46px; font-size: 1.05rem; }
+.modal-avatar-lg{ width: 50px; height: 50px; font-size: 1.1rem; }
 .modal-head strong{ display: block; font-size: 1rem; }
 .modal-head span{ font-size: .76rem; color: var(--text-faint); }
-.modal-grid{ display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 18px; }
+.modal-grid{ display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
 .modal-stat{ background: var(--surface-2); border-radius: 10px; padding: 10px 12px; }
-.modal-stat span{ font-size: .68rem; color: var(--text-faint); text-transform: uppercase; letter-spacing: .04em; font-weight: 700; }
+.modal-stat span{ font-size: .66rem; color: var(--text-faint); text-transform: uppercase; letter-spacing: .04em; font-weight: 700; }
 .modal-stat strong{ display: block; font-family: var(--font-mono); font-size: 1.05rem; margin-top: 2px; }
+.modal-progress-wrap{ margin-bottom: 20px; }
+.modal-progress-label{ display: flex; justify-content: space-between; font-size: .72rem; font-weight: 700; color: var(--text-muted); margin-bottom: 6px; }
+.modal-progress-track{ height: 8px; border-radius: 999px; background: var(--surface-2); overflow: hidden; }
+.modal-progress-fill{ height: 100%; background: linear-gradient(90deg, var(--biru-bright), var(--hijau)); border-radius: 999px; transition: width .4s ease; }
+.modal-actions{ display: flex; flex-direction: column; gap: 8px; }
+.btn-cetak-individu{ display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 11px; border-radius: 10px; border: none; background: linear-gradient(135deg, var(--merah), #8E271C); color: #fff; font-weight: 800; font-size: .85rem; cursor: pointer; box-shadow: 0 8px 18px -8px rgba(192,57,43,.6); }
+.btn-cetak-individu svg{ width: 16px; height: 16px; }
 .btn-tutup-modal{ width: 100%; padding: 10px; border-radius: 10px; border: 1.5px solid var(--border); background: var(--surface-2); font-weight: 800; font-size: .84rem; cursor: pointer; }
 
 /* ---------- TOAST ---------- */
 #toast{ position: fixed; bottom: 22px; right: 22px; background: var(--navy); color: #fff; padding: 12px 18px; border-radius: 10px; font-size: .84rem; font-weight: 700; box-shadow: var(--shadow-md); opacity: 0; transform: translateY(10px); pointer-events: none; transition: all .25s ease; z-index: 300; display: flex; align-items: center; gap: 9px; }
 #toast.is-show{ opacity: 1; transform: translateY(0); }
 #toast .dot{ width: 8px; height: 8px; border-radius: 50%; background: var(--hijau); flex-shrink: 0; }
+#toast.is-error .dot{ background: var(--merah); }
 
 /* ---------- RESPONSIVE ---------- */
+@media (max-width: 980px){
+  .charts-grid{ grid-template-columns: 1fr; }
+  .settings-grid{ grid-template-columns: 1fr; }
+}
 @media (max-width: 880px){
   .sidebar{ transform: translateX(-100%); box-shadow: 0 0 40px rgba(0,0,0,.3); }
   .sidebar.is-open{ transform: translateX(0); }
-  .sidebar-backdrop{ display: none; position: fixed; inset: 0; background: rgba(11,37,64,.45); z-index: 55; }
+  .sidebar-backdrop{ display: none; position: fixed; inset: 0; background: rgba(11,31,53,.45); z-index: 55; }
   .sidebar-backdrop.is-open{ display: block; }
   .main-wrap{ margin-left: 0; }
   #btnHamburger{ display: flex; }
@@ -250,6 +336,7 @@ table.tabel-siswa{ width: 100%; border-collapse: collapse; min-width: 640px; }
   .topbar{ padding: 0 14px; }
   .toolbar{ flex-direction: column; align-items: stretch; }
   .search-box{ max-width: none; }
+  .toolbar-actions{ flex-direction: column; }
   .btn-export{ justify-content: center; }
 }
 
@@ -257,44 +344,59 @@ table.tabel-siswa{ width: 100%; border-collapse: collapse; min-width: 640px; }
   *{ animation-duration: .001ms !important; transition-duration: .001ms !important; }
 }
 </style>
+
 </head>
 <body>
 
 <!-- ===================== GERBANG PEMERIKSAAN AKSES ===================== -->
+
 <div id="gateCek">
   <div class="gate-spinner" aria-hidden="true"></div>
   <p class="gate-brand">CHEMCLAK — Portal Guru</p>
   <p id="gateCekTeks">Memeriksa hak akses...</p>
 </div>
 
-<!-- ===================== SHELL DASHBOARD (tersembunyi sampai role terverifikasi) ===================== -->
+<!-- ===================== SHELL DASHBOARD ===================== -->
+
 <div class="app-shell" id="appShell" hidden>
 
   <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
 
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-brand">
-      <span class="logo-dot">C</span>
+      <span class="logo-dot" id="sidebarLogoWrap">C</span>
       <div>
         <strong>CHEMCLAK</strong>
         <span>Portal Analitik Guru</span>
       </div>
     </div>
-    <nav class="sidebar-nav">
-      <button class="nav-item is-active" data-view="beranda" type="button">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 11.5 12 4l8 7.5"/><path d="M6 10v9h12v-9"/></svg>
-        Beranda
-      </button>
-      <button class="nav-item" data-view="laporan" type="button">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="3.5" width="16" height="17" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>
-        Laporan Siswa
-      </button>
-      <button class="nav-item" data-view="pengaturan" type="button">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 13a7.6 7.6 0 0 0 0-2l2-1.5-2-3.4-2.3.9a7.7 7.7 0 0 0-1.7-1l-.4-2.5H9.9l-.4 2.5a7.7 7.7 0 0 0-1.7 1l-2.3-.9-2 3.4L5.5 11a7.6 7.6 0 0 0 0 2l-2 1.5 2 3.4 2.3-.9c.5.4 1.1.7 1.7 1l.4 2.5h4.1l.4-2.5c.6-.3 1.2-.6 1.7-1l2.3.9 2-3.4-2-1.5Z"/></svg>
-        Pengaturan
-      </button>
-    </nav>
-    <div class="sidebar-foot">Lomba Inovasi Nasional · CHEMCLAK © 2026</div>
+
+```
+<div class="sidebar-profile">
+  <span class="sp-avatar" id="sidebarAvatarWrap">G</span>
+  <div class="sp-meta">
+    <strong id="sidebarNamaGuru">Memuat...</strong>
+    <span id="sidebarEmailGuru">-</span>
+  </div>
+</div>
+
+<nav class="sidebar-nav">
+  <button class="nav-item is-active" data-view="beranda" type="button">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 11.5 12 4l8 7.5"/><path d="M6 10v9h12v-9"/></svg>
+    Beranda
+  </button>
+  <button class="nav-item" data-view="laporan" type="button">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="3.5" width="16" height="17" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>
+    Laporan Siswa (E-Rapor)
+  </button>
+  <button class="nav-item" data-view="pengaturan" type="button">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 13a7.6 7.6 0 0 0 0-2l2-1.5-2-3.4-2.3.9a7.7 7.7 0 0 0-1.7-1l-.4-2.5H9.9l-.4 2.5a7.7 7.7 0 0 0-1.7 1l-2.3-.9-2 3.4L5.5 11a7.6 7.6 0 0 0 0 2l-2 1.5 2 3.4 2.3-.9c.5.4 1.1.7 1.7 1l.4 2.5h4.1l.4-2.5c.6-.3 1.2-.6 1.7-1l2.3.9 2-3.4-2-1.5Z"/></svg>
+    Pengaturan Profil
+  </button>
+</nav>
+<div class="sidebar-foot">Lomba Inovasi Nasional · CHEMCLAK © 2026</div>
+```
+
   </aside>
 
   <div class="main-wrap">
@@ -303,11 +405,14 @@ table.tabel-siswa{ width: 100%; border-collapse: collapse; min-width: 640px; }
         <button id="btnHamburger" type="button" aria-label="Buka menu">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="19" height="19"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
         </button>
-        <h1 class="topbar-title" id="topbarTitle">Beranda</h1>
+        <div>
+          <p class="topbar-eyebrow">CHEMCLAK · Sistem Evaluasi Terpadu</p>
+          <h1 class="topbar-title" id="topbarTitle">Beranda</h1>
+        </div>
       </div>
       <div class="topbar-right">
         <div class="guru-chip">
-          <span class="guru-avatar" id="guruAvatarInisial">G</span>
+          <span class="guru-avatar" id="guruAvatarWrap">G</span>
           <div class="guru-meta">
             <strong id="guruNamaTampil">Memuat...</strong>
             <span>Guru Pengampu</span>
@@ -317,121 +422,205 @@ table.tabel-siswa{ width: 100%; border-collapse: collapse; min-width: 640px; }
       </div>
     </header>
 
-    <main class="content">
+```
+<main class="content">
 
-      <!-- ===================== VIEW: BERANDA ===================== -->
-      <section class="view is-active" id="view-beranda">
-        <span class="view-eyebrow">Ringkasan</span>
-        <h2 class="view-heading">Halo, <span id="sapaanNamaGuru">Bu/Pak Guru</span> 👋</h2>
-        <p class="view-sub">Berikut rangkuman perkembangan seluruh siswa CHEMCLAK secara real-time.</p>
+  <!-- ===================== VIEW: BERANDA ===================== -->
+  <section class="view is-active" id="view-beranda">
+    <span class="view-eyebrow">Ringkasan Evaluasi</span>
+    <h2 class="view-heading">Halo, <span id="sapaanNamaGuru">Bu/Pak Guru</span> 👋</h2>
+    <p class="view-sub">Berikut rangkuman perkembangan seluruh siswa CHEMCLAK secara real-time.</p>
 
-        <div class="cards-grid">
-          <div class="stat-card c-total">
-            <div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="3.2"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6"/><circle cx="17" cy="8.5" r="2.6"/><path d="M15.7 14.2c2.9.4 4.8 2.5 4.8 5.8"/></svg></div>
-            <div class="stat-label">Total Siswa Terdaftar</div>
-            <div class="stat-value" id="statTotalSiswa">–</div>
-            <div class="stat-hint">Akun dengan peran siswa</div>
-          </div>
-          <div class="stat-card c-avg">
-            <div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V10M12 19V5M20 19v-7"/></svg></div>
-            <div class="stat-label">Rata-rata Skor Kelas</div>
-            <div class="stat-value" id="statRataSkor">–</div>
-            <div class="stat-hint">Berdasarkan total XP</div>
-          </div>
-          <div class="stat-card c-top">
-            <div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 4h8v4a4 4 0 0 1-8 0V4z"/><path d="M8 5H5a3 3 0 0 0 3 4"/><path d="M16 5h3a3 3 0 0 1-3 4"/><path d="M9.5 19.5h5l-.8-4h-3.4z"/></svg></div>
-            <div class="stat-label">Siswa Teratas (Level)</div>
-            <div class="stat-value" id="statSiswaTerbaik">–</div>
-            <div class="stat-hint" id="statSiswaTerbaikHint">Level tertinggi di kelas</div>
+    <div class="cards-grid">
+      <div class="stat-card c-total">
+        <div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="3.2"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6"/><circle cx="17" cy="8.5" r="2.6"/><path d="M15.7 14.2c2.9.4 4.8 2.5 4.8 5.8"/></svg></div>
+        <div class="stat-label">Total Siswa Terdaftar</div>
+        <div class="stat-value" id="statTotalSiswa">–</div>
+        <div class="stat-hint">Akun dengan peran siswa</div>
+      </div>
+      <div class="stat-card c-avg">
+        <div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V10M12 19V5M20 19v-7"/></svg></div>
+        <div class="stat-label">Rata-rata Skor Kelas</div>
+        <div class="stat-value" id="statRataSkor">–</div>
+        <div class="stat-hint">Berdasarkan total XP</div>
+      </div>
+      <div class="stat-card c-top">
+        <div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 4h8v4a4 4 0 0 1-8 0V4z"/><path d="M8 5H5a3 3 0 0 0 3 4"/><path d="M16 5h3a3 3 0 0 1-3 4"/><path d="M9.5 19.5h5l-.8-4h-3.4z"/></svg></div>
+        <div class="stat-label">Siswa Teratas (Level)</div>
+        <div class="stat-value" id="statSiswaTerbaik">–</div>
+        <div class="stat-hint" id="statSiswaTerbaikHint">Level tertinggi di kelas</div>
+      </div>
+    </div>
+
+    <!-- ============ GRAFIK ANALITIK ============ -->
+    <div class="charts-grid">
+      <div class="panel chart-panel">
+        <h3>📊 Distribusi Level Siswa</h3>
+        <p class="panel-sub">Jumlah siswa pada setiap level pencapaian.</p>
+        <div class="chart-canvas-wrap">
+          <canvas id="chartDistribusiLevel"></canvas>
+        </div>
+      </div>
+      <div class="panel chart-panel">
+        <h3>🟢 Rasio Keaktifan Siswa</h3>
+        <p class="panel-sub">Perbandingan siswa aktif vs tidak aktif.</p>
+        <div class="chart-canvas-wrap chart-canvas-wrap-donut">
+          <canvas id="chartKeaktifan"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>🏆 5 Peringkat Teratas</h3>
+      <p class="panel-sub">Diurutkan dari total skor/XP tertinggi.</p>
+      <div class="mini-list" id="miniTop5">
+        <div class="state-row"><div class="mini-spinner"></div>Memuat data siswa...</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== VIEW: LAPORAN SISWA (E-RAPOR) ===================== -->
+  <section class="view" id="view-laporan">
+    <span class="view-eyebrow">Analitik</span>
+    <h2 class="view-heading">Laporan Siswa</h2>
+    <p class="view-sub">Cari, urutkan, tinjau, dan cetak rekap nilai seluruh siswa.</p>
+
+    <div class="toolbar">
+      <div class="search-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input type="text" id="inputCariSiswa" placeholder="Cari nama atau email siswa...">
+      </div>
+      <div class="toolbar-actions">
+        <button class="btn-export btn-export-csv" id="btnExportCsv" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v13m0 0-4.5-4.5M12 16l4.5-4.5"/><path d="M4 19.5h16"/></svg>
+          Unduh Excel (CSV)
+        </button>
+        <button class="btn-export btn-export-pdf" id="btnExportPdf" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h4"/></svg>
+          Cetak Rapor PDF Kelas
+        </button>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <div class="table-scroll">
+        <table class="tabel-siswa">
+          <thead>
+            <tr>
+              <th data-sort="rank" class="th-sort">No <span class="sort-ind"></span></th>
+              <th data-sort="nama" class="th-sort">Nama Siswa <span class="sort-ind"></span></th>
+              <th data-sort="email" class="th-sort">Email <span class="sort-ind"></span></th>
+              <th data-sort="level" class="th-sort">Level <span class="sort-ind"></span></th>
+              <th data-sort="xp" class="th-sort">Total Skor/XP <span class="sort-ind"></span></th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="tbodySiswa">
+            <tr class="state-row"><td colspan="6"><div class="mini-spinner"></div>Memuat Data Siswa...</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="pagination-bar" id="paginationBar">
+        <span class="pagination-info" id="paginationInfo">–</span>
+        <div class="pagination-controls" id="paginationControls"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== VIEW: PENGATURAN PROFIL ===================== -->
+  <section class="view" id="view-pengaturan">
+    <span class="view-eyebrow">Akun</span>
+    <h2 class="view-heading">Pengaturan Profil</h2>
+    <p class="view-sub">Kelola informasi dan foto profil akun guru Anda.</p>
+
+    <div class="settings-grid">
+      <div class="panel">
+        <h3>Foto Profil</h3>
+        <p class="panel-sub">Unggah foto dari galeri. Gambar otomatis dikompres agar ringan.</p>
+        <div class="foto-profil-area">
+          <span class="foto-preview-wrap" id="fotoPreviewWrap">
+            <span id="fotoPreviewInisial">G</span>
+          </span>
+          <div class="foto-actions">
+            <label class="btn-upload" for="inputFotoProfil">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 16.5V18a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-1.5"/><path d="M12 3v13M12 3l4 4M12 3 8 7"/></svg>
+              Pilih Foto Baru
+            </label>
+            <input type="file" id="inputFotoProfil" accept="image/*" hidden>
+            <span class="foto-hint" id="fotoUploadStatus">JPG/PNG, otomatis dikompres ke 200px.</span>
           </div>
         </div>
+      </div>
 
-        <div class="panel">
-          <h3>🏆 5 Peringkat Teratas</h3>
-          <p class="panel-sub">Diurutkan dari total skor/XP tertinggi.</p>
-          <div class="mini-list" id="miniTop5">
-            <div class="state-row"><div class="mini-spinner"></div>Memuat data siswa...</div>
+      <div class="panel">
+        <h3>Informasi Akun</h3>
+        <p class="panel-sub">Perbarui nama tampilan yang muncul di seluruh portal.</p>
+        <form id="formProfilGuru" class="form-profil">
+          <div class="form-group">
+            <label for="inputNamaGuru">Nama Lengkap</label>
+            <input type="text" id="inputNamaGuru" placeholder="Nama guru" required>
           </div>
-        </div>
-      </section>
-
-      <!-- ===================== VIEW: LAPORAN SISWA ===================== -->
-      <section class="view" id="view-laporan">
-        <span class="view-eyebrow">Analitik</span>
-        <h2 class="view-heading">Laporan Siswa</h2>
-        <p class="view-sub">Cari, tinjau, dan unduh rekap nilai seluruh siswa.</p>
-
-        <div class="toolbar">
-          <div class="search-box">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-            <input type="text" id="inputCariSiswa" placeholder="Cari nama siswa...">
+          <div class="form-group">
+            <label>Email</label>
+            <input type="text" id="inputEmailGuru" disabled>
           </div>
-          <button class="btn-export" id="btnExportCsv" type="button">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v13m0 0-4.5-4.5M12 16l4.5-4.5"/><path d="M4 19.5h16"/></svg>
-            Unduh Laporan Nilai (CSV)
-          </button>
-        </div>
+          <button type="submit" class="btn-simpan-profil" id="btnSimpanProfil">Simpan Perubahan</button>
+          <span class="form-status" id="formProfilStatus"></span>
+        </form>
+      </div>
+    </div>
+  </section>
 
-        <div class="table-wrap">
-          <div class="table-scroll">
-            <table class="tabel-siswa">
-              <thead>
-                <tr>
-                  <th>No</th>
-                  <th>Nama Siswa</th>
-                  <th>Email</th>
-                  <th>Level</th>
-                  <th>Total Skor/XP</th>
-                  <th>Aksi</th>
-                </tr>
-              </thead>
-              <tbody id="tbodySiswa">
-                <tr class="state-row"><td colspan="6"><div class="mini-spinner"></div>Memuat Data Siswa...</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </section>
+</main>
+```
 
-      <!-- ===================== VIEW: PENGATURAN ===================== -->
-      <section class="view" id="view-pengaturan">
-        <span class="view-eyebrow">Akun</span>
-        <h2 class="view-heading">Pengaturan</h2>
-        <p class="view-sub">Informasi akun guru yang sedang aktif.</p>
-
-        <div class="panel">
-          <div class="settings-card">
-            <span class="guru-avatar" id="settingsAvatarInisial">G</span>
-            <div>
-              <strong id="settingsNamaGuru">–</strong>
-              <span id="settingsEmailGuru">–</span>
-            </div>
-          </div>
-          <div class="note-box">Fitur pengaturan lanjutan (kelola akun guru, atur modul, dan preferensi notifikasi) akan segera hadir pada versi berikutnya.</div>
-        </div>
-      </section>
-
-    </main>
   </div>
 </div>
 
-<!-- ===================== MODAL DETAIL SISWA ===================== -->
+<!-- ===================== MODAL RAPOR INDIVIDU SISWA ===================== -->
+
 <div class="modal-backdrop" id="modalDetail">
-  <div class="modal-box">
-    <div class="modal-head">
-      <span class="guru-avatar" id="modalAvatar">S</span>
-      <div>
-        <strong id="modalNama">–</strong>
-        <span id="modalEmail">–</span>
-      </div>
+  <div class="modal-box modal-box-lg">
+    <button class="modal-close-x" id="btnTutupModalX" type="button" aria-label="Tutup">&times;</button>
+    <div class="modal-rapor-kop">
+      <span class="modal-rapor-kop-badge">CHEMCLAK</span>
+      <strong>Rapor Individu Siswa</strong>
+      <span>Portal Evaluasi CHEMCLAK</span>
     </div>
-    <div class="modal-grid">
-      <div class="modal-stat"><span>Level</span><strong id="modalLevel">–</strong></div>
-      <div class="modal-stat"><span>Total XP</span><strong id="modalXp">–</strong></div>
-      <div class="modal-stat"><span>Peringkat</span><strong id="modalRank">–</strong></div>
-      <div class="modal-stat"><span>Peran</span><strong id="modalRole">Siswa</strong></div>
-    </div>
-    <button class="btn-tutup-modal" id="btnTutupModal" type="button">Tutup</button>
+
+```
+<div class="modal-head">
+  <span class="guru-avatar modal-avatar-lg" id="modalAvatar">S</span>
+  <div>
+    <strong id="modalNama">–</strong>
+    <span id="modalEmail">–</span>
+  </div>
+</div>
+
+<div class="modal-grid">
+  <div class="modal-stat"><span>Level</span><strong id="modalLevel">–</strong></div>
+  <div class="modal-stat"><span>Total XP</span><strong id="modalXp">–</strong></div>
+  <div class="modal-stat"><span>Peringkat Kelas</span><strong id="modalRank">–</strong></div>
+  <div class="modal-stat"><span>Status Keaktifan</span><strong id="modalStatus">–</strong></div>
+</div>
+
+<div class="modal-progress-wrap">
+  <div class="modal-progress-label">
+    <span>Progres menuju level berikutnya</span>
+    <span id="modalProgressPct">0%</span>
+  </div>
+  <div class="modal-progress-track"><div class="modal-progress-fill" id="modalProgressFill"></div></div>
+</div>
+
+<div class="modal-actions">
+  <button class="btn-cetak-individu" id="btnCetakRaporSiswa" type="button">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h4"/></svg>
+    Cetak Rapor Siswa (PDF)
+  </button>
+  <button class="btn-tutup-modal" id="btnTutupModal" type="button">Tutup</button>
+</div>
+```
+
   </div>
 </div>
 
@@ -439,14 +628,14 @@ table.tabel-siswa{ width: 100%; border-collapse: collapse; min-width: 640px; }
 
 <script type="module">
 /* =====================================================================
-   TAHAP 2 — LOGIKA & FIREBASE (Portal Analitik Guru)
-   Firebase Web SDK v12.15.0 via CDN, konfigurasi sama dengan index.html
+   PORTAL ANALITIK GURU — CHEMCLAK — LOGIKA APLIKASI
+   Firebase Web SDK v12.15.0 via CDN
    ===================================================================== */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
-import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
-import { getFirestore, doc, getDoc, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+import { getAuth, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, updateDoc, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
 
-// ---------- 1. INISIALISASI FIREBASE (konfigurasi identik dengan index.html) ----------
+// ---------- 1. INISIALISASI FIREBASE ----------
 const firebaseConfig = {
   apiKey: "AIzaSyBFjHUQhugYI5k0QojQ8Q__8UFPywJatiw",
   authDomain: "chemcalk.firebaseapp.com",
@@ -467,21 +656,28 @@ try{
   window.location.href = "index.html";
 }
 
-// ---------- Referensi elemen DOM ----------
+// ---------- Referensi DOM ----------
 const $ = (sel) => document.querySelector(sel);
 const gateCek = $('#gateCek');
 const gateCekTeks = $('#gateCekTeks');
 const appShell = $('#appShell');
 
-// ---------- Variabel state global ----------
-let daftarSiswa = [];      // seluruh data siswa dari Firestore (sudah difilter role & diurutkan skor)
-let kataKunciCari = '';    // kata kunci pencarian aktif
+// ---------- State global ----------
+let daftarSiswaAsli = [];   // seluruh data siswa (sumber kebenaran, terurut XP tertinggi untuk perhitungan rank)
+let daftarSiswaTampil = []; // hasil setelah search + sort (dipakai untuk pagination)
+let kataKunciCari = '';
+let sortState = { kolom: 'xp', arah: 'desc' }; // default: urut skor tertinggi
+let halamanAktif = 1;
+const JUMLAH_PER_HALAMAN = 8;
 let unsubscribeSiswa = null;
+let userAktif = null;
+let dataGuruAktif = null;
+let fotoBase64Terpilih = null; // menampung hasil kompresi foto sebelum disimpan
+let chartLevel = null;
+let chartKeaktifan = null;
 
 /* =====================================================================
    2. SISTEM KEAMANAN — ROLE-BASED ACCESS CONTROL
-   Langkah pertama yang dijalankan: cek status login, lalu cek atribut
-   `role` pada dokumen Firestore user yang sedang login.
    ===================================================================== */
 function tolakAkses(pesan){
   alert(pesan || 'Akses Ditolak: Khusus Guru');
@@ -489,7 +685,6 @@ function tolakAkses(pesan){
 }
 
 onAuthStateChanged(auth, async (user) => {
-  // Belum login sama sekali -> tidak berhak berada di halaman ini
   if(!user){
     tolakAkses('Anda harus masuk terlebih dahulu.');
     return;
@@ -501,14 +696,13 @@ onAuthStateChanged(auth, async (user) => {
     const snapUser = await getDoc(refUser);
 
     if(!snapUser.exists() || snapUser.data().role !== 'guru'){
-      // Role bukan "guru" (atau dokumen/atribut tidak ada) -> tolak akses
       tolakAkses('Akses Ditolak: Khusus Guru');
       return;
     }
 
-    // Role terverifikasi sebagai guru -> muat dashboard
-    const dataGuru = snapUser.data();
-    tampilkanDashboard(dataGuru, user);
+    userAktif = user;
+    dataGuruAktif = snapUser.data();
+    tampilkanDashboard(dataGuruAktif, user);
 
   }catch(e){
     console.error('Gagal memverifikasi peran pengguna:', e);
@@ -526,14 +720,39 @@ function inisialDari(nama){
   return (bagian.length > 1 ? (bagian[0][0] + bagian[bagian.length-1][0]) : bersih.slice(0,2)).toUpperCase();
 }
 
+// Render inisial ATAU foto (Base64) ke sebuah elemen wrapper avatar
+function renderAvatarKe(elWrapper, nama, fotoBase64){
+  if(!elWrapper) return;
+  if(fotoBase64){
+    elWrapper.innerHTML = '';
+    const img = document.createElement('img');
+    img.src = fotoBase64;
+    img.alt = nama || 'Foto profil';
+    elWrapper.appendChild(img);
+  } else {
+    elWrapper.textContent = inisialDari(nama);
+  }
+}
+
+function perbaruiSemuaAvatarGuru(nama, fotoBase64){
+  renderAvatarKe($('#guruAvatarWrap'), nama, fotoBase64);
+  renderAvatarKe($('#sidebarAvatarWrap'), nama, fotoBase64);
+  renderAvatarKe($('#fotoPreviewWrap'), nama, fotoBase64);
+}
+
 function tampilkanDashboard(dataGuru, user){
   const namaGuru = dataGuru.name || user.email || 'Guru';
+  const fotoGuru = dataGuru.photoBase64 || null;
+
   $('#guruNamaTampil').textContent = namaGuru;
   $('#sapaanNamaGuru').textContent = namaGuru;
-  $('#guruAvatarInisial').textContent = inisialDari(namaGuru);
-  $('#settingsNamaGuru').textContent = namaGuru;
-  $('#settingsEmailGuru').textContent = user.email || '-';
-  $('#settingsAvatarInisial').textContent = inisialDari(namaGuru);
+  $('#sidebarNamaGuru').textContent = namaGuru;
+  $('#sidebarEmailGuru').textContent = user.email || '-';
+
+  $('#inputNamaGuru').value = namaGuru;
+  $('#inputEmailGuru').value = user.email || '-';
+
+  perbaruiSemuaAvatarGuru(namaGuru, fotoGuru);
 
   gateCek.style.display = 'none';
   appShell.hidden = false;
@@ -544,9 +763,6 @@ function tampilkanDashboard(dataGuru, user){
 
 /* =====================================================================
    4. LOGIKA FIREBASE — PENARIKAN DATA SISWA REAL-TIME
-   Mengambil seluruh dokumen dari koleksi `users`, lalu memfilter secara
-   client-side siapa saja yang BUKAN guru (role !== 'guru'), termasuk
-   dokumen yang sama sekali tidak memiliki atribut role.
    ===================================================================== */
 function ambilDataSiswaRealtime(){
   const refUsers = collection(db, 'users');
@@ -554,27 +770,43 @@ function ambilDataSiswaRealtime(){
     const sementara = [];
     snap.forEach((dS) => {
       const d = dS.data();
-      if(d.role === 'guru') return; // lewati akun guru, hanya tampilkan siswa
+      if(d.role === 'guru') return; // lewati akun guru
 
-      // Total skor mengutamakan field `xp`, dengan fallback ke `skor` bila ada
       const totalSkor = (typeof d.xp === 'number') ? d.xp : (typeof d.skor === 'number' ? d.skor : 0);
+      const levelSiswa = (typeof d.level === 'number') ? d.level : (parseInt(d.level, 10) || 1);
+
+      // Deteksi keaktifan: pakai field lastActive/lastLogin/updatedAt bila tersedia (Timestamp Firestore),
+      // fallback ke "aktif jika punya XP > 0" agar grafik tetap bermakna walau skema data
+      // belum mencatat waktu login terakhir.
+      let aktif;
+      const waktuAktifRaw = d.lastActive || d.lastLogin || d.updatedAt || null;
+      if(waktuAktifRaw && typeof waktuAktifRaw.toDate === 'function'){
+        const tgl = waktuAktifRaw.toDate();
+        const bedaHari = (Date.now() - tgl.getTime()) / (1000*60*60*24);
+        aktif = bedaHari <= 14;
+      } else {
+        aktif = totalSkor > 0;
+      }
 
       sementara.push({
         uid: dS.id,
         nama: d.name || 'Siswa Tanpa Nama',
         email: d.email || '-',
-        level: (typeof d.level === 'number') ? d.level : (d.level || 1),
-        xp: totalSkor
+        level: levelSiswa,
+        xp: totalSkor,
+        aktif: aktif,
+        fotoBase64: d.photoBase64 || null
       });
     });
 
-    // Urutkan dari skor/XP tertinggi ke terendah (default)
     sementara.sort((a, b) => b.xp - a.xp);
-    daftarSiswa = sementara;
+    daftarSiswaAsli = sementara;
 
-    renderTopCards(daftarSiswa);
-    renderTop5(daftarSiswa);
-    renderTabelSiswa(terapkanFilterCari(daftarSiswa, kataKunciCari));
+    renderTopCards(daftarSiswaAsli);
+    renderTop5(daftarSiswaAsli);
+    renderGrafikDistribusiLevel(daftarSiswaAsli);
+    renderGrafikKeaktifan(daftarSiswaAsli);
+    perbaruiTampilanTabel();
   }, (err) => {
     console.error('Gagal mengambil data siswa:', err);
     $('#tbodySiswa').innerHTML = '<tr class="state-row"><td colspan="6">Gagal memuat data. Periksa koneksi atau aturan keamanan Firestore.</td></tr>';
@@ -582,7 +814,7 @@ function ambilDataSiswaRealtime(){
 }
 
 /* =====================================================================
-   5. KALKULASI & RENDER TOP CARDS
+   5. KALKULASI & RENDER TOP CARDS + TOP 5
    ===================================================================== */
 function renderTopCards(list){
   const totalSiswa = list.length;
@@ -601,7 +833,6 @@ function renderTopCards(list){
   }
 }
 
-/* ---------- Render ringkasan 5 peringkat teratas di Beranda ---------- */
 function renderTop5(list){
   const wrap = $('#miniTop5');
   wrap.innerHTML = '';
@@ -615,7 +846,8 @@ function renderTop5(list){
     row.className = `mini-row ${rank<=3 ? 'r'+rank : ''}`;
 
     const rankEl = document.createElement('span'); rankEl.className = 'mini-rank'; rankEl.textContent = (rank===1?'🥇':rank===2?'🥈':rank===3?'🥉':String(rank));
-    const avatarEl = document.createElement('span'); avatarEl.className = 'mini-avatar'; avatarEl.textContent = inisialDari(s.nama);
+    const avatarEl = document.createElement('span'); avatarEl.className = 'mini-avatar';
+    renderAvatarKe(avatarEl, s.nama, s.fotoBase64);
     const infoEl = document.createElement('div'); infoEl.className = 'mini-info';
     const namaEl = document.createElement('strong'); namaEl.textContent = s.nama;
     const emailEl = document.createElement('span'); emailEl.textContent = s.email;
@@ -628,32 +860,147 @@ function renderTop5(list){
 }
 
 /* =====================================================================
-   6. RENDER TABEL — dibangun dengan createElement (bukan innerHTML)
-   untuk menghindari risiko injeksi dari data yang ditampilkan.
+   6. GRAFIK — DISTRIBUSI LEVEL (BAR) & KEAKTIFAN (DOUGHNUT)
    ===================================================================== */
-function renderTabelSiswa(list){
-  const tbody = $('#tbodySiswa');
-  tbody.innerHTML = ''; // reset (aman: tidak menyisipkan data pengguna lewat innerHTML)
+function renderGrafikDistribusiLevel(list){
+  const ctx = document.getElementById('chartDistribusiLevel');
+  if(!ctx || typeof Chart === 'undefined') return;
 
-  if(!daftarSiswa.length){
+  const hitungPerLevel = {};
+  list.forEach(s => { hitungPerLevel[s.level] = (hitungPerLevel[s.level] || 0) + 1; });
+  const levelUrut = Object.keys(hitungPerLevel).map(Number).sort((a,b) => a-b);
+  const labelLevel = levelUrut.map(lv => 'Level ' + lv);
+  const dataLevel = levelUrut.map(lv => hitungPerLevel[lv]);
+
+  if(chartLevel){ chartLevel.destroy(); }
+  chartLevel = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: labelLevel.length ? labelLevel : ['Belum ada data'],
+      datasets: [{
+        label: 'Jumlah Siswa',
+        data: dataLevel.length ? dataLevel : [0],
+        backgroundColor: '#1E5FA8',
+        borderRadius: 6,
+        maxBarThickness: 42
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { beginAtZero: true, ticks: { precision: 0 }, grid: { color: '#EEF2F7' } },
+        x: { grid: { display: false } }
+      }
+    }
+  });
+}
+
+function renderGrafikKeaktifan(list){
+  const ctx = document.getElementById('chartKeaktifan');
+  if(!ctx || typeof Chart === 'undefined') return;
+
+  const jumlahAktif = list.filter(s => s.aktif).length;
+  const jumlahNonaktif = list.length - jumlahAktif;
+
+  if(chartKeaktifan){ chartKeaktifan.destroy(); }
+  chartKeaktifan = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Aktif', 'Tidak Aktif'],
+      datasets: [{
+        data: [jumlahAktif, jumlahNonaktif],
+        backgroundColor: ['#1E7A46', '#DDE4ED'],
+        borderWidth: 0,
+        hoverOffset: 6
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: '68%',
+      plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } } }
+    }
+  });
+}
+
+/* =====================================================================
+   7. TABEL E-RAPOR — SEARCH, SORT, PAGINATION
+   ===================================================================== */
+function terapkanFilterCari(list, kataKunci){
+  const k = kataKunci.trim().toLowerCase();
+  if(!k) return list;
+  return list.filter(s => s.nama.toLowerCase().includes(k) || s.email.toLowerCase().includes(k));
+}
+
+function terapkanSort(list, kolom, arah){
+  const hasil = [...list];
+  hasil.sort((a, b) => {
+    let av, bv;
+    if(kolom === 'rank'){ av = daftarSiswaAsli.findIndex(x=>x.uid===a.uid); bv = daftarSiswaAsli.findIndex(x=>x.uid===b.uid); }
+    else if(kolom === 'nama'){ av = a.nama.toLowerCase(); bv = b.nama.toLowerCase(); }
+    else if(kolom === 'email'){ av = a.email.toLowerCase(); bv = b.email.toLowerCase(); }
+    else if(kolom === 'level'){ av = a.level; bv = b.level; }
+    else { av = a.xp; bv = b.xp; }
+
+    if(av < bv) return arah === 'asc' ? -1 : 1;
+    if(av > bv) return arah === 'asc' ? 1 : -1;
+    return 0;
+  });
+  return hasil;
+}
+
+// Titik pusat: dipanggil setiap kali data / filter / sort / halaman berubah
+function perbaruiTampilanTabel(){
+  const hasilFilter = terapkanFilterCari(daftarSiswaAsli, kataKunciCari);
+  const hasilSort = terapkanSort(hasilFilter, sortState.kolom, sortState.arah);
+  daftarSiswaTampil = hasilSort;
+
+  const totalHalaman = Math.max(1, Math.ceil(daftarSiswaTampil.length / JUMLAH_PER_HALAMAN));
+  if(halamanAktif > totalHalaman) halamanAktif = totalHalaman;
+  if(halamanAktif < 1) halamanAktif = 1;
+
+  const mulai = (halamanAktif - 1) * JUMLAH_PER_HALAMAN;
+  const potongan = daftarSiswaTampil.slice(mulai, mulai + JUMLAH_PER_HALAMAN);
+
+  renderTabelSiswa(potongan);
+  renderPagination(totalHalaman);
+  perbaruiIndikatorSort();
+}
+
+function perbaruiIndikatorSort(){
+  document.querySelectorAll('.th-sort').forEach(th => {
+    const ind = th.querySelector('.sort-ind');
+    if(th.dataset.sort === sortState.kolom){
+      ind.textContent = sortState.arah === 'asc' ? '▲' : '▼';
+    } else {
+      ind.textContent = '';
+    }
+  });
+}
+
+function renderTabelSiswa(potongan){
+  const tbody = $('#tbodySiswa');
+  tbody.innerHTML = '';
+
+  if(!daftarSiswaAsli.length){
     const tr = document.createElement('tr'); tr.className = 'state-row';
     const td = document.createElement('td'); td.colSpan = 6; td.textContent = 'Belum ada siswa yang terdaftar.';
     tr.appendChild(td); tbody.appendChild(tr);
     return;
   }
-  if(!list.length){
+  if(!potongan.length){
     const tr = document.createElement('tr'); tr.className = 'state-row';
     const td = document.createElement('td'); td.colSpan = 6; td.textContent = `Tidak ditemukan siswa dengan kata kunci "${kataKunciCari}".`;
     tr.appendChild(td); tbody.appendChild(tr);
     return;
   }
 
-  list.forEach((s) => {
-    // Peringkat dihitung dari posisi asli di daftar lengkap (bukan dari hasil filter),
-    // supaya angka rank tetap bermakna walau sedang mencari.
-    const rank = daftarSiswa.findIndex(x => x.uid === s.uid) + 1;
-
+  potongan.forEach((s) => {
+    const rank = daftarSiswaAsli.findIndex(x => x.uid === s.uid) + 1;
     const tr = document.createElement('tr');
+    tr.addEventListener('click', () => bukaModalDetail(s, rank));
 
     const tdNo = document.createElement('td'); tdNo.className = 'td-no';
     if(rank <= 3){
@@ -664,13 +1011,14 @@ function renderTabelSiswa(list){
     }
 
     const tdNama = document.createElement('td'); tdNama.className = 'td-nama';
-    const avatar = document.createElement('span'); avatar.className = 'row-avatar'; avatar.textContent = inisialDari(s.nama);
+    const avatar = document.createElement('span'); avatar.className = 'row-avatar';
+    renderAvatarKe(avatar, s.nama, s.fotoBase64);
     const namaSpan = document.createElement('span'); namaSpan.textContent = s.nama;
     tdNama.append(avatar, namaSpan);
 
     const tdEmail = document.createElement('td'); tdEmail.className = 'td-email'; tdEmail.textContent = s.email;
 
-    const tdLevel = document.createElement('td'); tdLevel.className = 'td-level';
+    const tdLevel = document.createElement('td');
     const badge = document.createElement('span'); badge.className = 'badge-level'; badge.textContent = 'Lv. ' + s.level;
     tdLevel.appendChild(badge);
 
@@ -678,7 +1026,7 @@ function renderTabelSiswa(list){
 
     const tdAksi = document.createElement('td');
     const btn = document.createElement('button'); btn.className = 'btn-aksi'; btn.type = 'button'; btn.textContent = 'Detail';
-    btn.addEventListener('click', () => bukaModalDetail(s, rank));
+    btn.addEventListener('click', (ev) => { ev.stopPropagation(); bukaModalDetail(s, rank); });
     tdAksi.appendChild(btn);
 
     tr.append(tdNo, tdNama, tdEmail, tdLevel, tdSkor, tdAksi);
@@ -686,30 +1034,84 @@ function renderTabelSiswa(list){
   });
 }
 
-function terapkanFilterCari(list, kataKunci){
-  const k = kataKunci.trim().toLowerCase();
-  if(!k) return list;
-  return list.filter(s => s.nama.toLowerCase().includes(k));
+function renderPagination(totalHalaman){
+  const info = $('#paginationInfo');
+  const controls = $('#paginationControls');
+  controls.innerHTML = '';
+
+  const totalData = daftarSiswaTampil.length;
+  if(!totalData){
+    info.textContent = 'Tidak ada data';
+    return;
+  }
+  const mulai = (halamanAktif - 1) * JUMLAH_PER_HALAMAN + 1;
+  const akhir = Math.min(halamanAktif * JUMLAH_PER_HALAMAN, totalData);
+  info.textContent = `Menampilkan ${mulai}–${akhir} dari ${totalData} siswa`;
+
+  const buatTombol = (label, target, opsi = {}) => {
+    const btn = document.createElement('button');
+    btn.className = 'pg-btn' + (opsi.aktif ? ' is-active' : '');
+    btn.textContent = label;
+    btn.disabled = !!opsi.nonaktif;
+    btn.addEventListener('click', () => { halamanAktif = target; perbaruiTampilanTabel(); });
+    return btn;
+  };
+
+  controls.appendChild(buatTombol('«', halamanAktif - 1, { nonaktif: halamanAktif <= 1 }));
+
+  const maksTombolTerlihat = 5;
+  let awal = Math.max(1, halamanAktif - Math.floor(maksTombolTerlihat/2));
+  let akhirLoop = Math.min(totalHalaman, awal + maksTombolTerlihat - 1);
+  awal = Math.max(1, akhirLoop - maksTombolTerlihat + 1);
+
+  for(let i = awal; i <= akhirLoop; i++){
+    controls.appendChild(buatTombol(String(i), i, { aktif: i === halamanAktif }));
+  }
+
+  controls.appendChild(buatTombol('»', halamanAktif + 1, { nonaktif: halamanAktif >= totalHalaman }));
 }
 
 /* =====================================================================
-   7. MODAL DETAIL SISWA (tombol Aksi)
+   8. MODAL RAPOR INDIVIDU SISWA
    ===================================================================== */
+let siswaModalAktif = null;
+let rankModalAktif = null;
+
+function hitungProgresLevel(xp, level){
+  // Estimasi visual progres saja (bukan sumber kebenaran level): asumsi ambang XP
+  // per level linear sederhana, level berikutnya butuh (level*100) XP kumulatif.
+  const batasBerikutnya = level * 100;
+  const batasSebelumnya = (level - 1) * 100;
+  const rentang = Math.max(1, batasBerikutnya - batasSebelumnya);
+  const progres = Math.min(100, Math.max(0, Math.round(((xp - batasSebelumnya) / rentang) * 100)));
+  return progres;
+}
+
 function bukaModalDetail(s, rank){
-  $('#modalAvatar').textContent = inisialDari(s.nama);
+  siswaModalAktif = s;
+  rankModalAktif = rank;
+
+  renderAvatarKe($('#modalAvatar'), s.nama, s.fotoBase64);
   $('#modalNama').textContent = s.nama;
   $('#modalEmail').textContent = s.email;
   $('#modalLevel').textContent = s.level;
   $('#modalXp').textContent = s.xp.toLocaleString('id-ID');
-  $('#modalRank').textContent = '#' + rank;
+  $('#modalRank').textContent = '#' + rank + ' dari ' + daftarSiswaAsli.length;
+
+  const statusEl = $('#modalStatus');
+  statusEl.textContent = s.aktif ? 'Aktif' : 'Tidak Aktif';
+  statusEl.style.color = s.aktif ? 'var(--hijau)' : 'var(--text-faint)';
+
+  const progres = hitungProgresLevel(s.xp, s.level);
+  $('#modalProgressPct').textContent = progres + '%';
+  $('#modalProgressFill').style.width = progres + '%';
+
   $('#modalDetail').classList.add('is-open');
 }
-function tutupModalDetail(){ $('#modalDetail').classList.remove('is-open'); }
+function tutupModalDetail(){ $('#modalDetail').classList.remove('is-open'); siswaModalAktif = null; rankModalAktif = null; }
 
 /* =====================================================================
-   8. FITUR PAMUNGKAS — EKSPOR LAPORAN NILAI KE CSV
-   Vanilla JavaScript murni: array siswa (sesuai tampilan saat ini,
-   termasuk hasil pencarian) diubah menjadi teks CSV lalu diunduh.
+   9. EKSPOR CSV (EXCEL)
    ===================================================================== */
 function escapeCsv(nilai){
   const teks = String(nilai ?? '');
@@ -720,21 +1122,20 @@ function escapeCsv(nilai){
 }
 
 function unduhLaporanCsv(){
-  const dataDiekspor = terapkanFilterCari(daftarSiswa, kataKunciCari);
+  const dataDiekspor = daftarSiswaTampil.length ? daftarSiswaTampil : terapkanFilterCari(daftarSiswaAsli, kataKunciCari);
   if(!dataDiekspor.length){
-    tampilkanToast('Tidak ada data untuk diekspor.');
+    tampilkanToast('Tidak ada data untuk diekspor.', true);
     return;
   }
 
-  const header = ['No', 'Nama Siswa', 'Email', 'Level', 'Total Skor/XP'];
+  const header = ['No', 'Nama Siswa', 'Email', 'Level', 'Total Skor/XP', 'Status Keaktifan'];
   const baris = [header.join(',')];
 
   dataDiekspor.forEach((s) => {
-    const rank = daftarSiswa.findIndex(x => x.uid === s.uid) + 1;
-    baris.push([rank, escapeCsv(s.nama), escapeCsv(s.email), s.level, s.xp].join(','));
+    const rank = daftarSiswaAsli.findIndex(x => x.uid === s.uid) + 1;
+    baris.push([rank, escapeCsv(s.nama), escapeCsv(s.email), s.level, s.xp, s.aktif ? 'Aktif' : 'Tidak Aktif'].join(','));
   });
 
-  // \uFEFF (BOM) ditambahkan agar karakter dibaca benar saat dibuka di Excel
   const csvString = '\uFEFF' + baris.join('\r\n');
   const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
   const url = URL.createObjectURL(blob);
@@ -748,25 +1149,274 @@ function unduhLaporanCsv(){
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
   URL.revokeObjectURL(url);
 
-  tampilkanToast(`Laporan berhasil diunduh: ${namaFile}`);
-}
-
-/* ---------- Notifikasi toast kecil ---------- */
-let timerToast = null;
-function tampilkanToast(pesan){
-  const toast = $('#toast');
-  $('#toastTeks').textContent = pesan;
-  toast.classList.add('is-show');
-  clearTimeout(timerToast);
-  timerToast = setTimeout(() => toast.classList.remove('is-show'), 3200);
+  tampilkanToast(`Laporan CSV berhasil diunduh: ${namaFile}`);
 }
 
 /* =====================================================================
-   9. NAVIGASI SIDEBAR, DRAWER MOBILE, PENCARIAN, & LOGOUT
+   10. EKSPOR PDF — RAPOR KELAS & RAPOR INDIVIDU (jsPDF + AutoTable)
+   ===================================================================== */
+function formatTanggalCetak(){
+  const bulanIndo = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+  const now = new Date();
+  return `${now.getDate()} ${bulanIndo[now.getMonth()]} ${now.getFullYear()}, ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')} WIB`;
+}
+
+function gambarKopSurat(docPdf, judulHalaman){
+  const lebarHalaman = docPdf.internal.pageSize.getWidth();
+
+  docPdf.setFillColor(18, 62, 115);
+  docPdf.rect(0, 0, lebarHalaman, 30, 'F');
+
+  docPdf.setTextColor(255, 255, 255);
+  docPdf.setFont('helvetica', 'bold');
+  docPdf.setFontSize(15);
+  docPdf.text('PORTAL EVALUASI CHEMCLAK', 14, 13);
+
+  docPdf.setFont('helvetica', 'normal');
+  docPdf.setFontSize(9);
+  docPdf.text('Sistem Analitik & Evaluasi Pembelajaran Digital', 14, 19);
+
+  docPdf.setFontSize(8.5);
+  docPdf.text(`Dicetak oleh: ${dataGuruAktif?.name || userAktif?.email || 'Guru Pengampu'}`, 14, 25);
+  docPdf.text(`Tanggal cetak: ${formatTanggalCetak()}`, lebarHalaman - 14, 25, { align: 'right' });
+
+  docPdf.setTextColor(0, 0, 0);
+  docPdf.setFont('helvetica', 'bold');
+  docPdf.setFontSize(12);
+  docPdf.text(judulHalaman, 14, 40);
+  docPdf.setDrawColor(221, 228, 237);
+  docPdf.line(14, 43, lebarHalaman - 14, 43);
+}
+
+function gambarRuangTandaTangan(docPdf, yMulai){
+  const lebarHalaman = docPdf.internal.pageSize.getWidth();
+  const kananX = lebarHalaman - 70;
+
+  docPdf.setFont('helvetica', 'normal');
+  docPdf.setFontSize(9.5);
+  docPdf.setTextColor(60, 60, 60);
+  docPdf.text('Mengetahui,', kananX, yMulai);
+  docPdf.text('Guru Pengampu', kananX, yMulai + 5);
+
+  docPdf.text('(...........................................)', kananX, yMulai + 30);
+  docPdf.setFont('helvetica', 'bold');
+  docPdf.text(dataGuruAktif?.name || userAktif?.email || 'Guru Pengampu', kananX, yMulai + 35);
+}
+
+function cetakRaporKelasPdf(){
+  if(typeof window.jspdf === 'undefined'){
+    tampilkanToast('Modul PDF belum siap dimuat. Coba lagi sesaat.', true);
+    return;
+  }
+  const dataDiekspor = daftarSiswaTampil.length ? daftarSiswaTampil : terapkanFilterCari(daftarSiswaAsli, kataKunciCari);
+  if(!dataDiekspor.length){
+    tampilkanToast('Tidak ada data untuk dicetak.', true);
+    return;
+  }
+
+  const { jsPDF } = window.jspdf;
+  const docPdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+
+  gambarKopSurat(docPdf, 'Rekap Nilai & Evaluasi Seluruh Siswa');
+
+  const bodyTabel = dataDiekspor.map((s) => {
+    const rank = daftarSiswaAsli.findIndex(x => x.uid === s.uid) + 1;
+    return [rank, s.nama, s.email, 'Lv. ' + s.level, s.xp.toLocaleString('id-ID'), s.aktif ? 'Aktif' : 'Tidak Aktif'];
+  });
+
+  docPdf.autoTable({
+    startY: 48,
+    head: [['No', 'Nama Siswa', 'Email', 'Level', 'Total XP', 'Status']],
+    body: bodyTabel,
+    theme: 'grid',
+    headStyles: { fillColor: [18, 62, 115], textColor: 255, fontStyle: 'bold', fontSize: 9 },
+    bodyStyles: { fontSize: 8.5, textColor: [30,30,30] },
+    alternateRowStyles: { fillColor: [246, 248, 251] },
+    margin: { left: 14, right: 14 }
+  });
+
+  const yAkhirTabel = docPdf.lastAutoTable.finalY || 60;
+  let yTandaTangan = yAkhirTabel + 20;
+  const tinggiHalaman = docPdf.internal.pageSize.getHeight();
+  if(yTandaTangan + 40 > tinggiHalaman){
+    docPdf.addPage();
+    yTandaTangan = 30;
+  }
+  gambarRuangTandaTangan(docPdf, yTandaTangan);
+
+  const namaBulan = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const sekarang = new Date();
+  const namaFile = `Rapor_Kelas_CHEMCLAK_${sekarang.getDate()}_${namaBulan[sekarang.getMonth()]}_${sekarang.getFullYear()}.pdf`;
+  docPdf.save(namaFile);
+
+  tampilkanToast(`Rapor kelas berhasil diunduh: ${namaFile}`);
+}
+
+function cetakRaporSiswaPdf(){
+  if(!siswaModalAktif){
+    tampilkanToast('Tidak ada siswa yang dipilih.', true);
+    return;
+  }
+  if(typeof window.jspdf === 'undefined'){
+    tampilkanToast('Modul PDF belum siap dimuat. Coba lagi sesaat.', true);
+    return;
+  }
+
+  const s = siswaModalAktif;
+  const rank = rankModalAktif;
+  const { jsPDF } = window.jspdf;
+  const docPdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+
+  gambarKopSurat(docPdf, 'Rapor Individu Siswa');
+
+  let y = 56;
+  const baris = [
+    ['Nama Siswa', s.nama],
+    ['Email', s.email],
+    ['Level Saat Ini', 'Level ' + s.level],
+    ['Total Skor / XP', s.xp.toLocaleString('id-ID')],
+    ['Peringkat Kelas', '#' + rank + ' dari ' + daftarSiswaAsli.length + ' siswa'],
+    ['Status Keaktifan', s.aktif ? 'Aktif' : 'Tidak Aktif']
+  ];
+
+  docPdf.autoTable({
+    startY: y,
+    body: baris,
+    theme: 'plain',
+    styles: { fontSize: 10.5, cellPadding: 2.4 },
+    columnStyles: {
+      0: { fontStyle: 'bold', cellWidth: 55 },
+      1: { textColor: [30,30,30] }
+    },
+    margin: { left: 14, right: 14 }
+  });
+
+  const yAkhir = docPdf.lastAutoTable.finalY || y;
+  docPdf.setFont('helvetica', 'italic');
+  docPdf.setFontSize(9);
+  docPdf.setTextColor(90,90,90);
+  docPdf.text('Catatan: Progres level dihitung berdasarkan akumulasi XP dari seluruh aktivitas pembelajaran siswa di platform CHEMCLAK.', 14, yAkhir + 10, { maxWidth: 180 });
+
+  gambarRuangTandaTangan(docPdf, yAkhir + 40);
+
+  const namaFileAman = s.nama.replace(/[^a-z0-9]+/gi, '_');
+  docPdf.save(`Rapor_${namaFileAman}_CHEMCLAK.pdf`);
+
+  tampilkanToast(`Rapor individu ${s.nama} berhasil diunduh.`);
+}
+
+/* =====================================================================
+   11. PENGATURAN PROFIL — UBAH NAMA & FOTO (Base64 via Canvas)
+   ===================================================================== */
+function kompresGambarKeBase64(file, maksDimensi = 200, kualitas = 0.82){
+  return new Promise((resolve, reject) => {
+    if(!file || !file.type.startsWith('image/')){
+      reject(new Error('File yang dipilih bukan gambar.'));
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        let { width, height } = img;
+        if(width > height){
+          if(width > maksDimensi){ height = Math.round(height * (maksDimensi / width)); width = maksDimensi; }
+        } else {
+          if(height > maksDimensi){ width = Math.round(width * (maksDimensi / height)); height = maksDimensi; }
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width; canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL('image/jpeg', kualitas));
+      };
+      img.onerror = () => reject(new Error('Gagal memuat gambar.'));
+      img.src = e.target.result;
+    };
+    reader.onerror = () => reject(new Error('Gagal membaca file.'));
+    reader.readAsDataURL(file);
+  });
+}
+
+async function tanganiPilihFoto(e){
+  const file = e.target.files && e.target.files[0];
+  if(!file) return;
+  const statusEl = $('#fotoUploadStatus');
+  try{
+    statusEl.textContent = 'Memproses & mengompres gambar...';
+    const base64 = await kompresGambarKeBase64(file, 200, 0.82);
+    fotoBase64Terpilih = base64;
+    renderAvatarKe($('#fotoPreviewWrap'), $('#inputNamaGuru').value, base64);
+    statusEl.textContent = 'Foto siap disimpan. Klik "Simpan Perubahan".';
+  }catch(err){
+    console.error(err);
+    statusEl.textContent = 'Gagal memproses foto. Coba gambar lain.';
+    fotoBase64Terpilih = null;
+  }
+}
+
+async function simpanProfilGuru(e){
+  e.preventDefault();
+  const namaBaru = $('#inputNamaGuru').value.trim();
+  const statusEl = $('#formProfilStatus');
+  const btnSimpan = $('#btnSimpanProfil');
+
+  if(!namaBaru){
+    statusEl.textContent = 'Nama tidak boleh kosong.';
+    statusEl.className = 'form-status err';
+    return;
+  }
+
+  btnSimpan.disabled = true;
+  statusEl.className = 'form-status';
+  statusEl.textContent = 'Menyimpan perubahan...';
+
+  try{
+    const dataUpdate = { name: namaBaru };
+    if(fotoBase64Terpilih){ dataUpdate.photoBase64 = fotoBase64Terpilih; }
+    await updateDoc(doc(db, 'users', userAktif.uid), dataUpdate);
+
+    await updateProfile(userAktif, { displayName: namaBaru });
+
+    const fotoTerbaru = fotoBase64Terpilih || dataGuruAktif?.photoBase64 || null;
+    dataGuruAktif = { ...dataGuruAktif, name: namaBaru, photoBase64: fotoTerbaru };
+
+    $('#guruNamaTampil').textContent = namaBaru;
+    $('#sapaanNamaGuru').textContent = namaBaru;
+    $('#sidebarNamaGuru').textContent = namaBaru;
+    perbaruiSemuaAvatarGuru(namaBaru, fotoTerbaru);
+
+    statusEl.textContent = 'Profil berhasil diperbarui.';
+    statusEl.className = 'form-status ok';
+    tampilkanToast('Profil guru berhasil diperbarui.');
+    fotoBase64Terpilih = null;
+
+  }catch(err){
+    console.error('Gagal menyimpan profil:', err);
+    statusEl.textContent = 'Gagal menyimpan perubahan. Silakan coba lagi.';
+    statusEl.className = 'form-status err';
+    tampilkanToast('Gagal menyimpan profil guru.', true);
+  }finally{
+    btnSimpan.disabled = false;
+  }
+}
+
+/* ---------- Toast ---------- */
+let timerToast = null;
+function tampilkanToast(pesan, error = false){
+  const toast = $('#toast');
+  $('#toastTeks').textContent = pesan;
+  toast.classList.toggle('is-error', !!error);
+  toast.classList.add('is-show');
+  clearTimeout(timerToast);
+  timerToast = setTimeout(() => toast.classList.remove('is-show'), 3400);
+}
+
+/* =====================================================================
+   12. NAVIGASI, DRAWER MOBILE, EVENT LISTENER UTAMA
    ===================================================================== */
 function pasangEventListener(){
-  // --- Navigasi antar-view (Beranda / Laporan Siswa / Pengaturan) ---
-  const judulView = { beranda: 'Beranda', laporan: 'Laporan Siswa', pengaturan: 'Pengaturan' };
+  const judulView = { beranda: 'Beranda', laporan: 'Laporan Siswa (E-Rapor)', pengaturan: 'Pengaturan Profil' };
   document.querySelectorAll('.nav-item').forEach((btn) => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('is-active'));
@@ -779,29 +1429,47 @@ function pasangEventListener(){
     });
   });
 
-  // --- Drawer sidebar mobile ---
   $('#btnHamburger').addEventListener('click', () => {
     $('#sidebar').classList.add('is-open');
     $('#sidebarBackdrop').classList.add('is-open');
   });
   $('#sidebarBackdrop').addEventListener('click', tutupDrawerMobile);
 
-  // --- Pencarian siswa (filter array, tanpa reload halaman) ---
   $('#inputCariSiswa').addEventListener('input', (e) => {
     kataKunciCari = e.target.value;
-    renderTabelSiswa(terapkanFilterCari(daftarSiswa, kataKunciCari));
+    halamanAktif = 1;
+    perbaruiTampilanTabel();
   });
 
-  // --- Tombol ekspor CSV ---
+  document.querySelectorAll('.th-sort').forEach(th => {
+    th.addEventListener('click', () => {
+      const kolom = th.dataset.sort;
+      if(sortState.kolom === kolom){
+        sortState.arah = sortState.arah === 'asc' ? 'desc' : 'asc';
+      } else {
+        sortState.kolom = kolom;
+        sortState.arah = (kolom === 'nama' || kolom === 'email') ? 'asc' : 'desc';
+      }
+      halamanAktif = 1;
+      perbaruiTampilanTabel();
+    });
+  });
+
   $('#btnExportCsv').addEventListener('click', unduhLaporanCsv);
+  $('#btnExportPdf').addEventListener('click', cetakRaporKelasPdf);
 
-  // --- Modal detail ---
   $('#btnTutupModal').addEventListener('click', tutupModalDetail);
+  $('#btnTutupModalX').addEventListener('click', tutupModalDetail);
   $('#modalDetail').addEventListener('click', (e) => { if(e.target.id === 'modalDetail') tutupModalDetail(); });
+  $('#btnCetakRaporSiswa').addEventListener('click', cetakRaporSiswaPdf);
 
-  // --- Logout ---
+  $('#inputFotoProfil').addEventListener('change', tanganiPilihFoto);
+  $('#formProfilGuru').addEventListener('submit', simpanProfilGuru);
+
   $('#btnLogout').addEventListener('click', () => {
     if(unsubscribeSiswa) unsubscribeSiswa();
+    if(chartLevel) chartLevel.destroy();
+    if(chartKeaktifan) chartKeaktifan.destroy();
     signOut(auth).finally(() => { window.location.href = 'index.html'; });
   });
 }
@@ -811,5 +1479,6 @@ function tutupDrawerMobile(){
   $('#sidebarBackdrop').classList.remove('is-open');
 }
 </script>
+
 </body>
 </html>
