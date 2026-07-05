@@ -197,6 +197,19 @@ a:focus-visible, button:focus-visible, input:focus-visible, [tabindex]:focus-vis
 }
 .auth-form input:focus { border-color: var(--blue); }
 .auth-form .btn { margin-top: 18px; }
+
+.pw-field-wrap { position: relative; display: flex; }
+.pw-field-wrap input { width: 100%; padding-right: 44px; }
+.pw-toggle-btn {
+  position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+  width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+  border-radius: 50%; color: var(--text-muted); transition: color .15s ease, background .15s ease;
+}
+.pw-toggle-btn:hover { color: var(--blue-deep); background: var(--blue-mist); }
+.pw-toggle-btn svg { width: 19px; height: 19px; }
+.pw-toggle-btn .icon-eye-off { display: none; }
+.pw-toggle-btn.is-visible .icon-eye { display: none; }
+.pw-toggle-btn.is-visible .icon-eye-off { display: inline-flex; }
 .auth-error { color: var(--red); font-size: .82rem; font-weight: 700; min-height: 1.1em; margin-top: 6px; }
 .auth-success { color: var(--green); font-size: .82rem; font-weight: 700; min-height: 1.1em; margin-top: 6px; line-height: 1.4; }
 .auth-switch { text-align: center; font-size: .85rem; color: var(--text-muted); margin-top: 14px; line-height: 1.5; }
@@ -911,6 +924,19 @@ main { padding: 28px 32px 60px; max-width: 1440px; margin: 0 auto; width: 100%; 
 .toast.info    { background: linear-gradient(135deg, var(--blue), var(--blue-dark)); }
 .confetti-container { position: fixed; inset: 0; pointer-events: none; z-index: 3000; overflow: hidden; }
 .confetti-piece { position: absolute; top: -20px; border-radius: 2px; animation: confettiFall linear forwards; }
+.token-guru-wrapper {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(-6px);
+  transition: max-height 0.3s ease, opacity 0.25s ease, transform 0.25s ease, margin-top 0.3s ease;
+}
+.token-guru-wrapper.show {
+  max-height: 80px;
+  opacity: 1;
+  transform: translateY(0);
+  margin-top: 8px;
+}
 </style>
 </head>
 <body>
@@ -944,7 +970,13 @@ main { padding: 28px 32px 60px; max-width: 1440px; margin: 0 auto; width: 100%; 
       <label for="loginEmail">Email</label>
       <input type="email" id="loginEmail" placeholder="nama@email.com" autocomplete="email" required>
       <label for="loginPassword">Kata sandi</label>
-      <input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password" required>
+      <div class="pw-field-wrap">
+        <input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password" required>
+        <button type="button" class="pw-toggle-btn" data-pw-toggle="loginPassword" aria-label="Lihat kata sandi">
+          <svg class="icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>
+          <svg class="icon-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.94 10.94 0 0 1 12 19c-7 0-11-7-11-7a18.7 18.7 0 0 1 5.06-5.94M9.9 4.24A10.4 10.4 0 0 1 12 4c7 0 11 7 11 7a18.7 18.7 0 0 1-2.18 3.19m-6.24-1.07a3 3 0 1 1-4.24-4.24"/><path d="M1 1l22 22"/></svg>
+        </button>
+      </div>
       <p class="auth-error" id="loginError"></p>
       <button type="submit" class="btn btn-primary btn-block" id="loginBtn">
         <span class="btn-label">Masuk</span><span class="btn-spinner" hidden></span>
@@ -972,7 +1004,29 @@ main { padding: 28px 32px 60px; max-width: 1440px; margin: 0 auto; width: 100%; 
       <label for="registerEmail">Email</label>
       <input type="email" id="registerEmail" placeholder="nama@email.com" autocomplete="email" required>
       <label for="registerPassword">Kata sandi</label>
-      <input type="password" id="registerPassword" placeholder="Minimal 6 karakter" autocomplete="new-password" required minlength="6">
+      <div class="pw-field-wrap">
+        <input type="password" id="registerPassword" placeholder="Minimal 6 karakter" autocomplete="new-password" required minlength="6">
+        <button type="button" class="pw-toggle-btn" data-pw-toggle="registerPassword" aria-label="Lihat kata sandi">
+          <svg class="icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>
+          <svg class="icon-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.94 10.94 0 0 1 12 19c-7 0-11-7-11-7a18.7 18.7 0 0 1 5.06-5.94M9.9 4.24A10.4 10.4 0 0 1 12 4c7 0 11 7 11 7a18.7 18.7 0 0 1-2.18 3.19m-6.24-1.07a3 3 0 1 1-4.24-4.24"/><path d="M1 1l22 22"/></svg>
+        </button>
+      </div>
+
+      <div class="guru-checkbox-row" style="display:flex; align-items:center; gap:8px; margin-top:8px;">
+        <input type="checkbox" id="checkGuru" style="width:auto; margin:0;">
+        <label for="checkGuru" style="margin:0; cursor:pointer;">Daftar sebagai Guru</label>
+      </div>
+
+      <div class="token-guru-wrapper" id="tokenGuruWrapper">
+        <div class="pw-field-wrap">
+          <input type="password" id="inputTokenGuru" placeholder="Masukkan Token Sekolah" autocomplete="off">
+          <button type="button" class="pw-toggle-btn" data-pw-toggle="inputTokenGuru" aria-label="Lihat token">
+            <svg class="icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg class="icon-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.94 10.94 0 0 1 12 19c-7 0-11-7-11-7a18.7 18.7 0 0 1 5.06-5.94M9.9 4.24A10.4 10.4 0 0 1 12 4c7 0 11 7 11 7a18.7 18.7 0 0 1-2.18 3.19m-6.24-1.07a3 3 0 1 1-4.24-4.24"/><path d="M1 1l22 22"/></svg>
+          </button>
+        </div>
+      </div>
+
       <p class="auth-error" id="registerError"></p>
       <button type="submit" class="btn btn-primary btn-block" id="registerBtn">
         <span class="btn-label">Daftar Akun</span><span class="btn-spinner" hidden></span>
@@ -2554,6 +2608,19 @@ $$('.link-btn[data-goto]').forEach(b=> b.addEventListener('click', ()=>{
   document.getElementById(b.dataset.goto + 'Form').classList.add('active');
 }));
 
+// ---------- FITUR LIHAT/SEMBUNYIKAN SANDI (Toggle Show/Hide Password) ----------
+// Didaftarkan di scope global supaya tetap berfungsi walau Firebase gagal dimuat.
+$$('.pw-toggle-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    const target = $('#'+btn.dataset.pwToggle);
+    if(!target) return;
+    const showing = target.type === 'text';
+    target.type = showing ? 'password' : 'text';
+    btn.classList.toggle('is-visible', !showing);
+    btn.setAttribute('aria-label', showing ? 'Lihat kata sandi' : 'Sembunyikan kata sandi');
+  });
+});
+
 // ---------- FITUR RESET PASSWORD (Lupa Kata Sandi) ----------
 // Didaftarkan di scope global (bukan hanya di dalam blok firebaseAvailable)
 // supaya kalau Firebase gagal dimuat, tombol tetap aman diklik (preventDefault
@@ -2600,13 +2667,31 @@ if (firebaseAvailable) {
     catch(err){ $('#loginError').textContent = 'Kredensial tidak terdeteksi. Silakan verifikasi sandi Anda.'; }
     finally{ setBtnLoading(btn, false); }
   });
+  $('#checkGuru').addEventListener('change', (e)=>{
+    const wrapper = $('#tokenGuruWrapper');
+    wrapper.classList.toggle('show', e.target.checked);
+    if(!e.target.checked) $('#inputTokenGuru').value = '';
+  });
+
   $('#registerForm').addEventListener('submit', async (e)=>{
     e.preventDefault(); const btn = $('#registerBtn'); setBtnLoading(btn, true);
+
+    const TOKEN_RAHASIA = "CHEMCLAK-GURU-7X9Q2K";
+    const daftarSebagaiGuru = $('#checkGuru').checked;
+    const tokenInput = $('#inputTokenGuru').value.trim();
+
+    if(daftarSebagaiGuru && tokenInput !== TOKEN_RAHASIA){
+      alert("Akses Ditolak: Token Guru Tidak Valid!");
+      setBtnLoading(btn, false);
+      return;
+    }
+
     try{ 
       const nama = $('#registerName').value.trim() || 'Siswa';
+      const role = daftarSebagaiGuru ? 'guru' : 'siswa';
       const cred = await createUserWithEmailAndPassword(auth, $('#registerEmail').value.trim(), $('#registerPassword').value);
       await updateProfile(cred.user, { displayName: nama });
-      await setDoc(doc(db,'users',cred.user.uid), { name: nama, xp: state.xp || 0, progress: state.progress || {}, createdAt: serverTimestamp() });
+      await setDoc(doc(db,'users',cred.user.uid), { name: nama, role, xp: state.xp || 0, progress: state.progress || {}, createdAt: serverTimestamp() });
     }
     catch(err){ $('#registerError').textContent = 'Kredensial ditolak (Mungkin sandi < 6 huruf atau email telah terdaftar).'; }
     finally{ setBtnLoading(btn, false); }
