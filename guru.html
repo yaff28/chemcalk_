@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<title>Portal Analitik Guru — CHEMCLAK</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22><circle cx=%2212%22 cy=%2212%22 r=%222.3%22 fill=%22%231E88E5%22/><ellipse cx=%2212%22 cy=%2212%22 rx=%2210%22 ry=%224.2%22 fill=%22none%22 stroke=%22%231E88E5%22 stroke-width=%221.6%22/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,800;9..144,900&family=Nunito:wght@400;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+/* =====================================================================
+   PORTAL ANALITIK GURU — CHEMCLAK
+   Palet: putih bersih + biru admin (identitas favicon CHEMCLAK) + aksen
+   navy pada sidebar, dan aksen emas/hijau untuk elemen peringkat —
+   menyambung bahasa visual "papan peringkat" dari aplikasi siswa.
+   ===================================================================== */
+* , *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root{
+  --biru: #1E88E5;
+  --biru-dark: #1565C0;
+  --biru-mist: rgba(30,136,229,.10);
+  --navy: #0B2540;
+  --navy-2: #123256;
+  --hijau: #2F8F62;
+  --hijau-mist: rgba(47,143,98,.12);
+  --emas: #D9A441;
+  --emas-mist: rgba(217,164,65,.14);
+  --merah: #D64545;
+
+  --bg: #F3F6FA;
+  --surface: #FFFFFF;
+  --surface-2: #F8FAFD;
+  --border: #E3E9F1;
+  --text: #16233A;
+  --text-muted: #5B6B82;
+  --text-faint: #93A1B4;
+
+  --radius: 16px;
+  --radius-sm: 10px;
+  --shadow-sm: 0 1px 2px rgba(16,38,73,.06), 0 1px 1px rgba(16,38,73,.04);
+  --shadow-md: 0 10px 30px -12px rgba(16,38,73,.18);
+  --font-display: 'Fraunces', serif;
+  --font-body: 'Nunito', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+html,body{ height:100%; }
+body{
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+h1,h2,h3{ font-family: var(--font-display); letter-spacing: -.01em; }
+button, input{ font-family: inherit; }
+a{ color: inherit; }
+::selection{ background: var(--biru-mist); }
+:focus-visible{ outline: 2.5px solid var(--biru); outline-offset: 2px; border-radius: 4px; }
+
+/* ---------- GERBANG PEMERIKSAAN AKSES (tampil sebelum role terverifikasi) ---------- */
+#gateCek{
+  position: fixed; inset: 0; z-index: 999; background: var(--navy);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px;
+  color: #EAF2FB;
+}
+.gate-spinner{ width: 46px; height: 46px; border-radius: 50%; border: 3.5px solid rgba(255,255,255,.18); border-top-color: var(--emas); animation: spin .85s linear infinite; }
+@keyframes spin{ to{ transform: rotate(360deg); } }
+#gateCek p{ font-size: .92rem; color: #B9CBE0; letter-spacing: .01em; }
+#gateCek .gate-brand{ font-family: var(--font-display); font-weight: 800; font-size: 1.15rem; color: #fff; }
+
+/* ---------- SHELL APLIKASI ---------- */
+.app-shell{ display: flex; min-height: 100vh; }
+.app-shell[hidden]{ display: none; }
+
+/* ---------- SIDEBAR ---------- */
+.sidebar{
+  width: 250px; flex-shrink: 0; background: var(--navy);
+  background-image: radial-gradient(circle at 15% 0%, var(--navy-2), var(--navy) 60%);
+  color: #EAF2FB; display: flex; flex-direction: column;
+  position: fixed; inset: 0 auto 0 0; z-index: 60;
+  transition: transform .28s ease;
+}
+.sidebar-brand{ display: flex; align-items: center; gap: 10px; padding: 22px 22px 18px; border-bottom: 1px solid rgba(255,255,255,.08); }
+.sidebar-brand .logo-dot{ width: 34px; height: 34px; border-radius: 10px; background: linear-gradient(150deg, var(--biru), var(--biru-dark)); display: flex; align-items: center; justify-content: center; font-weight: 800; font-family: var(--font-display); box-shadow: 0 4px 14px rgba(30,136,229,.4); }
+.sidebar-brand strong{ font-family: var(--font-display); font-size: 1.02rem; font-weight: 800; display: block; }
+.sidebar-brand span{ font-size: .68rem; color: #8EA5C2; text-transform: uppercase; letter-spacing: .06em; }
+.sidebar-nav{ flex: 1; padding: 18px 12px; display: flex; flex-direction: column; gap: 3px; }
+.nav-item{
+  display: flex; align-items: center; gap: 11px; padding: 11px 14px; border-radius: 10px;
+  color: #B9CBE0; font-weight: 700; font-size: .87rem; cursor: pointer; border: none; background: none;
+  width: 100%; text-align: left; transition: background .18s ease, color .18s ease;
+}
+.nav-item svg{ width: 18px; height: 18px; flex-shrink: 0; opacity: .85; }
+.nav-item:hover{ background: rgba(255,255,255,.06); color: #fff; }
+.nav-item.is-active{ background: linear-gradient(135deg, var(--biru), var(--biru-dark)); color: #fff; box-shadow: 0 6px 16px -4px rgba(30,136,229,.55); }
+.sidebar-foot{ padding: 16px 22px 20px; border-top: 1px solid rgba(255,255,255,.08); font-size: .68rem; color: #6F86A3; }
+.sidebar-backdrop{ display: none; }
+
+/* ---------- MAIN ---------- */
+.main-wrap{ flex: 1; margin-left: 250px; display: flex; flex-direction: column; min-width: 0; }
+.topbar{
+  height: 68px; background: var(--surface); border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between; padding: 0 26px;
+  position: sticky; top: 0; z-index: 40; gap: 14px;
+}
+.topbar-left{ display: flex; align-items: center; gap: 14px; min-width: 0; }
+#btnHamburger{ display: none; background: var(--surface-2); border: 1px solid var(--border); border-radius: 9px; width: 38px; height: 38px; cursor: pointer; align-items: center; justify-content: center; }
+#btnHamburger span, #btnHamburger::before, #btnHamburger::after{ display:none; }
+.topbar-title{ font-size: 1rem; font-weight: 800; font-family: var(--font-display); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.topbar-right{ display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+.guru-chip{ display: flex; align-items: center; gap: 9px; }
+.guru-avatar{ width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(150deg, var(--emas), #B9812A); color: #241606; display: flex; align-items: center; justify-content: center; font-weight: 800; font-family: var(--font-display); flex-shrink: 0; }
+.guru-meta{ line-height: 1.25; }
+.guru-meta strong{ font-size: .82rem; display: block; }
+.guru-meta span{ font-size: .68rem; color: var(--text-faint); }
+.btn-logout{ background: var(--surface-2); border: 1px solid var(--border); color: var(--merah); font-weight: 800; font-size: .78rem; padding: 8px 14px; border-radius: 9px; cursor: pointer; transition: background .18s ease; }
+.btn-logout:hover{ background: #FCEBEB; }
+
+.content{ padding: 26px 28px 60px; max-width: 1240px; width: 100%; margin: 0 auto; }
+.view{ display: none; animation: viewFade .35s ease; }
+.view.is-active{ display: block; }
+@keyframes viewFade{ from{ opacity:0; transform: translateY(6px); } to{ opacity:1; transform: translateY(0); } }
+
+.view-eyebrow{ font-size: .72rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--biru); }
+.view-heading{ font-size: 1.5rem; font-weight: 800; margin: 4px 0 4px; }
+.view-sub{ color: var(--text-muted); font-size: .88rem; margin-bottom: 22px; }
+
+/* ---------- TOP CARDS ---------- */
+.cards-grid{ display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 26px; }
+.stat-card{
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 20px 20px 18px; box-shadow: var(--shadow-sm); position: relative; overflow: hidden;
+}
+.stat-card::before{ content:''; position: absolute; top:0; left:0; right:0; height: 3px; background: var(--accent, var(--biru)); }
+.stat-card .stat-icon{ width: 42px; height: 42px; border-radius: 11px; display: flex; align-items: center; justify-content: center; background: var(--accent-mist, var(--biru-mist)); color: var(--accent, var(--biru)); margin-bottom: 12px; }
+.stat-card .stat-icon svg{ width: 22px; height: 22px; }
+.stat-card .stat-label{ font-size: .74rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: .04em; }
+.stat-card .stat-value{ font-family: var(--font-display); font-size: 1.7rem; font-weight: 800; margin-top: 4px; line-height: 1.15; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.stat-card .stat-hint{ font-size: .72rem; color: var(--text-faint); margin-top: 3px; }
+.stat-card.c-total{ --accent: var(--biru); --accent-mist: var(--biru-mist); }
+.stat-card.c-avg{ --accent: var(--hijau); --accent-mist: var(--hijau-mist); }
+.stat-card.c-top{ --accent: var(--emas); --accent-mist: var(--emas-mist); }
+
+/* ---------- Mini ringkasan Beranda ---------- */
+.panel{ background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 22px; box-shadow: var(--shadow-sm); }
+.panel h3{ font-size: .98rem; font-weight: 800; margin-bottom: 4px; }
+.panel .panel-sub{ font-size: .78rem; color: var(--text-faint); margin-bottom: 14px; }
+.mini-list{ display: flex; flex-direction: column; gap: 8px; }
+.mini-row{ display: flex; align-items: center; gap: 12px; padding: 9px 10px; border-radius: 10px; transition: background .15s ease; }
+.mini-row:hover{ background: var(--surface-2); }
+.mini-rank{ width: 22px; text-align: center; font-family: var(--font-mono); font-weight: 700; color: var(--text-faint); font-size: .82rem; }
+.mini-row.r1 .mini-rank, .mini-row.r2 .mini-rank, .mini-row.r3 .mini-rank{ font-size: 1.05rem; }
+.mini-avatar{ width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: .78rem; color: #fff; background: linear-gradient(150deg, var(--biru), var(--biru-dark)); flex-shrink: 0; }
+.mini-row.r1 .mini-avatar{ box-shadow: 0 0 0 3px var(--emas-mist), 0 0 0 2px var(--emas); }
+.mini-row.r2 .mini-avatar{ box-shadow: 0 0 0 3px #EEF1F5, 0 0 0 2px #B9C2CE; }
+.mini-row.r3 .mini-avatar{ box-shadow: 0 0 0 3px #F7EADC, 0 0 0 2px #C7924F; }
+.mini-info{ flex: 1; min-width: 0; }
+.mini-info strong{ display: block; font-size: .84rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mini-info span{ font-size: .7rem; color: var(--text-faint); }
+.mini-score{ font-family: var(--font-mono); font-weight: 800; color: var(--biru-dark); font-size: .88rem; }
+
+/* ---------- TOOLBAR (search + export) ---------- */
+.toolbar{ display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 16px; flex-wrap: wrap; }
+.search-box{ position: relative; flex: 1; min-width: 220px; max-width: 360px; }
+.search-box svg{ position: absolute; left: 13px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(--text-faint); }
+.search-box input{
+  width: 100%; padding: 10px 14px 10px 37px; border-radius: 10px; border: 1.5px solid var(--border);
+  background: var(--surface); font-size: .85rem; color: var(--text); transition: border-color .18s ease, box-shadow .18s ease;
+}
+.search-box input:focus{ border-color: var(--biru); box-shadow: 0 0 0 3px var(--biru-mist); outline: none; }
+.btn-export{
+  display: inline-flex; align-items: center; gap: 8px; background: linear-gradient(135deg, var(--hijau), #2A7A54);
+  color: #fff; font-weight: 800; font-size: .84rem; padding: 11px 18px; border-radius: 11px; border: none; cursor: pointer;
+  box-shadow: 0 8px 20px -8px rgba(47,143,98,.65); transition: transform .15s ease, box-shadow .15s ease; flex-shrink: 0;
+}
+.btn-export:hover{ transform: translateY(-1px); box-shadow: 0 10px 22px -6px rgba(47,143,98,.75); }
+.btn-export:active{ transform: translateY(0); }
+.btn-export svg{ width: 17px; height: 17px; }
+
+/* ---------- TABEL ---------- */
+.table-wrap{ background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow-sm); }
+.table-scroll{ overflow-x: auto; }
+table.tabel-siswa{ width: 100%; border-collapse: collapse; min-width: 640px; }
+.tabel-siswa thead th{
+  text-align: left; font-size: .68rem; text-transform: uppercase; letter-spacing: .05em; color: var(--text-muted);
+  font-weight: 800; padding: 13px 16px; background: var(--surface-2); border-bottom: 1px solid var(--border); white-space: nowrap;
+}
+.tabel-siswa td{ padding: 12px 16px; font-size: .85rem; border-bottom: 1px solid var(--border); vertical-align: middle; }
+.tabel-siswa tbody tr{ transition: background .15s ease; }
+.tabel-siswa tbody tr:hover{ background: var(--biru-mist); }
+.tabel-siswa tbody tr:last-child td{ border-bottom: none; }
+.td-no{ font-family: var(--font-mono); color: var(--text-faint); width: 34px; }
+.rank-chip{ display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 7px; font-weight: 800; font-size: .78rem; font-family: var(--font-mono); }
+.rank-chip.r1{ background: var(--emas-mist); color: #A47318; }
+.rank-chip.r2{ background: #EEF1F5; color: #64707D; }
+.rank-chip.r3{ background: #F7EADC; color: #9C6A2E; }
+.td-nama{ display: flex; align-items: center; gap: 10px; font-weight: 700; }
+.td-nama .row-avatar{ width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(150deg, var(--biru), var(--biru-dark)); color: #fff; display: flex; align-items: center; justify-content: center; font-size: .72rem; font-weight: 800; flex-shrink: 0; }
+.td-email{ color: var(--text-muted); }
+.td-level{ font-family: var(--font-mono); font-weight: 700; }
+.badge-level{ display: inline-block; padding: 3px 9px; border-radius: 999px; background: var(--biru-mist); color: var(--biru-dark); font-size: .74rem; font-weight: 800; }
+.td-skor{ font-family: var(--font-mono); font-weight: 800; color: var(--hijau); }
+.btn-aksi{ background: var(--surface-2); border: 1px solid var(--border); color: var(--biru-dark); font-weight: 700; font-size: .74rem; padding: 6px 12px; border-radius: 8px; cursor: pointer; transition: background .15s ease; }
+.btn-aksi:hover{ background: var(--biru-mist); }
+
+.state-row td{ text-align: center; padding: 34px 16px; color: var(--text-faint); font-size: .86rem; }
+.state-row .mini-spinner{ width: 22px; height: 22px; border-radius: 50%; border: 3px solid var(--border); border-top-color: var(--biru); animation: spin .8s linear infinite; margin: 0 auto 10px; }
+
+/* ---------- PENGATURAN ---------- */
+.settings-card{ display: flex; align-items: center; gap: 16px; margin-bottom: 16px; }
+.settings-card .guru-avatar{ width: 52px; height: 52px; font-size: 1.2rem; }
+.settings-card strong{ display: block; font-size: 1rem; }
+.settings-card span{ font-size: .78rem; color: var(--text-faint); }
+.note-box{ background: var(--emas-mist); border: 1px solid rgba(217,164,65,.3); color: #7A5A18; font-size: .82rem; padding: 12px 14px; border-radius: 10px; }
+
+/* ---------- MODAL DETAIL ---------- */
+.modal-backdrop{ position: fixed; inset: 0; background: rgba(11,37,64,.5); display: flex; align-items: center; justify-content: center; z-index: 200; padding: 20px; opacity: 0; pointer-events: none; transition: opacity .2s ease; }
+.modal-backdrop.is-open{ opacity: 1; pointer-events: auto; }
+.modal-box{ background: var(--surface); border-radius: var(--radius); padding: 26px; width: 100%; max-width: 360px; box-shadow: var(--shadow-md); transform: translateY(10px) scale(.97); transition: transform .2s ease; }
+.modal-backdrop.is-open .modal-box{ transform: translateY(0) scale(1); }
+.modal-head{ display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+.modal-head .guru-avatar{ width: 46px; height: 46px; font-size: 1.05rem; }
+.modal-head strong{ display: block; font-size: 1rem; }
+.modal-head span{ font-size: .76rem; color: var(--text-faint); }
+.modal-grid{ display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 18px; }
+.modal-stat{ background: var(--surface-2); border-radius: 10px; padding: 10px 12px; }
+.modal-stat span{ font-size: .68rem; color: var(--text-faint); text-transform: uppercase; letter-spacing: .04em; font-weight: 700; }
+.modal-stat strong{ display: block; font-family: var(--font-mono); font-size: 1.05rem; margin-top: 2px; }
+.btn-tutup-modal{ width: 100%; padding: 10px; border-radius: 10px; border: 1.5px solid var(--border); background: var(--surface-2); font-weight: 800; font-size: .84rem; cursor: pointer; }
+
+/* ---------- TOAST ---------- */
+#toast{ position: fixed; bottom: 22px; right: 22px; background: var(--navy); color: #fff; padding: 12px 18px; border-radius: 10px; font-size: .84rem; font-weight: 700; box-shadow: var(--shadow-md); opacity: 0; transform: translateY(10px); pointer-events: none; transition: all .25s ease; z-index: 300; display: flex; align-items: center; gap: 9px; }
+#toast.is-show{ opacity: 1; transform: translateY(0); }
+#toast .dot{ width: 8px; height: 8px; border-radius: 50%; background: var(--hijau); flex-shrink: 0; }
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 880px){
+  .sidebar{ transform: translateX(-100%); box-shadow: 0 0 40px rgba(0,0,0,.3); }
+  .sidebar.is-open{ transform: translateX(0); }
+  .sidebar-backdrop{ display: none; position: fixed; inset: 0; background: rgba(11,37,64,.45); z-index: 55; }
+  .sidebar-backdrop.is-open{ display: block; }
+  .main-wrap{ margin-left: 0; }
+  #btnHamburger{ display: flex; }
+  .cards-grid{ grid-template-columns: 1fr; }
+  .content{ padding: 18px 16px 46px; }
+  .guru-meta{ display: none; }
+  .topbar{ padding: 0 14px; }
+  .toolbar{ flex-direction: column; align-items: stretch; }
+  .search-box{ max-width: none; }
+  .btn-export{ justify-content: center; }
+}
+
+@media (prefers-reduced-motion: reduce){
+  *{ animation-duration: .001ms !important; transition-duration: .001ms !important; }
+}
+</style>
+</head>
+<body>
+
+<!-- ===================== GERBANG PEMERIKSAAN AKSES ===================== -->
+<div id="gateCek">
+  <div class="gate-spinner" aria-hidden="true"></div>
+  <p class="gate-brand">CHEMCLAK — Portal Guru</p>
+  <p id="gateCekTeks">Memeriksa hak akses...</p>
+</div>
+
+<!-- ===================== SHELL DASHBOARD (tersembunyi sampai role terverifikasi) ===================== -->
+<div class="app-shell" id="appShell" hidden>
+
+  <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <span class="logo-dot">C</span>
+      <div>
+        <strong>CHEMCLAK</strong>
+        <span>Portal Analitik Guru</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <button class="nav-item is-active" data-view="beranda" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 11.5 12 4l8 7.5"/><path d="M6 10v9h12v-9"/></svg>
+        Beranda
+      </button>
+      <button class="nav-item" data-view="laporan" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="3.5" width="16" height="17" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>
+        Laporan Siswa
+      </button>
+      <button class="nav-item" data-view="pengaturan" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 13a7.6 7.6 0 0 0 0-2l2-1.5-2-3.4-2.3.9a7.7 7.7 0 0 0-1.7-1l-.4-2.5H9.9l-.4 2.5a7.7 7.7 0 0 0-1.7 1l-2.3-.9-2 3.4L5.5 11a7.6 7.6 0 0 0 0 2l-2 1.5 2 3.4 2.3-.9c.5.4 1.1.7 1.7 1l.4 2.5h4.1l.4-2.5c.6-.3 1.2-.6 1.7-1l2.3.9 2-3.4-2-1.5Z"/></svg>
+        Pengaturan
+      </button>
+    </nav>
+    <div class="sidebar-foot">Lomba Inovasi Nasional · CHEMCLAK © 2026</div>
+  </aside>
+
+  <div class="main-wrap">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button id="btnHamburger" type="button" aria-label="Buka menu">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="19" height="19"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+        <h1 class="topbar-title" id="topbarTitle">Beranda</h1>
+      </div>
+      <div class="topbar-right">
+        <div class="guru-chip">
+          <span class="guru-avatar" id="guruAvatarInisial">G</span>
+          <div class="guru-meta">
+            <strong id="guruNamaTampil">Memuat...</strong>
+            <span>Guru Pengampu</span>
+          </div>
+        </div>
+        <button class="btn-logout" id="btnLogout" type="button">Keluar</button>
+      </div>
+    </header>
+
+    <main class="content">
+
+      <!-- ===================== VIEW: BERANDA ===================== -->
+      <section class="view is-active" id="view-beranda">
+        <span class="view-eyebrow">Ringkasan</span>
+        <h2 class="view-heading">Halo, <span id="sapaanNamaGuru">Bu/Pak Guru</span> 👋</h2>
+        <p class="view-sub">Berikut rangkuman perkembangan seluruh siswa CHEMCLAK secara real-time.</p>
+
+        <div class="cards-grid">
+          <div class="stat-card c-total">
+            <div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8" r="3.2"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6"/><circle cx="17" cy="8.5" r="2.6"/><path d="M15.7 14.2c2.9.4 4.8 2.5 4.8 5.8"/></svg></div>
+            <div class="stat-label">Total Siswa Terdaftar</div>
+            <div class="stat-value" id="statTotalSiswa">–</div>
+            <div class="stat-hint">Akun dengan peran siswa</div>
+          </div>
+          <div class="stat-card c-avg">
+            <div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19V10M12 19V5M20 19v-7"/></svg></div>
+            <div class="stat-label">Rata-rata Skor Kelas</div>
+            <div class="stat-value" id="statRataSkor">–</div>
+            <div class="stat-hint">Berdasarkan total XP</div>
+          </div>
+          <div class="stat-card c-top">
+            <div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 4h8v4a4 4 0 0 1-8 0V4z"/><path d="M8 5H5a3 3 0 0 0 3 4"/><path d="M16 5h3a3 3 0 0 1-3 4"/><path d="M9.5 19.5h5l-.8-4h-3.4z"/></svg></div>
+            <div class="stat-label">Siswa Teratas (Level)</div>
+            <div class="stat-value" id="statSiswaTerbaik">–</div>
+            <div class="stat-hint" id="statSiswaTerbaikHint">Level tertinggi di kelas</div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3>🏆 5 Peringkat Teratas</h3>
+          <p class="panel-sub">Diurutkan dari total skor/XP tertinggi.</p>
+          <div class="mini-list" id="miniTop5">
+            <div class="state-row"><div class="mini-spinner"></div>Memuat data siswa...</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== VIEW: LAPORAN SISWA ===================== -->
+      <section class="view" id="view-laporan">
+        <span class="view-eyebrow">Analitik</span>
+        <h2 class="view-heading">Laporan Siswa</h2>
+        <p class="view-sub">Cari, tinjau, dan unduh rekap nilai seluruh siswa.</p>
+
+        <div class="toolbar">
+          <div class="search-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+            <input type="text" id="inputCariSiswa" placeholder="Cari nama siswa...">
+          </div>
+          <button class="btn-export" id="btnExportCsv" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v13m0 0-4.5-4.5M12 16l4.5-4.5"/><path d="M4 19.5h16"/></svg>
+            Unduh Laporan Nilai (CSV)
+          </button>
+        </div>
+
+        <div class="table-wrap">
+          <div class="table-scroll">
+            <table class="tabel-siswa">
+              <thead>
+                <tr>
+                  <th>No</th>
+                  <th>Nama Siswa</th>
+                  <th>Email</th>
+                  <th>Level</th>
+                  <th>Total Skor/XP</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="tbodySiswa">
+                <tr class="state-row"><td colspan="6"><div class="mini-spinner"></div>Memuat Data Siswa...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===================== VIEW: PENGATURAN ===================== -->
+      <section class="view" id="view-pengaturan">
+        <span class="view-eyebrow">Akun</span>
+        <h2 class="view-heading">Pengaturan</h2>
+        <p class="view-sub">Informasi akun guru yang sedang aktif.</p>
+
+        <div class="panel">
+          <div class="settings-card">
+            <span class="guru-avatar" id="settingsAvatarInisial">G</span>
+            <div>
+              <strong id="settingsNamaGuru">–</strong>
+              <span id="settingsEmailGuru">–</span>
+            </div>
+          </div>
+          <div class="note-box">Fitur pengaturan lanjutan (kelola akun guru, atur modul, dan preferensi notifikasi) akan segera hadir pada versi berikutnya.</div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<!-- ===================== MODAL DETAIL SISWA ===================== -->
+<div class="modal-backdrop" id="modalDetail">
+  <div class="modal-box">
+    <div class="modal-head">
+      <span class="guru-avatar" id="modalAvatar">S</span>
+      <div>
+        <strong id="modalNama">–</strong>
+        <span id="modalEmail">–</span>
+      </div>
+    </div>
+    <div class="modal-grid">
+      <div class="modal-stat"><span>Level</span><strong id="modalLevel">–</strong></div>
+      <div class="modal-stat"><span>Total XP</span><strong id="modalXp">–</strong></div>
+      <div class="modal-stat"><span>Peringkat</span><strong id="modalRank">–</strong></div>
+      <div class="modal-stat"><span>Peran</span><strong id="modalRole">Siswa</strong></div>
+    </div>
+    <button class="btn-tutup-modal" id="btnTutupModal" type="button">Tutup</button>
+  </div>
+</div>
+
+<div id="toast"><span class="dot"></span><span id="toastTeks">Berhasil</span></div>
+
+<script type="module">
+/* =====================================================================
+   TAHAP 2 — LOGIKA & FIREBASE (Portal Analitik Guru)
+   Firebase Web SDK v12.15.0 via CDN, konfigurasi sama dengan index.html
+   ===================================================================== */
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+
+// ---------- 1. INISIALISASI FIREBASE (konfigurasi identik dengan index.html) ----------
+const firebaseConfig = {
+  apiKey: "AIzaSyBFjHUQhugYI5k0QojQ8Q__8UFPywJatiw",
+  authDomain: "chemcalk.firebaseapp.com",
+  projectId: "chemcalk",
+  storageBucket: "chemcalk.firebasestorage.app",
+  messagingSenderId: "324074818827",
+  appId: "1:324074818827:web:5719c37366141426b0a60e"
+};
+
+let auth, db;
+try{
+  const fbApp = initializeApp(firebaseConfig);
+  auth = getAuth(fbApp);
+  db = getFirestore(fbApp);
+}catch(e){
+  console.error("Gagal inisialisasi Firebase:", e);
+  alert("Gagal terhubung ke server. Anda akan diarahkan kembali.");
+  window.location.href = "index.html";
+}
+
+// ---------- Referensi elemen DOM ----------
+const $ = (sel) => document.querySelector(sel);
+const gateCek = $('#gateCek');
+const gateCekTeks = $('#gateCekTeks');
+const appShell = $('#appShell');
+
+// ---------- Variabel state global ----------
+let daftarSiswa = [];      // seluruh data siswa dari Firestore (sudah difilter role & diurutkan skor)
+let kataKunciCari = '';    // kata kunci pencarian aktif
+let unsubscribeSiswa = null;
+
+/* =====================================================================
+   2. SISTEM KEAMANAN — ROLE-BASED ACCESS CONTROL
+   Langkah pertama yang dijalankan: cek status login, lalu cek atribut
+   `role` pada dokumen Firestore user yang sedang login.
+   ===================================================================== */
+function tolakAkses(pesan){
+  alert(pesan || 'Akses Ditolak: Khusus Guru');
+  window.location.href = 'index.html';
+}
+
+onAuthStateChanged(auth, async (user) => {
+  // Belum login sama sekali -> tidak berhak berada di halaman ini
+  if(!user){
+    tolakAkses('Anda harus masuk terlebih dahulu.');
+    return;
+  }
+
+  try{
+    gateCekTeks.textContent = 'Memverifikasi peran akun...';
+    const refUser = doc(db, 'users', user.uid);
+    const snapUser = await getDoc(refUser);
+
+    if(!snapUser.exists() || snapUser.data().role !== 'guru'){
+      // Role bukan "guru" (atau dokumen/atribut tidak ada) -> tolak akses
+      tolakAkses('Akses Ditolak: Khusus Guru');
+      return;
+    }
+
+    // Role terverifikasi sebagai guru -> muat dashboard
+    const dataGuru = snapUser.data();
+    tampilkanDashboard(dataGuru, user);
+
+  }catch(e){
+    console.error('Gagal memverifikasi peran pengguna:', e);
+    tolakAkses('Terjadi kesalahan saat memverifikasi akses. Silakan coba lagi.');
+  }
+});
+
+/* =====================================================================
+   3. MENAMPILKAN DASHBOARD SETELAH LOLOS VERIFIKASI
+   ===================================================================== */
+function inisialDari(nama){
+  const bersih = (nama || '').trim();
+  if(!bersih) return 'G';
+  const bagian = bersih.split(/\s+/).filter(Boolean);
+  return (bagian.length > 1 ? (bagian[0][0] + bagian[bagian.length-1][0]) : bersih.slice(0,2)).toUpperCase();
+}
+
+function tampilkanDashboard(dataGuru, user){
+  const namaGuru = dataGuru.name || user.email || 'Guru';
+  $('#guruNamaTampil').textContent = namaGuru;
+  $('#sapaanNamaGuru').textContent = namaGuru;
+  $('#guruAvatarInisial').textContent = inisialDari(namaGuru);
+  $('#settingsNamaGuru').textContent = namaGuru;
+  $('#settingsEmailGuru').textContent = user.email || '-';
+  $('#settingsAvatarInisial').textContent = inisialDari(namaGuru);
+
+  gateCek.style.display = 'none';
+  appShell.hidden = false;
+
+  ambilDataSiswaRealtime();
+  pasangEventListener();
+}
+
+/* =====================================================================
+   4. LOGIKA FIREBASE — PENARIKAN DATA SISWA REAL-TIME
+   Mengambil seluruh dokumen dari koleksi `users`, lalu memfilter secara
+   client-side siapa saja yang BUKAN guru (role !== 'guru'), termasuk
+   dokumen yang sama sekali tidak memiliki atribut role.
+   ===================================================================== */
+function ambilDataSiswaRealtime(){
+  const refUsers = collection(db, 'users');
+  unsubscribeSiswa = onSnapshot(refUsers, (snap) => {
+    const sementara = [];
+    snap.forEach((dS) => {
+      const d = dS.data();
+      if(d.role === 'guru') return; // lewati akun guru, hanya tampilkan siswa
+
+      // Total skor mengutamakan field `xp`, dengan fallback ke `skor` bila ada
+      const totalSkor = (typeof d.xp === 'number') ? d.xp : (typeof d.skor === 'number' ? d.skor : 0);
+
+      sementara.push({
+        uid: dS.id,
+        nama: d.name || 'Siswa Tanpa Nama',
+        email: d.email || '-',
+        level: (typeof d.level === 'number') ? d.level : (d.level || 1),
+        xp: totalSkor
+      });
+    });
+
+    // Urutkan dari skor/XP tertinggi ke terendah (default)
+    sementara.sort((a, b) => b.xp - a.xp);
+    daftarSiswa = sementara;
+
+    renderTopCards(daftarSiswa);
+    renderTop5(daftarSiswa);
+    renderTabelSiswa(terapkanFilterCari(daftarSiswa, kataKunciCari));
+  }, (err) => {
+    console.error('Gagal mengambil data siswa:', err);
+    $('#tbodySiswa').innerHTML = '<tr class="state-row"><td colspan="6">Gagal memuat data. Periksa koneksi atau aturan keamanan Firestore.</td></tr>';
+  });
+}
+
+/* =====================================================================
+   5. KALKULASI & RENDER TOP CARDS
+   ===================================================================== */
+function renderTopCards(list){
+  const totalSiswa = list.length;
+  $('#statTotalSiswa').textContent = totalSiswa;
+
+  const rataSkor = totalSiswa ? Math.round(list.reduce((a, s) => a + s.xp, 0) / totalSiswa) : 0;
+  $('#statRataSkor').textContent = rataSkor.toLocaleString('id-ID');
+
+  if(totalSiswa){
+    const terbaik = list.reduce((tertinggi, s) => (s.level > tertinggi.level ? s : tertinggi), list[0]);
+    $('#statSiswaTerbaik').textContent = terbaik.nama;
+    $('#statSiswaTerbaikHint').textContent = `Level ${terbaik.level} · ${terbaik.xp.toLocaleString('id-ID')} XP`;
+  } else {
+    $('#statSiswaTerbaik').textContent = '–';
+    $('#statSiswaTerbaikHint').textContent = 'Belum ada data siswa';
+  }
+}
+
+/* ---------- Render ringkasan 5 peringkat teratas di Beranda ---------- */
+function renderTop5(list){
+  const wrap = $('#miniTop5');
+  wrap.innerHTML = '';
+  if(!list.length){
+    wrap.innerHTML = '<div class="state-row" style="padding:20px 0;">Belum ada data siswa.</div>';
+    return;
+  }
+  list.slice(0, 5).forEach((s, i) => {
+    const rank = i + 1;
+    const row = document.createElement('div');
+    row.className = `mini-row ${rank<=3 ? 'r'+rank : ''}`;
+
+    const rankEl = document.createElement('span'); rankEl.className = 'mini-rank'; rankEl.textContent = (rank===1?'🥇':rank===2?'🥈':rank===3?'🥉':String(rank));
+    const avatarEl = document.createElement('span'); avatarEl.className = 'mini-avatar'; avatarEl.textContent = inisialDari(s.nama);
+    const infoEl = document.createElement('div'); infoEl.className = 'mini-info';
+    const namaEl = document.createElement('strong'); namaEl.textContent = s.nama;
+    const emailEl = document.createElement('span'); emailEl.textContent = s.email;
+    infoEl.append(namaEl, emailEl);
+    const skorEl = document.createElement('span'); skorEl.className = 'mini-score'; skorEl.textContent = s.xp.toLocaleString('id-ID') + ' XP';
+
+    row.append(rankEl, avatarEl, infoEl, skorEl);
+    wrap.appendChild(row);
+  });
+}
+
+/* =====================================================================
+   6. RENDER TABEL — dibangun dengan createElement (bukan innerHTML)
+   untuk menghindari risiko injeksi dari data yang ditampilkan.
+   ===================================================================== */
+function renderTabelSiswa(list){
+  const tbody = $('#tbodySiswa');
+  tbody.innerHTML = ''; // reset (aman: tidak menyisipkan data pengguna lewat innerHTML)
+
+  if(!daftarSiswa.length){
+    const tr = document.createElement('tr'); tr.className = 'state-row';
+    const td = document.createElement('td'); td.colSpan = 6; td.textContent = 'Belum ada siswa yang terdaftar.';
+    tr.appendChild(td); tbody.appendChild(tr);
+    return;
+  }
+  if(!list.length){
+    const tr = document.createElement('tr'); tr.className = 'state-row';
+    const td = document.createElement('td'); td.colSpan = 6; td.textContent = `Tidak ditemukan siswa dengan kata kunci "${kataKunciCari}".`;
+    tr.appendChild(td); tbody.appendChild(tr);
+    return;
+  }
+
+  list.forEach((s) => {
+    // Peringkat dihitung dari posisi asli di daftar lengkap (bukan dari hasil filter),
+    // supaya angka rank tetap bermakna walau sedang mencari.
+    const rank = daftarSiswa.findIndex(x => x.uid === s.uid) + 1;
+
+    const tr = document.createElement('tr');
+
+    const tdNo = document.createElement('td'); tdNo.className = 'td-no';
+    if(rank <= 3){
+      const chip = document.createElement('span'); chip.className = 'rank-chip r' + rank; chip.textContent = rank;
+      tdNo.appendChild(chip);
+    } else {
+      tdNo.textContent = rank;
+    }
+
+    const tdNama = document.createElement('td'); tdNama.className = 'td-nama';
+    const avatar = document.createElement('span'); avatar.className = 'row-avatar'; avatar.textContent = inisialDari(s.nama);
+    const namaSpan = document.createElement('span'); namaSpan.textContent = s.nama;
+    tdNama.append(avatar, namaSpan);
+
+    const tdEmail = document.createElement('td'); tdEmail.className = 'td-email'; tdEmail.textContent = s.email;
+
+    const tdLevel = document.createElement('td'); tdLevel.className = 'td-level';
+    const badge = document.createElement('span'); badge.className = 'badge-level'; badge.textContent = 'Lv. ' + s.level;
+    tdLevel.appendChild(badge);
+
+    const tdSkor = document.createElement('td'); tdSkor.className = 'td-skor'; tdSkor.textContent = s.xp.toLocaleString('id-ID');
+
+    const tdAksi = document.createElement('td');
+    const btn = document.createElement('button'); btn.className = 'btn-aksi'; btn.type = 'button'; btn.textContent = 'Detail';
+    btn.addEventListener('click', () => bukaModalDetail(s, rank));
+    tdAksi.appendChild(btn);
+
+    tr.append(tdNo, tdNama, tdEmail, tdLevel, tdSkor, tdAksi);
+    tbody.appendChild(tr);
+  });
+}
+
+function terapkanFilterCari(list, kataKunci){
+  const k = kataKunci.trim().toLowerCase();
+  if(!k) return list;
+  return list.filter(s => s.nama.toLowerCase().includes(k));
+}
+
+/* =====================================================================
+   7. MODAL DETAIL SISWA (tombol Aksi)
+   ===================================================================== */
+function bukaModalDetail(s, rank){
+  $('#modalAvatar').textContent = inisialDari(s.nama);
+  $('#modalNama').textContent = s.nama;
+  $('#modalEmail').textContent = s.email;
+  $('#modalLevel').textContent = s.level;
+  $('#modalXp').textContent = s.xp.toLocaleString('id-ID');
+  $('#modalRank').textContent = '#' + rank;
+  $('#modalDetail').classList.add('is-open');
+}
+function tutupModalDetail(){ $('#modalDetail').classList.remove('is-open'); }
+
+/* =====================================================================
+   8. FITUR PAMUNGKAS — EKSPOR LAPORAN NILAI KE CSV
+   Vanilla JavaScript murni: array siswa (sesuai tampilan saat ini,
+   termasuk hasil pencarian) diubah menjadi teks CSV lalu diunduh.
+   ===================================================================== */
+function escapeCsv(nilai){
+  const teks = String(nilai ?? '');
+  if(/[",\n]/.test(teks)){
+    return '"' + teks.replace(/"/g, '""') + '"';
+  }
+  return teks;
+}
+
+function unduhLaporanCsv(){
+  const dataDiekspor = terapkanFilterCari(daftarSiswa, kataKunciCari);
+  if(!dataDiekspor.length){
+    tampilkanToast('Tidak ada data untuk diekspor.');
+    return;
+  }
+
+  const header = ['No', 'Nama Siswa', 'Email', 'Level', 'Total Skor/XP'];
+  const baris = [header.join(',')];
+
+  dataDiekspor.forEach((s) => {
+    const rank = daftarSiswa.findIndex(x => x.uid === s.uid) + 1;
+    baris.push([rank, escapeCsv(s.nama), escapeCsv(s.email), s.level, s.xp].join(','));
+  });
+
+  // \uFEFF (BOM) ditambahkan agar karakter dibaca benar saat dibuka di Excel
+  const csvString = '\uFEFF' + baris.join('\r\n');
+  const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+
+  const namaBulan = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const sekarang = new Date();
+  const namaFile = `Laporan_CHEMCLAK_${sekarang.getDate()}_${namaBulan[sekarang.getMonth()]}_${sekarang.getFullYear()}.csv`;
+
+  const a = document.createElement('a');
+  a.href = url; a.download = namaFile;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+
+  tampilkanToast(`Laporan berhasil diunduh: ${namaFile}`);
+}
+
+/* ---------- Notifikasi toast kecil ---------- */
+let timerToast = null;
+function tampilkanToast(pesan){
+  const toast = $('#toast');
+  $('#toastTeks').textContent = pesan;
+  toast.classList.add('is-show');
+  clearTimeout(timerToast);
+  timerToast = setTimeout(() => toast.classList.remove('is-show'), 3200);
+}
+
+/* =====================================================================
+   9. NAVIGASI SIDEBAR, DRAWER MOBILE, PENCARIAN, & LOGOUT
+   ===================================================================== */
+function pasangEventListener(){
+  // --- Navigasi antar-view (Beranda / Laporan Siswa / Pengaturan) ---
+  const judulView = { beranda: 'Beranda', laporan: 'Laporan Siswa', pengaturan: 'Pengaturan' };
+  document.querySelectorAll('.nav-item').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('is-active'));
+      btn.classList.add('is-active');
+      const target = btn.dataset.view;
+      document.querySelectorAll('.view').forEach(v => v.classList.remove('is-active'));
+      $('#view-' + target).classList.add('is-active');
+      $('#topbarTitle').textContent = judulView[target] || 'Beranda';
+      tutupDrawerMobile();
+    });
+  });
+
+  // --- Drawer sidebar mobile ---
+  $('#btnHamburger').addEventListener('click', () => {
+    $('#sidebar').classList.add('is-open');
+    $('#sidebarBackdrop').classList.add('is-open');
+  });
+  $('#sidebarBackdrop').addEventListener('click', tutupDrawerMobile);
+
+  // --- Pencarian siswa (filter array, tanpa reload halaman) ---
+  $('#inputCariSiswa').addEventListener('input', (e) => {
+    kataKunciCari = e.target.value;
+    renderTabelSiswa(terapkanFilterCari(daftarSiswa, kataKunciCari));
+  });
+
+  // --- Tombol ekspor CSV ---
+  $('#btnExportCsv').addEventListener('click', unduhLaporanCsv);
+
+  // --- Modal detail ---
+  $('#btnTutupModal').addEventListener('click', tutupModalDetail);
+  $('#modalDetail').addEventListener('click', (e) => { if(e.target.id === 'modalDetail') tutupModalDetail(); });
+
+  // --- Logout ---
+  $('#btnLogout').addEventListener('click', () => {
+    if(unsubscribeSiswa) unsubscribeSiswa();
+    signOut(auth).finally(() => { window.location.href = 'index.html'; });
+  });
+}
+
+function tutupDrawerMobile(){
+  $('#sidebar').classList.remove('is-open');
+  $('#sidebarBackdrop').classList.remove('is-open');
+}
+</script>
+</body>
+</html>
