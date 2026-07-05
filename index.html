@@ -564,14 +564,39 @@ main { padding: 28px 32px 60px; max-width: 1440px; margin: 0 auto; width: 100%; 
 .xp-bar-fill::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,.55), transparent); width: 40%; animation: xpShine 2.2s ease-in-out infinite; }
 @keyframes xpShine { 0% { transform: translateX(-120%); } 100% { transform: translateX(340%); } }
 
-.leaderboard-table th { text-align: left; font-size: .65rem; text-transform: uppercase; color: var(--text-faint); padding-bottom: 8px; }
-.leaderboard-table td { padding: 9px 4px; font-size: .84rem; border-top: 1px solid var(--border-soft); }
-.leaderboard-table tr:first-child td { font-weight: 800; }
-.leaderboard-table td:first-child { width: 22px; color: var(--text-muted); font-family: var(--font-mono); }
-.leaderboard-table td:last-child { text-align: right; font-family: var(--font-mono); font-weight: 700; color: var(--blue-deep); }
-.leaderboard-loading { text-align: center !important; color: var(--text-faint); padding: 18px 0 !important; }
-.leaderboard-table tr.is-me td { color: var(--green-dark); }
-.rank-1 { color: #F9A825 !important; } .rank-2 { color: #90A4AE !important; } .rank-3 { color: #C08552 !important; }
+/* ---------- LEADERBOARD NASIONAL (kartu + foto profil) ---------- */
+.natlb-list { display: flex; flex-direction: column; gap: 8px; margin-top: 6px; }
+.natlb-row {
+  display: flex; align-items: center; gap: 12px; padding: 9px 12px;
+  background: var(--surface-1); border: 1px solid var(--border-soft); border-radius: var(--radius-sm);
+  transition: all .25s ease; animation: natlbPop .35s cubic-bezier(.3,1.3,.4,1) backwards;
+}
+.natlb-row:hover { border-color: var(--line-glow); transform: translateX(3px); }
+@keyframes natlbPop { from{ opacity:0; transform: translateY(6px); } to{ opacity:1; transform: translateY(0); } }
+.natlb-row.is-me { border-color: var(--green); background: rgba(76,174,127,.12); box-shadow: 0 0 0 1px rgba(76,174,127,.25); }
+.natlb-rank { width: 24px; flex-shrink: 0; text-align: center; font-family: var(--font-display); font-weight: 800; color: var(--text-faint); font-size: .95rem; }
+.natlb-row.natlb-r1 .natlb-rank { color: #FFD86B; font-size: 1.15rem; }
+.natlb-row.natlb-r2 .natlb-rank { color: #D7DEE8; }
+.natlb-row.natlb-r3 .natlb-rank { color: #E0A26B; }
+.natlb-avatar {
+  width: 42px; height: 42px; border-radius: 50%; overflow: hidden; flex-shrink: 0; position: relative;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(145deg, var(--blue-light), var(--blue)); color: #1F1006;
+  font-family: var(--font-display); font-weight: 800; font-size: .9rem;
+  box-shadow: var(--shadow-sm), inset 0 0 0 2px rgba(255,255,255,.15);
+}
+.natlb-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.natlb-row.natlb-r1 .natlb-avatar { box-shadow: 0 0 0 2px var(--surface-1), 0 0 0 3px #FFD86B, 0 0 18px rgba(255,216,107,.55); animation: natlbGoldPulse 2.2s ease-in-out infinite; }
+@keyframes natlbGoldPulse { 0%,100%{ box-shadow: 0 0 0 2px var(--surface-1), 0 0 0 3px #FFD86B, 0 0 18px rgba(255,216,107,.55); } 50%{ box-shadow: 0 0 0 2px var(--surface-1), 0 0 0 3px #FFD86B, 0 0 28px rgba(255,216,107,.85); } }
+.natlb-row.natlb-r2 .natlb-avatar { box-shadow: 0 0 0 2px var(--surface-1), 0 0 0 3px #D7DEE8, 0 0 12px rgba(215,222,232,.4); }
+.natlb-row.natlb-r3 .natlb-avatar { box-shadow: 0 0 0 2px var(--surface-1), 0 0 0 3px #E0A26B, 0 0 12px rgba(224,162,107,.4); }
+.natlb-medal { position: absolute; top: -7px; left: -5px; font-size: .85rem; filter: drop-shadow(0 1px 2px rgba(0,0,0,.65)); line-height: 1; }
+.natlb-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.natlb-name { font-size: .87rem; font-weight: 700; color: var(--text-dark); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.natlb-you-tag { font-size: .66rem; color: var(--green); font-weight: 700; }
+.natlb-xp { font-family: var(--font-mono); font-weight: 800; color: var(--blue-deep); font-size: .9rem; flex-shrink: 0; text-align: right; }
+.natlb-xp small { font-size: .58rem; font-weight: 700; color: var(--text-faint); margin-left: 2px; }
+.natlb-empty { text-align: center; color: var(--text-faint); font-size: .82rem; padding: 22px 0; }
 
 /* ---------- ANIMASI ---------- */
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -685,7 +710,7 @@ main { padding: 28px 32px 60px; max-width: 1440px; margin: 0 auto; width: 100%; 
 .badge strong { display: block; font-size: .78rem; color: var(--text-dark); margin-bottom: 3px; }
 .badge span { font-size: .66rem; color: var(--text-faint); line-height: 1.3; display: block; }
 
-/* ---------- DUEL MODE (Real-time Multiplayer) ---------- */
+/* ---------- MODE DUEL & KOMPETISI KELAS (ARENA) ---------- */
 .duel-card {
   background: linear-gradient(150deg, rgba(139,90,140,.16), var(--card-white));
   border: 1px solid rgba(139,90,140,.35); border-radius: var(--radius-lg);
@@ -695,25 +720,133 @@ main { padding: 28px 32px 60px; max-width: 1440px; margin: 0 auto; width: 100%; 
 .duel-card-head .duel-icon { font-size: 1.5rem; filter: drop-shadow(0 0 8px rgba(178,110,220,.6)); }
 .duel-card-head h3 { font-size: 1.05rem; color: var(--text-dark); }
 .duel-actions-row { display: flex; gap: 14px; flex-wrap: wrap; }
-.duel-action-box { flex: 1; min-width: 220px; background: var(--surface-2); border-radius: var(--radius-md); padding: 16px; border: 1px solid var(--border-soft); }
-.duel-action-box h4 { font-size: .82rem; color: var(--purple); text-transform: uppercase; letter-spacing: .04em; margin-bottom: 10px; }
+.duel-action-box { flex: 1; min-width: 260px; background: var(--surface-2); border-radius: var(--radius-md); padding: 18px; border: 1px solid var(--border-soft); }
+.duel-action-box h4 { font-size: .82rem; color: var(--purple); text-transform: uppercase; letter-spacing: .04em; margin-bottom: 12px; }
 .duel-join-row { display: flex; gap: 8px; }
 .duel-join-row input { flex: 1; background: var(--surface-1); border: 1px solid var(--border-soft); border-radius: var(--radius-sm); padding: 10px 12px; color: var(--text-dark); font-family: var(--font-mono); letter-spacing: .12em; text-transform: uppercase; text-align: center; font-size: 1rem; }
-.duel-join-row input:focus { outline: none; border-color: var(--purple); box-shadow: 0 0 0 3px rgba(139,90,140,.2); }
-.duel-room-code { font-family: var(--font-mono); font-size: 2rem; letter-spacing: .18em; color: var(--purple); text-shadow: 0 0 16px rgba(178,110,220,.5); text-align: center; padding: 10px 0; }
-.duel-status-line { display: flex; align-items: center; gap: 8px; font-size: .82rem; color: var(--text-muted); margin-top: 10px; }
+.duel-join-row input:focus, .arena-field input:focus, .arena-field select:focus { outline: none; border-color: var(--purple); box-shadow: 0 0 0 3px rgba(139,90,140,.2); }
+.duel-room-code { font-family: var(--font-mono); font-size: 2.3rem; letter-spacing: .18em; color: var(--purple); text-shadow: 0 0 16px rgba(178,110,220,.5); text-align: center; padding: 10px 0; }
+.duel-status-line { display: flex; align-items: center; gap: 8px; font-size: .82rem; color: var(--text-muted); margin-top: 10px; justify-content: center; }
 .duel-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--text-faint); flex-shrink: 0; }
 .duel-dot.live { background: var(--green); box-shadow: 0 0 8px var(--green); animation: duelPulse 1.4s ease-in-out infinite; }
 @keyframes duelPulse { 0%,100%{ opacity:1; } 50%{ opacity:.4; } }
-.duel-vs-panel { margin-top: 18px; display: none; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 14px; background: var(--surface-1); border-radius: var(--radius-md); padding: 18px; border: 1px solid rgba(139,90,140,.3); }
-.duel-vs-panel.show { display: grid; }
-.duel-player { text-align: center; }
-.duel-player-name { font-size: .78rem; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: .03em; }
-.duel-player-score { font-family: var(--font-display); font-size: 2.1rem; font-weight: 800; color: var(--text-dark); }
-.duel-player.me .duel-player-score { color: var(--green); text-shadow: 0 0 14px rgba(76,174,127,.5); }
-.duel-player.opp .duel-player-score { color: var(--orange); text-shadow: 0 0 14px rgba(217,114,59,.5); }
-.duel-vs-badge { font-family: var(--font-display); font-weight: 800; color: var(--purple); font-size: 1.1rem; opacity: .8; }
 .duel-leave-btn { margin-top: 14px; }
+
+/* --- Form pengaturan ruang (jumlah soal, waktu, modul) --- */
+.arena-field { margin-bottom: 12px; }
+.arena-field label { display: block; font-size: .78rem; color: var(--text-muted); margin-bottom: 5px; }
+.arena-field input[type="text"], .arena-field input[type="number"], .arena-field select {
+  width: 100%; background: var(--surface-1); border: 1px solid var(--border-soft); border-radius: var(--radius-sm);
+  padding: 9px 12px; color: var(--text-dark); font-size: .9rem; font-family: var(--font-mono);
+}
+.arena-modul-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px,1fr)); gap: 8px; margin-bottom: 4px; }
+.arena-modul-chip { position: relative; }
+.arena-modul-chip input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.arena-modul-chip span {
+  display: block; text-align: center; padding: 9px 6px; border-radius: var(--radius-sm); font-size: .74rem;
+  background: var(--surface-1); border: 1.5px solid var(--border-soft); color: var(--text-muted); transition: all .15s ease; cursor: pointer;
+}
+.arena-modul-chip input:checked + span { background: rgba(76,174,127,.16); border-color: var(--green); color: var(--text-dark); font-weight: 700; box-shadow: var(--glow-green); }
+.arena-toggle-row { display: flex; align-items: center; justify-content: space-between; background: var(--surface-1); border-radius: var(--radius-sm); padding: 10px 12px; margin-bottom: 12px; border: 1px solid var(--border-soft); }
+.arena-toggle-row span { font-size: .82rem; color: var(--text-dark); }
+.arena-switch { position: relative; width: 42px; height: 24px; flex-shrink: 0; }
+.arena-switch input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.arena-switch .track { position: absolute; inset: 0; background: var(--surface-2); border: 1px solid var(--border-soft); border-radius: 999px; transition: all .2s ease; }
+.arena-switch .knob { position: absolute; top: 2px; left: 2px; width: 18px; height: 18px; border-radius: 50%; background: var(--text-faint); transition: all .2s ease; }
+.arena-switch input:checked ~ .track { background: rgba(76,174,127,.35); border-color: var(--green); }
+.arena-switch input:checked ~ .knob { transform: translateX(18px); background: var(--green); box-shadow: 0 0 6px var(--green); }
+
+/* --- Avatar pemain arena (dipakai di lobby, leaderboard, podium) --- */
+.arena-avatar {
+  border-radius: 50%; overflow: hidden; flex-shrink: 0; position: relative;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(145deg, var(--blue-light), var(--blue));
+  color: #1F1006; font-family: var(--font-display); font-weight: 800;
+  box-shadow: var(--shadow-sm), inset 0 0 0 2px rgba(255,255,255,.15);
+  user-select: none;
+}
+.arena-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.arena-avatar .arena-crown {
+  position: absolute; top: -7px; left: 50%; transform: translateX(-50%);
+  font-size: .9em; filter: drop-shadow(0 1px 2px rgba(0,0,0,.6)); line-height: 1;
+}
+.arena-avatar.sz-lobby { width: 46px; height: 46px; font-size: 1.05rem; margin: 0 auto 6px; }
+.arena-avatar.sz-lb { width: 38px; height: 38px; font-size: .82rem; }
+.arena-avatar.sz-podium { width: 62px; height: 62px; font-size: 1.3rem; margin-bottom: 8px; }
+
+/* --- Lobi peserta --- */
+.arena-lobby-players { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px,1fr)); gap: 10px; margin: 16px 0; max-height: 260px; overflow-y: auto; padding-right: 4px; }
+.arena-lobby-player { background: var(--surface-2); border: 1px solid var(--border-soft); border-radius: var(--radius-sm); padding: 10px; text-align: center; animation: playerJoinPop .3s cubic-bezier(.3,1.4,.4,1); transition: border-color .2s ease, transform .2s ease; }
+.arena-lobby-player:hover { border-color: var(--line-glow); transform: translateY(-2px); }
+@keyframes playerJoinPop { from{ opacity:0; transform: scale(.7); } to{ opacity:1; transform: scale(1); } }
+.arena-lobby-player .pname { font-size: .74rem; color: var(--text-dark); font-weight: 700; display:block; margin-top:2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.arena-lobby-player.is-host .pname { color: var(--kulit-m); }
+.arena-lobby-player.is-host .arena-avatar { box-shadow: var(--glow-cyan), inset 0 0 0 2px rgba(255,255,255,.2), 0 0 0 2px var(--kulit-m); }
+.arena-empty-hint { text-align: center; color: var(--text-faint); font-size: .82rem; padding: 20px 0; grid-column: 1/-1; }
+.arena-player-count { font-family: var(--font-display); font-weight: 800; color: var(--green); }
+
+/* --- Tampilan soal --- */
+.arena-question-card { text-align: center; }
+.arena-question-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; font-size: .8rem; color: var(--text-muted); }
+.arena-timer-ring { position: relative; width: 64px; height: 64px; margin: 0 auto 14px; }
+.arena-timer-ring svg { transform: rotate(-90deg); width: 100%; height: 100%; }
+.arena-timer-ring circle.bg { fill: none; stroke: var(--surface-2); stroke-width: 6; }
+.arena-timer-ring circle.fg { fill: none; stroke: var(--green); stroke-width: 6; stroke-linecap: round; transition: stroke-dashoffset .25s linear, stroke .25s ease; }
+.arena-timer-ring .timer-num { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 800; font-size: 1.2rem; color: var(--text-dark); }
+.arena-question-prompt { font-size: 1.15rem; font-weight: 700; color: var(--text-dark); line-height: 1.4; margin-bottom: 20px; }
+.arena-answered-count { font-size: .78rem; color: var(--text-faint); margin-bottom: 10px; }
+.arena-options-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+@media (max-width: 560px) { .arena-options-grid { grid-template-columns: 1fr; } }
+.arena-opt-btn {
+  display: flex; align-items: center; gap: 10px; padding: 16px 18px; border-radius: var(--radius-md);
+  border: none; font-family: var(--font-display); font-weight: 700; font-size: .95rem; color: #fff; text-align: left;
+  cursor: pointer; transition: transform .12s ease, filter .12s ease; box-shadow: var(--shadow-sm);
+}
+.arena-opt-btn:hover:not(:disabled) { transform: translateY(-2px) scale(1.015); filter: brightness(1.08); }
+.arena-opt-btn:disabled { cursor: default; opacity: .55; }
+.arena-opt-btn .opt-shape { font-size: 1.1rem; flex-shrink: 0; }
+.arena-opt-0 { background: linear-gradient(135deg, var(--red), #8f2c26); }
+.arena-opt-1 { background: linear-gradient(135deg, var(--blue), var(--blue-dark)); }
+.arena-opt-2 { background: linear-gradient(135deg, var(--kulit-m), var(--orange-dark)); }
+.arena-opt-3 { background: linear-gradient(135deg, var(--green), var(--green-dark)); }
+.arena-opt-btn.correct-reveal { outline: 3px solid #fff; box-shadow: 0 0 0 4px rgba(76,174,127,.5), var(--shadow-md); }
+.arena-opt-btn.wrong-reveal { opacity: .35; filter: grayscale(.5); }
+.arena-feedback-banner { margin-top: 16px; font-family: var(--font-display); font-weight: 800; font-size: 1.05rem; padding: 12px; border-radius: var(--radius-md); }
+.arena-feedback-banner.benar { background: rgba(76,174,127,.18); color: var(--green); border: 1px solid rgba(76,174,127,.4); }
+.arena-feedback-banner.salah { background: rgba(193,68,59,.18); color: #F4574F; border: 1px solid rgba(193,68,59,.4); }
+
+/* --- Papan peringkat sementara & akhir --- */
+.arena-leaderboard-list { display: flex; flex-direction: column; gap: 8px; margin: 16px 0; max-height: 360px; overflow-y: auto; }
+.arena-lb-row { display: flex; align-items: center; gap: 12px; background: var(--surface-2); border-radius: var(--radius-sm); padding: 9px 14px; border: 1px solid var(--border-soft); transition: all .3s ease; }
+.arena-lb-row.is-me { border-color: var(--green); background: rgba(76,174,127,.12); box-shadow: 0 0 0 1px rgba(76,174,127,.25); }
+.arena-lb-rank { font-family: var(--font-display); font-weight: 800; width: 22px; text-align: center; color: var(--text-faint); flex-shrink: 0; }
+.arena-lb-row:nth-child(1) .arena-lb-rank { color: #FFD86B; font-size: 1.1rem; }
+.arena-lb-row:nth-child(2) .arena-lb-rank { color: #D7DEE8; }
+.arena-lb-row:nth-child(3) .arena-lb-rank { color: #E0A26B; }
+.arena-lb-row:nth-child(1) .arena-avatar { box-shadow: 0 0 0 2px var(--surface-2), 0 0 0 3px #FFD86B, 0 0 16px rgba(255,216,107,.55); }
+.arena-lb-row:nth-child(2) .arena-avatar { box-shadow: 0 0 0 2px var(--surface-2), 0 0 0 3px #D7DEE8, 0 0 12px rgba(215,222,232,.4); }
+.arena-lb-row:nth-child(3) .arena-avatar { box-shadow: 0 0 0 2px var(--surface-2), 0 0 0 3px #E0A26B, 0 0 12px rgba(224,162,107,.4); }
+.arena-lb-name { flex: 1; font-size: .88rem; font-weight: 700; color: var(--text-dark); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.arena-lb-score { font-family: var(--font-mono); font-weight: 700; color: var(--green); flex-shrink: 0; }
+.arena-lb-delta { font-size: .7rem; color: var(--text-faint); }
+
+/* --- Podium akhir --- */
+.arena-podium { display: flex; align-items: flex-end; justify-content: center; gap: 10px; margin: 24px 0 8px; }
+.podium-col { display: flex; flex-direction: column; align-items: center; width: 100px; animation: podiumRise .5s cubic-bezier(.2,.9,.3,1.2) backwards; }
+.podium-col.p1 { animation-delay: .15s; }
+.podium-col.p2 { animation-delay: .3s; }
+.podium-col.p3 { animation-delay: .45s; }
+@keyframes podiumRise { from{ opacity:0; transform: translateY(24px) scale(.85); } to{ opacity:1; transform: translateY(0) scale(1); } }
+.podium-medal { font-size: 1.8rem; margin-bottom: 6px; }
+.podium-col.p1 .arena-avatar { box-shadow: 0 0 0 3px var(--surface-1), 0 0 0 5px #FFD86B, var(--glow-cyan), 0 0 26px rgba(255,216,107,.5); animation: podiumGlowGold 2.2s ease-in-out infinite; }
+.podium-col.p2 .arena-avatar { box-shadow: 0 0 0 3px var(--surface-1), 0 0 0 5px #D7DEE8, 0 0 16px rgba(215,222,232,.4); }
+.podium-col.p3 .arena-avatar { box-shadow: 0 0 0 3px var(--surface-1), 0 0 0 5px #E0A26B, 0 0 16px rgba(224,162,107,.4); }
+@keyframes podiumGlowGold { 0%,100%{ box-shadow: 0 0 0 3px var(--surface-1), 0 0 0 5px #FFD86B, var(--glow-cyan), 0 0 26px rgba(255,216,107,.5); } 50%{ box-shadow: 0 0 0 3px var(--surface-1), 0 0 0 5px #FFD86B, var(--glow-cyan), 0 0 40px rgba(255,216,107,.85); } }
+.podium-name { font-size: .8rem; font-weight: 700; color: var(--text-dark); text-align: center; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.podium-bar { width: 100%; border-radius: 10px 10px 0 0; display: flex; align-items: flex-start; justify-content: center; padding-top: 8px; font-family: var(--font-mono); font-weight: 700; color: #1F1006; }
+.podium-col.p1 .podium-bar { height: 120px; background: linear-gradient(180deg,#FFE49B,#FFD86B); }
+.podium-col.p2 .podium-bar { height: 90px; background: linear-gradient(180deg,#EDF1F6,#D7DEE8); }
+.podium-col.p3 .podium-bar { height: 65px; background: linear-gradient(180deg,#F0C79B,#E0A26B); }
 
 
 /* ---------- BADGE UNLOCK TOAST ---------- */
@@ -1227,55 +1360,129 @@ main { padding: 28px 32px 60px; max-width: 1440px; margin: 0 auto; width: 100%; 
         </div>
       </section>
 
-      <section class="view" id="view-duel" aria-label="Mode Duel real-time">
+      <section class="view" id="view-duel" aria-label="Mode Duel & Kompetisi Kelas real-time">
         <div class="view-header">
           <span class="view-eyebrow">Kompetisi Langsung</span>
-          <h2>Ruang Duel — Adu Skor Real-time</h2>
-          <p>Buat ruang lalu bagikan kodenya, atau gabung ke ruang temanmu. Skor dari modul kuis & papan congklak akan tersinkron otomatis tanpa refresh.</p>
+          <h2>Arena Kompetisi — Real-time Multiplayer</h2>
+          <p>Buat ruang, atur jumlah soal & modul, lalu bagikan kodenya ke satu kelas. Setiap peserta bergabung dengan nama panggilan sendiri dari perangkat masing-masing — jadi walau ada yang login dengan akun yang sama, tiap perangkat tetap dihitung sebagai peserta yang terpisah dan tidak akan tabrakan skor.</p>
         </div>
 
-        <div class="duel-card" id="duelSetupCard">
-          <div class="duel-card-head"><span class="duel-icon">⚔️</span><h3>Mulai Duel Baru</h3></div>
-          <div class="duel-actions-row">
-            <div class="duel-action-box">
-              <h4>Buat Ruang (Host)</h4>
-              <p style="font-size:.82rem;color:var(--text-muted);margin-bottom:12px;">Jadi host dan bagikan kode 4 digit ke lawanmu.</p>
-              <button class="btn btn-blue btn-block" id="btnBuatRuang">
-                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg> Buat Ruang
-              </button>
+        <!-- ===== STAGE 1: SETUP (Buat Ruang / Gabung Ruang) ===== -->
+        <div id="arenaStageSetup">
+          <div class="duel-card">
+            <div class="duel-card-head"><span class="duel-icon">⚙️</span><h3>Buat Ruang Baru (Host)</h3></div>
+            <div class="arena-field">
+              <label>Jumlah Soal</label>
+              <select id="arenaJumlahSoal">
+                <option value="5">5 Soal (Cepat)</option>
+                <option value="10" selected>10 Soal</option>
+                <option value="15">15 Soal</option>
+                <option value="20">20 Soal (Lomba)</option>
+              </select>
             </div>
-            <div class="duel-action-box">
-              <h4>Gabung Ruang (Challenger)</h4>
-              <p style="font-size:.82rem;color:var(--text-muted);margin-bottom:12px;">Masukkan kode 4 digit dari temanmu.</p>
+            <div class="arena-field">
+              <label>Waktu per Soal</label>
+              <select id="arenaWaktuSoal">
+                <option value="10">10 detik</option>
+                <option value="15" selected>15 detik</option>
+                <option value="20">20 detik</option>
+                <option value="30">30 detik (Santai)</option>
+              </select>
+            </div>
+            <div class="arena-field">
+              <label>Modul Soal (pilih minimal 1)</label>
+              <div class="arena-modul-grid">
+                <label class="arena-modul-chip"><input type="checkbox" value="tebak" checked><span>🔍 Tebak Unsur</span></label>
+                <label class="arena-modul-chip"><input type="checkbox" value="valensi" checked><span>👑 Valensi</span></label>
+                <label class="arena-modul-chip"><input type="checkbox" value="ion" checked><span>⚡ Ion</span></label>
+                <label class="arena-modul-chip"><input type="checkbox" value="sifat" checked><span>🧪 Sifat</span></label>
+                <label class="arena-modul-chip"><input type="checkbox" value="papan"><span>⚛️ Kulit Atom</span></label>
+                <label class="arena-modul-chip"><input type="checkbox" value="susun"><span>🧩 Elektron Valensi</span></label>
+              </div>
+            </div>
+            <div class="arena-toggle-row">
+              <span>⚡ Bonus poin kecepatan menjawab</span>
+              <label class="arena-switch"><input type="checkbox" id="arenaBonusKecepatan" checked><span class="track"></span><span class="knob"></span></label>
+            </div>
+            <div class="arena-toggle-row">
+              <span>🎮 Host juga ikut bermain (bukan cuma jadi wasit)</span>
+              <label class="arena-switch"><input type="checkbox" id="arenaHostMain" checked><span class="track"></span><span class="knob"></span></label>
+            </div>
+            <div class="arena-field">
+              <label>Nama Panggilan Host</label>
+              <input type="text" id="arenaHostNickname" maxlength="20" placeholder="Nama kamu di Arena">
+            </div>
+            <button class="btn btn-blue btn-block" id="btnBuatRuangArena">
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg> Buat Ruang & Undang Kelas
+            </button>
+          </div>
+
+          <div class="duel-card">
+            <div class="duel-card-head"><span class="duel-icon">🙋</span><h3>Gabung ke Ruang (Peserta)</h3></div>
+            <div class="arena-field">
+              <label>Nama Panggilanmu</label>
+              <input type="text" id="arenaJoinNickname" maxlength="20" placeholder="Contoh: Budi, Kelas 10A">
+            </div>
+            <div class="arena-field">
+              <label>Kode Ruang (6 karakter dari host)</label>
               <div class="duel-join-row">
-                <input type="text" id="inputKodeRuang" maxlength="4" placeholder="0000">
+                <input type="text" id="inputKodeRuang" maxlength="6" placeholder="ABC123">
                 <button class="btn btn-green" id="btnGabungRuang">Gabung</button>
               </div>
             </div>
           </div>
         </div>
 
-        <div class="duel-card" id="duelActiveCard" style="display:none;">
-          <div class="duel-card-head"><span class="duel-icon">🎮</span><h3>Ruang Aktif</h3></div>
-          <div class="duel-room-code" id="duelRoomCodeDisplay">----</div>
+        <!-- ===== STAGE 2: LOBBY (menunggu peserta, host mengatur mulai) ===== -->
+        <div class="duel-card" id="arenaStageLobby" style="display:none;">
+          <div class="duel-card-head"><span class="duel-icon">🎮</span><h3 id="arenaLobbyTitle">Ruang Aktif</h3></div>
+          <div class="duel-room-code" id="duelRoomCodeDisplay">------</div>
           <div class="duel-status-line">
-            <span class="duel-dot" id="duelStatusDot"></span>
-            <span id="duelStatusText">Menunggu lawan bergabung…</span>
+            <span class="duel-dot live"></span>
+            <span id="arenaLobbyStatusText">Menunggu host memulai kompetisi…</span>
           </div>
-
-          <div class="duel-vs-panel" id="duelVsPanel">
-            <div class="duel-player me">
-              <div class="duel-player-name">Skor Saya</div>
-              <div class="duel-player-score" id="duelSkorSaya">0</div>
-            </div>
-            <div class="duel-vs-badge">VS</div>
-            <div class="duel-player opp">
-              <div class="duel-player-name" id="duelLawanNama">Skor Lawan</div>
-              <div class="duel-player-score" id="duelSkorLawan">0</div>
-            </div>
+          <p style="text-align:center;margin-top:8px;"><span class="arena-player-count" id="arenaJumlahPeserta">0</span> <span style="color:var(--text-muted);font-size:.85rem;">peserta bergabung</span></p>
+          <div class="arena-lobby-players" id="arenaLobbyPlayers">
+            <div class="arena-empty-hint">Belum ada peserta. Bagikan kode ruangnya!</div>
           </div>
+          <button class="btn btn-green btn-block" id="btnMulaiArena" style="display:none;">🚀 Mulai Kompetisi Sekarang</button>
+          <button class="btn btn-gray duel-leave-btn btn-block" id="btnKeluarLobby">Tinggalkan Ruang</button>
+        </div>
 
-          <button class="btn btn-gray duel-leave-btn" id="btnKeluarRuang">Tinggalkan Ruang</button>
+        <!-- ===== STAGE 3: SOAL BERJALAN ===== -->
+        <div class="duel-card arena-question-card" id="arenaStageQuestion" style="display:none;">
+          <div class="arena-question-meta">
+            <span id="arenaQNomor">Soal 1/10</span>
+            <span id="arenaQSkorSaya">Skormu: 0</span>
+          </div>
+          <div class="arena-timer-ring">
+            <svg viewBox="0 0 64 64"><circle class="bg" cx="32" cy="32" r="27"/><circle class="fg" id="arenaTimerCircle" cx="32" cy="32" r="27"/></svg>
+            <div class="timer-num" id="arenaTimerNum">15</div>
+          </div>
+          <p class="arena-question-prompt" id="arenaQPrompt">Memuat soal…</p>
+          <p class="arena-answered-count" id="arenaAnsweredCount"></p>
+          <div class="arena-options-grid" id="arenaOptionsGrid"></div>
+          <div class="arena-feedback-banner" id="arenaFeedbackBanner" style="display:none;"></div>
+          <p style="text-align:center;margin-top:14px;"><button class="link-btn" id="btnKeluarSaatSoal" style="font-size:.78rem;">Keluar dari kompetisi</button></p>
+        </div>
+
+        <!-- ===== STAGE 4: PAPAN PERINGKAT SEMENTARA (antar soal) ===== -->
+        <div class="duel-card" id="arenaStageIntermission" style="display:none;">
+          <div class="duel-card-head"><span class="duel-icon">📊</span><h3>Papan Peringkat Sementara</h3></div>
+          <p style="text-align:center;color:var(--text-muted);font-size:.85rem;" id="arenaIntermissionSub">Setelah soal 1 dari 10</p>
+          <div class="arena-leaderboard-list" id="arenaIntermissionList"></div>
+          <button class="btn btn-blue btn-block" id="btnLanjutSoal" style="display:none;">Lanjut ke Soal Berikutnya ➜</button>
+          <p class="duel-status-line" id="arenaWaitHostText" style="display:none;justify-content:center;">Menunggu host melanjutkan…</p>
+          <p style="text-align:center;margin-top:10px;"><button class="link-btn" id="btnKeluarSaatIntermission" style="font-size:.78rem;">Keluar dari kompetisi</button></p>
+        </div>
+
+        <!-- ===== STAGE 5: SELESAI (Podium & peringkat akhir) ===== -->
+        <div class="duel-card" id="arenaStageFinished" style="display:none;">
+          <div class="duel-card-head"><span class="duel-icon">🏁</span><h3>Kompetisi Selesai!</h3></div>
+          <div class="arena-podium" id="arenaPodium"></div>
+          <p style="text-align:center;font-family:var(--font-display);font-weight:700;color:var(--text-dark);margin-bottom:6px;" id="arenaPeringkatSaya"></p>
+          <div class="arena-leaderboard-list" id="arenaFinishedList"></div>
+          <button class="btn btn-gray btn-block" id="btnKeluarSelesai" style="margin-top:14px;">Keluar dari Arena</button>
         </div>
       </section>
 
@@ -1525,13 +1732,10 @@ main { padding: 28px 32px 60px; max-width: 1440px; margin: 0 auto; width: 100%; 
             </div>
 
             <div class="footer-card" style="margin-top:16px;" id="ranking">
-              <h3>Leaderboard Nasional</h3>
-              <table class="leaderboard-table">
-                <thead><tr><th>#</th><th>Nama Siswa</th><th>Skor XP</th></tr></thead>
-                <tbody id="leaderboardBody">
-                  <tr><td colspan="3" class="leaderboard-loading">Memuat koneksi database...</td></tr>
-                </tbody>
-              </table>
+              <h3>🏆 Leaderboard Nasional</h3>
+              <div class="natlb-list" id="leaderboardBody">
+                <div class="natlb-empty">Memuat koneksi database...</div>
+              </div>
               <p style="font-size:0.7rem; color:var(--text-faint); margin-top:10px; text-align:center;">(Mode Tamu tidak dicatat di Leaderboard ini)</p>
             </div>
           </div>
@@ -1661,8 +1865,10 @@ const state = {
   quizTarget: { tebak:null, valensi:null, ion:null, sifat:null },
   quizAnswered: { tebak:false, valensi:false, ion:false, sifat:false },
   unsubDoc: null,
-  // --- Mode Duel (Real-time Multiplayer) ---
-  duel: { roomId: null, role: null, myScore: 0, oppScore: 0, oppName: 'Lawan', unsub: null, active: false },
+  // --- Arena Kompetisi (Real-time Multiplayer) ---
+  duel: { roomId: null, pid: null, isHost: false, playing: false, roomData: null, unsub: null,
+    lastRenderedIndex: -2, lastRenderedStatus: null, timerInterval: null, autoAdvanceTimeout: null,
+    transitioning: false, finishAwarded: false, oppAchvGiven: false },
   // --- Sistem Achievement tambahan ---
   achv: { firstConfigDone: false, multiplayerPlayed: false, quizStreak: 0, unlocked: [] }
 };
@@ -1862,7 +2068,7 @@ function resetKeAwalSaatLogout(){
     localStorage.removeItem('chemclak_achv');
   }catch(e){}
   if(state.unsubDoc){ try{ state.unsubDoc(); }catch(e){} state.unsubDoc = null; }
-  keluarDariRuangDuel();
+  if(state.duel && state.duel.roomId) keluarDariArena(false);
   state.user = null;
   state.xp = 0;
   state.progress = {};
@@ -1888,7 +2094,6 @@ async function tambahPoin(jumlah, modul=null){
   state.xp += jumlah;
   if(modul) state.progress[modul] = (state.progress[modul]||0) + 1;
   simpanProgresLokal(); renderGamifikasi(); renderProgres(); renderAccPopover();
-  sinkronSkorDuel(jumlah); // dorong skor real-time ke lawan jika sedang berduel
   
   const after = levelInfo(state.xp).level;
   if(after>before){ sfx.levelup(); toast(`🎉 Level Up! Peringkat Akademik naik ke Level ${after}!`,'success'); levelUpBurst(after); }
@@ -1921,7 +2126,7 @@ const BADGES = [
   { id:'level5', icon:'🏆', label:'Elite Akademik', desc:'Mencapai Level Akademik 5', check:(p, xp)=> levelInfo(xp).level >= 5 },
   { id:'firstblood', icon:'🩸', label:'First Blood', desc:'Selesaikan konfigurasi elektron untuk pertama kalinya', check:(p, xp, a)=> !!(a && a.firstConfigDone) },
   { id:'flawless', icon:'💎', label:'Flawless Chemist', desc:'Jawab kuis benar 3x berturut-turut tanpa salah', check:(p, xp, a)=> !!(a && a.quizStreak >= 3) },
-  { id:'social', icon:'🦋', label:'Social Butterfly', desc:'Bermain Mode Duel untuk pertama kalinya', check:(p, xp, a)=> !!(a && a.multiplayerPlayed) },
+  { id:'social', icon:'🦋', label:'Social Butterfly', desc:'Bermain di Arena Kompetisi untuk pertama kalinya', check:(p, xp, a)=> !!(a && a.multiplayerPlayed) },
 ];
 
 // Cek lencana baru yang baru terbuka dibanding sebelumnya, lalu tampilkan toast + suara "ting"
@@ -2274,7 +2479,7 @@ $('#btnCekSifat').addEventListener('click', ()=>{
 const VIEW_INFO = {
   beranda:  { title: 'Beranda', subtitle: 'Platform Edukasi Simulasi Kimia' },
   papan:    { title: 'Simulasi Kuantum Interaktif', subtitle: 'Atur elektron pada probabilitas energi absolut' },
-  duel:     { title: 'Ruang Duel', subtitle: 'Kompetisi skor real-time melawan temanmu' },
+  duel:     { title: 'Arena Kompetisi', subtitle: 'Kompetisi skor real-time satu kelas' },
   susun:    { title: 'Modul Latihan 1: Akurasi Resolusi', subtitle: 'Asah ketelitian meletakkan ikatan elektron.' },
   tebak:    { title: 'Modul Latihan 2: Dekripsi Identitas', subtitle: 'Identifikasi struktur materi berbasis tabel periodik.' },
   valensi:  { title: 'Modul Latihan 3: Analisa Golongan', subtitle: 'Simpulkan elektron penentu ikatan molekuler.' },
@@ -2465,12 +2670,27 @@ if (firebaseAvailable) {
       // Sinkronisasi Leaderboard
       const q = query(collection(db,'users'), orderBy('xp','desc'), limit(10));
       onSnapshot(q, snap=>{
-        if(snap.empty) { $('#leaderboardBody').innerHTML = '<tr><td colspan="3" class="leaderboard-loading">Database kosong.</td></tr>'; return; }
+        if(snap.empty) { $('#leaderboardBody').innerHTML = '<div class="natlb-empty">Database kosong.</div>'; return; }
         let rows = '', rank = 1; state.currentRank = null;
+        const medaliNat = {1:'🥇',2:'🥈',3:'🥉'};
         snap.forEach(dS=>{
           const d = dS.data(); const isMe = dS.id === state.user.uid;
           if(isMe) state.currentRank = rank;
-          rows += `<tr class="${isMe?'is-me':''} ${rank===1?'rank-1-row':''}"><td class="${rank===1?'rank-1':rank===2?'rank-2':rank===3?'rank-3':''}">${rank}</td><td>${d.name||'Siswa'}${isMe?' (Anda)':''}</td><td>${d.xp||0}</td></tr>`;
+          const namaSiswa = d.name || 'Siswa';
+          const medalHtml = medaliNat[rank] ? `<span class="natlb-medal">${medaliNat[rank]}</span>` : '';
+          let avatarHtml;
+          if(d.photoURL){
+            avatarHtml = `<span class="natlb-avatar">${medalHtml}<img src="${d.photoURL}" alt="Foto ${escapeHtml(namaSiswa)}"></span>`;
+          } else {
+            const [c1,c2] = warnaAvatarDariSeed(dS.id || namaSiswa);
+            avatarHtml = `<span class="natlb-avatar" style="background:linear-gradient(145deg,${c1},${c2})">${medalHtml}${escapeHtml(inisialPemain(namaSiswa))}</span>`;
+          }
+          rows += `<div class="natlb-row ${isMe?'is-me':''} ${rank===1?'natlb-r1':rank===2?'natlb-r2':rank===3?'natlb-r3':''}">
+            <span class="natlb-rank">${rank}</span>
+            ${avatarHtml}
+            <span class="natlb-info"><span class="natlb-name">${escapeHtml(namaSiswa)}</span>${isMe?'<span class="natlb-you-tag">Ini kamu</span>':''}</span>
+            <span class="natlb-xp">${d.xp||0}<small>XP</small></span>
+          </div>`;
           rank++;
         });
         $('#leaderboardBody').innerHTML = rows;
@@ -2497,7 +2717,7 @@ if (firebaseAvailable) {
 
 } else {
   // Jika Firebase sama sekali mati (Misal buka offline lokal)
-  $('#leaderboardBody').innerHTML = '<tr><td colspan="3" class="leaderboard-loading">Mode Offline Aktif.<br>Leaderboard tidak tersedia.</td></tr>';
+  $('#leaderboardBody').innerHTML = '<div class="natlb-empty">Mode Offline Aktif.<br>Leaderboard tidak tersedia.</div>';
   $('#btnAccLogout').addEventListener('click', ()=>{
     sfx.click(); closeAccPopover();
     resetKeAwalSaatLogout();
@@ -2534,95 +2754,513 @@ function renderKartuUnsur(list){
 }
 
 // =====================================================================================
-// FITUR 1: MODE MULTIPLAYER REAL-TIME (RUANG DUEL)
+// FITUR 1: MODE MULTIPLAYER REAL-TIME (ARENA KOMPETISI KELAS)
 // =====================================================================================
-function kodeRuangAcak(){ return String(Math.floor(1000 + Math.random()*9000)); }
+// Catatan perbaikan: sebelumnya modul ini rusak total karena elemen HTML yang dipanggil
+// (duelSetupCard, duelActiveCard, btnBuatRuang, dst.) tidak pernah ada di markup —
+// markup sudah diupgrade ke sistem "Arena" 5-tahap (Setup → Lobby → Soal → Peringkat
+// Sementara → Selesai) tapi skripnya masih skrip lama yang jauh lebih sederhana.
+// Seluruh logika di bawah ini ditulis ulang agar cocok 1:1 dengan markup yang ada,
+// ditambah sinkronisasi skor real-time, timer per-soal, leaderboard, dan podium.
 
-async function buatRuangDuel(){
-  if(!firebaseAvailable){ toast('Mode Duel butuh koneksi server. Periksa internetmu.', 'error'); return; }
-  if(!state.user){ toast('Masuk/mode tamu dulu sebelum membuat ruang.', 'error'); return; }
-  sfx.click();
-  const kode = kodeRuangAcak();
-  try{
-    await setDoc(doc(db, 'rooms', kode), {
-      hostUid: state.user.uid, hostName: state.user.name || 'Host',
-      hostScore: 0, guestUid: null, guestName: null, guestScore: 0,
-      status: 'waiting', createdAt: serverTimestamp()
-    });
-    masukKeRuangDuel(kode, 'host');
-    toast(`Ruang ${kode} dibuat! Bagikan kodenya ke lawanmu.`, 'success');
-  }catch(e){ toast('Gagal membuat ruang. Coba lagi.', 'error'); }
+function escapeHtml(str){
+  return String(str==null?'':str).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function shuffleArr(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+
+function kodeRuangAcak(){
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // tanpa 0/O/1/I agar tak tertukar saat dibacakan
+  let s = '';
+  for(let i=0;i<6;i++) s += chars[Math.floor(Math.random()*chars.length)];
+  return s;
+}
+function getArenaPid(){
+  let pid = localStorage.getItem('chemclak_arena_pid');
+  if(!pid){
+    pid = 'p' + Math.random().toString(36).slice(2,10) + Date.now().toString(36);
+    try{ localStorage.setItem('chemclak_arena_pid', pid); }catch(e){}
+  }
+  return pid;
+}
+function ambilModulTerpilih(){
+  return $$('#view-duel .arena-modul-chip input[type="checkbox"]:checked').map(i=>i.value);
 }
 
-async function gabungRuangDuel(kode){
-  if(!firebaseAvailable){ toast('Mode Duel butuh koneksi server. Periksa internetmu.', 'error'); return; }
-  if(!state.user){ toast('Masuk/mode tamu dulu sebelum gabung ruang.', 'error'); return; }
-  if(!/^\d{4}$/.test(kode)){ toast('Kode ruang harus 4 digit angka.', 'error'); return; }
+// ---------- Bank Soal Pilihan Ganda untuk Arena ----------
+function buatOpsiMCQ(correctText, distractorPool, n=4){
+  const opsi = new Set([correctText]);
+  for(const d of shuffleArr([...distractorPool])){
+    if(opsi.size>=n) break;
+    if(d!==correctText) opsi.add(d);
+  }
+  const arr = shuffleArr([...opsi]);
+  return { options: arr, correctIndex: arr.indexOf(correctText) };
+}
+function buatSoalTebakMCQ(){
+  const el = pilihAcak(POOL_PAPAN);
+  const distractors = POOL_PAPAN.filter(e=>e.z!==el.z).map(e=>e.nama);
+  const { options, correctIndex } = buatOpsiMCQ(el.nama, distractors);
+  return { modul:'tebak', prompt:`Sebuah unsur memiliki konfigurasi elektron ${el.config} (nomor atom ${el.z}). Apa nama unsur ini?`, options, correctIndex };
+}
+function buatSoalValensiMCQ(){
+  const el = pilihAcak(POOL_GOLVAL);
+  const correctText = `Valensi ${el.valensi} • Golongan ${el.golongan}`;
+  const distractors = POOL_GOLVAL.filter(e=>e.z!==el.z).map(e=>`Valensi ${e.valensi} • Golongan ${e.golongan}`);
+  const { options, correctIndex } = buatOpsiMCQ(correctText, distractors);
+  return { modul:'valensi', prompt:`Unsur ${el.sym} memiliki konfigurasi elektron ${el.config}. Berapa elektron valensi dan golongan unsur ini?`, options, correctIndex };
+}
+function buatSoalIonMCQ(){
+  const el = pilihAcak(POOL_ION);
+  const muatanBenar = el.isLogam ? el.valensi : -(8-el.valensi);
+  const labelOf = (e,m)=>{ const abs=Math.abs(m); return `${e.sym}${abs>1?abs:''}${m>0?'+':'-'}`; };
+  const correctText = labelOf(el, muatanBenar);
+  const salahTanda = labelOf(el, -muatanBenar);
+  const lain = shuffleArr(POOL_ION.filter(e=>e.z!==el.z)).slice(0,4).map(e=>{
+    const m = e.isLogam ? e.valensi : -(8-e.valensi); return labelOf(e,m);
+  });
+  const { options, correctIndex } = buatOpsiMCQ(correctText, [salahTanda, ...lain]);
+  return { modul:'ion', prompt:`Unsur ${el.sym} (konfigurasi ${el.config}) paling stabil membentuk ion apa?`, options, correctIndex };
+}
+function buatSoalSifatMCQ(){
+  const el = pilihAcak(POOL_SIFAT);
+  const correctText = KATEGORI_LABEL[el.cat];
+  const distractors = Object.values(KATEGORI_LABEL).filter(v=>v!==correctText);
+  const { options, correctIndex } = buatOpsiMCQ(correctText, distractors);
+  return { modul:'sifat', prompt:`Unsur ${el.sym} (konfigurasi ${el.config}) termasuk kategori sifat kimia apa?`, options, correctIndex };
+}
+function buatSoalKulitMCQ(){
+  const kandidat = POOL_PAPAN.filter(e=>e.lastIdx>=1);
+  const el = pilihAcak(kandidat.length ? kandidat : POOL_PAPAN);
+  const shellIdx = Math.floor(Math.random()*(el.lastIdx+1));
+  const benar = el.shells[shellIdx];
+  const set = new Set([benar]); let guard=0;
+  while(set.size<4 && guard<30){ guard++; const val = benar + Math.floor(Math.random()*5) - 2; if(val>=0 && val<=KULIT_MAKS[shellIdx]) set.add(val); }
+  while(set.size<4) set.add(Math.floor(Math.random()*(KULIT_MAKS[shellIdx]+1)));
+  const distractors = [...set].filter(v=>v!==benar).map(String);
+  const { options, correctIndex } = buatOpsiMCQ(String(benar), distractors);
+  return { modul:'papan', prompt:`Unsur ${el.sym} (nomor atom ${el.z}) memiliki berapa elektron di kulit ${KULIT_LABEL[shellIdx]} (kulit ke-${shellIdx+1})?`, options, correctIndex };
+}
+function buatSoalValensiElektronMCQ(){
+  const el = pilihAcak(POOL_PAPAN);
+  const benar = el.valensi;
+  const set = new Set([benar]); let guard=0;
+  while(set.size<4 && guard<30){ guard++; const val = benar + Math.floor(Math.random()*7) - 3; if(val>=1 && val<=8) set.add(val); }
+  while(set.size<4) set.add(1+Math.floor(Math.random()*8));
+  const distractors = [...set].filter(v=>v!==benar).map(String);
+  const { options, correctIndex } = buatOpsiMCQ(String(benar), distractors);
+  return { modul:'susun', prompt:`Unsur ${el.sym} (konfigurasi ${el.config}) memiliki berapa elektron valensi (elektron di kulit terluar)?`, options, correctIndex };
+}
+const ARENA_BUILDERS = { tebak:buatSoalTebakMCQ, valensi:buatSoalValensiMCQ, ion:buatSoalIonMCQ, sifat:buatSoalSifatMCQ, papan:buatSoalKulitMCQ, susun:buatSoalValensiElektronMCQ };
+function generateSoalArena(modulList, jumlah){
+  const mods = (modulList && modulList.length) ? modulList : ['tebak'];
+  const list = [];
+  for(let i=0;i<jumlah;i++){
+    const builder = ARENA_BUILDERS[mods[i % mods.length]] || ARENA_BUILDERS.tebak;
+    list.push(builder());
+  }
+  return shuffleArr(list);
+}
+
+// ---------- Avatar pemain arena (foto profil / inisial berwarna) ----------
+const ARENA_AVATAR_PALETTES = [
+  ['#FFB74D','#B6572A'], ['#4CAE7F','#2F8F62'], ['#8B5A8C','#6B4270'],
+  ['#2F8F82','#1D5E58'], ['#6C6BAE','#463F8F'], ['#D9723B','#93432A'], ['#1E88E5','#12568F']
+];
+function inisialPemain(nama){
+  const bersih = (nama||'').trim();
+  if(!bersih) return '?';
+  const parts = bersih.split(/\s+/).filter(Boolean);
+  return (parts.length>1 ? (parts[0][0]+parts[parts.length-1][0]) : bersih.slice(0,2)).toUpperCase();
+}
+function warnaAvatarDariSeed(seed){
+  let h = 0; const s = String(seed||'?');
+  for(let i=0;i<s.length;i++) h = (h*31 + s.charCodeAt(i)) >>> 0;
+  return ARENA_AVATAR_PALETTES[h % ARENA_AVATAR_PALETTES.length];
+}
+// sizeClass: 'sz-lobby' | 'sz-lb' | 'sz-podium'
+function renderAvatarPemain(p, pid, sizeClass, opts={}){
+  const crown = (p.isHost && opts.crown!==false) ? '<span class="arena-crown">👑</span>' : '';
+  if(p.photoURL){
+    return `<span class="arena-avatar ${sizeClass}">${crown}<img src="${p.photoURL}" alt="Foto ${escapeHtml(p.name||'pemain')}"></span>`;
+  }
+  const [c1,c2] = warnaAvatarDariSeed(pid || p.name);
+  return `<span class="arena-avatar ${sizeClass}" style="background:linear-gradient(145deg,${c1},${c2})">${crown}${escapeHtml(inisialPemain(p.name))}</span>`;
+}
+// Membuat versi mini foto profil (≤ ~14KB) khusus untuk disinkronkan lintas pemain di Firestore,
+// supaya dokumen room tetap ringan meski banyak peserta memakai foto profil.
+function buatAvatarArenaKecil(){
+  return new Promise((resolve)=>{
+    if(!state.photoURL) return resolve(null);
+    try{
+      const img = new Image();
+      img.onerror = ()=> resolve(null);
+      img.onload = ()=>{
+        try{
+          const SIZE = 72;
+          const canvas = document.createElement('canvas'); canvas.width = SIZE; canvas.height = SIZE;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, SIZE, SIZE);
+          let quality = 0.72, out = canvas.toDataURL('image/jpeg', quality);
+          while(out.length > 14000 && quality > 0.25){ quality -= 0.1; out = canvas.toDataURL('image/jpeg', quality); }
+          resolve(out);
+        }catch(e){ resolve(null); }
+      };
+      img.src = state.photoURL;
+    }catch(e){ resolve(null); }
+  });
+}
+
+// ---------- Kontrol tahap tampilan ----------
+const ARENA_STAGES = ['arenaStageSetup','arenaStageLobby','arenaStageQuestion','arenaStageIntermission','arenaStageFinished'];
+function tampilkanTahapArena(id){
+  ARENA_STAGES.forEach(s=>{ const el=document.getElementById(s); if(el) el.style.display = (s===id) ? '' : 'none'; });
+}
+
+// ---------- Membuat & bergabung ke ruang ----------
+async function buatRuangArena(){
+  if(!firebaseAvailable){ toast('Arena Kompetisi butuh koneksi server. Periksa internetmu.', 'error'); return; }
+  if(!state.user){ toast('Masuk/mode tamu dulu sebelum membuat ruang.', 'error'); return; }
+  const modul = ambilModulTerpilih();
+  if(!modul.length){ toast('Pilih minimal 1 modul soal dulu!', 'error'); return; }
   sfx.click();
+  const jumlahSoal = parseInt($('#arenaJumlahSoal').value,10) || 10;
+  const waktuSoal = parseInt($('#arenaWaktuSoal').value,10) || 15;
+  const bonusKecepatan = $('#arenaBonusKecepatan').checked;
+  const hostMain = $('#arenaHostMain').checked;
+  const nickname = ($('#arenaHostNickname').value || '').trim().slice(0,20) || (state.user.name || 'Host');
+  const pid = getArenaPid();
+  const kode = kodeRuangAcak();
+  const btn = $('#btnBuatRuangArena'); if(btn) btn.disabled = true;
+  try{
+    const avatarArena = await buatAvatarArenaKecil();
+    await setDoc(doc(db, 'rooms', kode), {
+      kode, hostPid: pid, hostName: nickname,
+      settings: { jumlahSoal, waktuSoal, modul, bonusKecepatan, hostMain },
+      players: { [pid]: { name: nickname, score: 0, isHost: true, joinedAt: Date.now(), photoURL: avatarArena } },
+      status: 'lobby', currentIndex: -1, questions: [], answers: {},
+      createdAt: serverTimestamp()
+    });
+    masukKeArena(kode, pid, true);
+    toast(`Ruang ${kode} berhasil dibuat! Bagikan kodenya ke pesertamu.`, 'success');
+  }catch(e){ toast('Gagal membuat ruang. Coba lagi.', 'error'); }
+  finally{ if(btn) btn.disabled = false; }
+}
+
+async function gabungRuangArena(kodeInput){
+  if(!firebaseAvailable){ toast('Arena Kompetisi butuh koneksi server. Periksa internetmu.', 'error'); return; }
+  if(!state.user){ toast('Masuk/mode tamu dulu sebelum gabung ruang.', 'error'); return; }
+  const kode = (kodeInput||'').trim().toUpperCase();
+  if(!/^[A-Z0-9]{4,8}$/.test(kode)){ toast('Kode ruang tidak valid. Cek lagi ejaannya.', 'error'); return; }
+  const nickname = ($('#arenaJoinNickname').value || '').trim().slice(0,20);
+  if(!nickname){ toast('Masukkan nama panggilanmu dulu!', 'error'); return; }
+  sfx.click();
+  const pid = getArenaPid();
+  const btn = $('#btnGabungRuang'); if(btn) btn.disabled = true;
   try{
     const ref = doc(db, 'rooms', kode);
     const snap = await getDoc(ref);
     if(!snap.exists()){ toast('Ruang tidak ditemukan. Periksa kembali kodenya.', 'error'); return; }
-    const data = snap.data();
-    if(data.guestUid && data.guestUid !== state.user.uid){ toast('Ruang ini sudah penuh.', 'error'); return; }
-    await updateDoc(ref, { guestUid: state.user.uid, guestName: state.user.name || 'Challenger', status: 'active' });
-    masukKeRuangDuel(kode, 'guest');
+    const d = snap.data();
+    if(d.players && d.players[pid]){
+      masukKeArena(kode, pid, !!d.players[pid].isHost);
+      toast(`Kembali ke ruang ${kode}.`, 'info');
+      return;
+    }
+    if(d.status !== 'lobby'){ toast('Kompetisi di ruang ini sudah berjalan atau selesai.', 'error'); return; }
+    const avatarArena = await buatAvatarArenaKecil();
+    await updateDoc(ref, { [`players.${pid}`]: { name: nickname, score: 0, isHost: false, joinedAt: Date.now(), photoURL: avatarArena } });
+    masukKeArena(kode, pid, false);
     toast(`Berhasil gabung ke ruang ${kode}!`, 'success');
   }catch(e){ toast('Gagal gabung ruang. Coba lagi.', 'error'); }
+  finally{ if(btn) btn.disabled = false; }
 }
 
-function masukKeRuangDuel(kode, peran){
-  state.duel.roomId = kode; state.duel.role = peran; state.duel.active = true;
-  state.duel.myScore = 0; state.duel.oppScore = 0;
-
-  $('#duelSetupCard').style.display = 'none';
-  $('#duelActiveCard').style.display = '';
-  $('#duelRoomCodeDisplay').textContent = kode;
-
-  const ref = doc(db, 'rooms', kode);
-  state.duel.unsub = onSnapshot(ref, snap=>{
-    if(!snap.exists()){ toast('Ruang duel telah ditutup.', 'info'); keluarDariRuangDuel(); return; }
-    const d = snap.data();
-    const adaLawan = peran==='host' ? !!d.guestUid : !!d.hostUid;
-    $('#duelVsPanel').classList.toggle('show', adaLawan);
-    $('#duelStatusDot').classList.toggle('live', adaLawan);
-    $('#duelStatusText').textContent = adaLawan ? 'Duel berlangsung — skor tersinkron real-time.' : 'Menunggu lawan bergabung…';
-
-    if(peran==='host'){
-      state.duel.myScore = d.hostScore||0; state.duel.oppScore = d.guestScore||0;
-      $('#duelLawanNama').textContent = d.guestName ? `Skor ${d.guestName}` : 'Skor Lawan';
-    } else {
-      state.duel.myScore = d.guestScore||0; state.duel.oppScore = d.hostScore||0;
-      $('#duelLawanNama').textContent = d.hostName ? `Skor ${d.hostName}` : 'Skor Lawan';
-    }
-    $('#duelSkorSaya').textContent = state.duel.myScore;
-    $('#duelSkorLawan').textContent = state.duel.oppScore;
-
-    if(adaLawan && !state.achv.multiplayerPlayed){
-      state.achv.multiplayerPlayed = true; simpanAchvLokal(); evaluasiBadgeBaru();
-    }
-  });
-}
-
-async function sinkronSkorDuel(tambahan){
-  if(!state.duel.active || !state.duel.roomId) return;
-  const field = state.duel.role === 'host' ? 'hostScore' : 'guestScore';
-  try{ await updateDoc(doc(db,'rooms',state.duel.roomId), { [field]: increment(tambahan) }); }catch(e){}
-}
-
-function keluarDariRuangDuel(){
+function masukKeArena(kode, pid, isHost){
   if(state.duel.unsub){ try{ state.duel.unsub(); }catch(e){} }
-  state.duel = { roomId: null, role: null, myScore: 0, oppScore: 0, oppName: 'Lawan', unsub: null, active: false };
-  const setup = $('#duelSetupCard'), active = $('#duelActiveCard');
-  if(setup) setup.style.display = '';
-  if(active) active.style.display = 'none';
-  const vsPanel = $('#duelVsPanel'); if(vsPanel) vsPanel.classList.remove('show');
+  clearInterval(state.duel.timerInterval); clearTimeout(state.duel.autoAdvanceTimeout);
+  state.duel = {
+    roomId: kode, pid, isHost, playing: true, roomData: null, unsub: null,
+    lastRenderedIndex: -2, lastRenderedStatus: null, timerInterval: null, autoAdvanceTimeout: null,
+    transitioning: false, finishAwarded: false, oppAchvGiven: false
+  };
+  $('#duelRoomCodeDisplay') && ($('#duelRoomCodeDisplay').textContent = kode);
+  attachArenaListener();
+  tampilkanTahapArena('arenaStageLobby');
 }
 
-$('#btnBuatRuang') && $('#btnBuatRuang').addEventListener('click', buatRuangDuel);
-$('#btnGabungRuang') && $('#btnGabungRuang').addEventListener('click', ()=> gabungRuangDuel($('#inputKodeRuang').value.trim()));
-$('#inputKodeRuang') && $('#inputKodeRuang').addEventListener('keydown', (e)=>{ if(e.key==='Enter') gabungRuangDuel($('#inputKodeRuang').value.trim()); });
-$('#btnKeluarRuang') && $('#btnKeluarRuang').addEventListener('click', ()=>{ sfx.click(); keluarDariRuangDuel(); toast('Kamu meninggalkan ruang duel.', 'info'); });
+function keluarDariArena(showToast=true){
+  if(state.duel.unsub){ try{ state.duel.unsub(); }catch(e){} }
+  clearInterval(state.duel.timerInterval); clearTimeout(state.duel.autoAdvanceTimeout);
+  state.duel = { roomId:null, pid:null, isHost:false, playing:false, roomData:null, unsub:null,
+    lastRenderedIndex:-2, lastRenderedStatus:null, timerInterval:null, autoAdvanceTimeout:null,
+    transitioning:false, finishAwarded:false, oppAchvGiven:false };
+  tampilkanTahapArena('arenaStageSetup');
+  if(showToast) toast('Kamu meninggalkan Arena Kompetisi.', 'info');
+}
+
+// ---------- Listener real-time utama ----------
+function attachArenaListener(){
+  const ref = doc(db, 'rooms', state.duel.roomId);
+  state.duel.unsub = onSnapshot(ref, snap=>{
+    if(!snap.exists()){ toast('Ruang arena telah ditutup atau dihapus.', 'info'); keluarDariArena(false); return; }
+    const d = snap.data();
+    state.duel.roomData = d;
+    state.duel.playing = state.duel.isHost ? !!(d.settings && d.settings.hostMain) : true;
+
+    if(d.status === 'lobby'){
+      tampilkanTahapArena('arenaStageLobby');
+      renderLobbyArena(d);
+    } else if(d.status === 'question'){
+      const soalBaru = (state.duel.lastRenderedIndex !== d.currentIndex) || (state.duel.lastRenderedStatus !== 'question');
+      tampilkanTahapArena('arenaStageQuestion');
+      renderSoalArena(d);
+      if(soalBaru){
+        state.duel.lastRenderedIndex = d.currentIndex;
+        state.duel.transitioning = false;
+        mulaiTimerArena(d);
+      }
+      if(state.duel.isHost && !state.duel.transitioning){
+        const terjawab = ((d.answers||{})[d.currentIndex]) || {};
+        const totalPemain = Object.values(d.players||{}).filter(p=> p.isHost ? (d.settings&&d.settings.hostMain) : true).length;
+        if(totalPemain>0 && Object.keys(terjawab).length >= totalPemain){
+          state.duel.transitioning = true;
+          clearInterval(state.duel.timerInterval);
+          majuTahapArena();
+        }
+      }
+    } else if(d.status === 'intermission'){
+      tampilkanTahapArena('arenaStageIntermission');
+      renderIntermissionArena(d);
+      if(state.duel.lastRenderedStatus !== 'intermission'){
+        clearTimeout(state.duel.autoAdvanceTimeout);
+        if(state.duel.isHost) state.duel.autoAdvanceTimeout = setTimeout(lanjutSoalBerikutnya, 15000);
+      }
+    } else if(d.status === 'finished'){
+      tampilkanTahapArena('arenaStageFinished');
+      clearInterval(state.duel.timerInterval); clearTimeout(state.duel.autoAdvanceTimeout);
+      renderFinishedArena(d);
+    }
+    state.duel.lastRenderedStatus = d.status;
+  }, ()=>{ toast('Koneksi ke ruang arena terputus. Coba masuk kembali.', 'error'); });
+}
+
+// ---------- Tahap Lobby ----------
+function renderLobbyArena(d){
+  const entries = Object.entries(d.players||{});
+  $('#arenaJumlahPeserta').textContent = entries.length;
+  $('#arenaLobbyTitle').textContent = `Ruang ${d.kode || state.duel.roomId} Aktif`;
+  const wrap = $('#arenaLobbyPlayers');
+  wrap.innerHTML = entries.length
+    ? entries.map(([pid,p])=>`<div class="arena-lobby-player ${p.isHost?'is-host':''}">${renderAvatarPemain(p,pid,'sz-lobby')}<span class="pname">${escapeHtml(p.name)}</span></div>`).join('')
+    : '<div class="arena-empty-hint">Belum ada peserta. Bagikan kode ruangnya!</div>';
+
+  const guestCount = entries.filter(([,p])=>!p.isHost).length;
+  $('#arenaLobbyStatusText').textContent = guestCount>0 ? 'Peserta sudah bergabung — host bisa memulai kapan saja.' : 'Menunggu peserta bergabung…';
+
+  const btnMulai = $('#btnMulaiArena');
+  if(state.duel.isHost){
+    btnMulai.style.display = '';
+    btnMulai.disabled = guestCount < 1;
+    btnMulai.title = guestCount<1 ? 'Tunggu minimal 1 peserta bergabung dulu' : '';
+  } else {
+    btnMulai.style.display = 'none';
+  }
+
+  if(!state.duel.oppAchvGiven && entries.length>=2){
+    state.duel.oppAchvGiven = true;
+    if(!state.achv.multiplayerPlayed){ state.achv.multiplayerPlayed = true; simpanAchvLokal(); evaluasiBadgeBaru(); }
+  }
+}
+
+async function mulaiKompetisiArena(){
+  if(!state.duel.isHost || !state.duel.roomId) return;
+  const d = state.duel.roomData; if(!d) return;
+  const guestCount = Object.values(d.players||{}).filter(p=>!p.isHost).length;
+  if(guestCount<1){ toast('Tunggu minimal 1 peserta bergabung dulu!', 'error'); return; }
+  sfx.click();
+  const soalList = generateSoalArena(d.settings.modul, d.settings.jumlahSoal);
+  const btn = $('#btnMulaiArena'); if(btn) btn.disabled = true;
+  try{
+    await updateDoc(doc(db,'rooms',state.duel.roomId), {
+      questions: soalList, status: 'question', currentIndex: 0, questionStartAt: serverTimestamp(), answers: {}
+    });
+  }catch(e){ toast('Gagal memulai kompetisi. Coba lagi.', 'error'); if(btn) btn.disabled = false; }
+}
+
+// ---------- Tahap Soal ----------
+function mulaiTimerArena(d){
+  clearInterval(state.duel.timerInterval);
+  const waktu = (d.settings && d.settings.waktuSoal) || 15;
+  const startMs = d.questionStartAt && d.questionStartAt.toMillis ? d.questionStartAt.toMillis() : Date.now();
+  const circle = $('#arenaTimerCircle'), num = $('#arenaTimerNum');
+  if(!circle || !num) return;
+  const R = 27, C = 2*Math.PI*R;
+  circle.style.strokeDasharray = `${C}`;
+  const tick = ()=>{
+    const elapsed = (Date.now()-startMs)/1000;
+    const remain = Math.max(0, waktu-elapsed);
+    num.textContent = Math.ceil(remain);
+    const frac = remain/waktu;
+    circle.style.strokeDashoffset = `${C*(1-frac)}`;
+    circle.style.stroke = frac<0.25 ? 'var(--red)' : (frac<0.5 ? 'var(--orange)' : 'var(--green)');
+    if(remain<=0){
+      clearInterval(state.duel.timerInterval);
+      if(state.duel.isHost && !state.duel.transitioning){ state.duel.transitioning = true; majuTahapArena(); }
+    }
+  };
+  tick();
+  state.duel.timerInterval = setInterval(tick, 100);
+}
+
+function renderSoalArena(d){
+  const idx = d.currentIndex;
+  const soal = (d.questions||[])[idx];
+  if(!soal) return;
+  const total = (d.questions||[]).length;
+  $('#arenaQNomor').textContent = `Soal ${idx+1}/${total}`;
+
+  const me = (d.players||{})[state.duel.pid] || { score:0 };
+  $('#arenaQSkorSaya').textContent = state.duel.playing ? `Skormu: ${me.score||0}` : 'Kamu wasit — memantau jalannya kompetisi';
+
+  $('#arenaQPrompt').textContent = soal.prompt;
+
+  const jawabanSoalIni = ((d.answers||{})[idx]) || {};
+  const totalPemain = Object.values(d.players||{}).filter(p=> p.isHost ? (d.settings&&d.settings.hostMain) : true).length;
+  $('#arenaAnsweredCount').textContent = `${Object.keys(jawabanSoalIni).length}/${totalPemain} peserta sudah menjawab`;
+
+  const jawabanSaya = jawabanSoalIni[state.duel.pid];
+  const grid = $('#arenaOptionsGrid');
+  grid.innerHTML = soal.options.map((opt,i)=>`<button type="button" class="arena-opt-btn arena-opt-${i}" data-idx="${i}" ${(jawabanSaya||!state.duel.playing)?'disabled':''}>${escapeHtml(opt)}</button>`).join('');
+  if(!jawabanSaya && state.duel.playing){
+    $$('#arenaOptionsGrid .arena-opt-btn').forEach(btn=> btn.addEventListener('click', ()=> jawabSoalArena(parseInt(btn.dataset.idx,10))));
+  } else {
+    $$('#arenaOptionsGrid .arena-opt-btn').forEach((btn,i)=>{
+      if(i===soal.correctIndex) btn.classList.add('correct-reveal');
+      else if(jawabanSaya && i===jawabanSaya.optionIndex) btn.classList.add('wrong-reveal');
+    });
+  }
+
+  const banner = $('#arenaFeedbackBanner');
+  if(jawabanSaya){
+    banner.style.display = '';
+    banner.className = `arena-feedback-banner ${jawabanSaya.correct ? 'benar':'salah'}`;
+    banner.textContent = jawabanSaya.correct ? `✅ Benar! +${jawabanSaya.points} poin` : `❌ Kurang tepat. Jawaban benar: ${soal.options[soal.correctIndex]}`;
+  } else {
+    banner.style.display = 'none'; banner.textContent = '';
+  }
+}
+
+async function jawabSoalArena(idxOpsi){
+  const d = state.duel.roomData;
+  if(!d || d.status!=='question' || !state.duel.playing) return;
+  const qIdx = d.currentIndex;
+  const sudahAda = ((d.answers||{})[qIdx]||{})[state.duel.pid];
+  if(sudahAda) return;
+  const soal = (d.questions||[])[qIdx]; if(!soal) return;
+  sfx.click();
+  const startMs = d.questionStartAt && d.questionStartAt.toMillis ? d.questionStartAt.toMillis() : Date.now();
+  const elapsedMs = Math.max(0, Date.now()-startMs);
+  const waktuMs = ((d.settings&&d.settings.waktuSoal)||15)*1000;
+  const benar = idxOpsi === soal.correctIndex;
+  let poin = 0;
+  if(benar){
+    poin = 100;
+    if(d.settings && d.settings.bonusKecepatan){
+      const sisaFrac = Math.max(0, 1-(elapsedMs/waktuMs));
+      poin += Math.round(sisaFrac*50);
+    }
+  }
+  $$('#arenaOptionsGrid .arena-opt-btn').forEach(btn=> btn.disabled = true);
+  try{
+    await updateDoc(doc(db,'rooms',state.duel.roomId), {
+      [`answers.${qIdx}.${state.duel.pid}`]: { optionIndex: idxOpsi, correct: benar, points: poin, timeMs: elapsedMs },
+      [`players.${state.duel.pid}.score`]: increment(poin)
+    });
+    benar ? sfx.correct() : sfx.wrong();
+  }catch(e){
+    toast('Gagal mengirim jawaban. Periksa koneksi.', 'error');
+    $$('#arenaOptionsGrid .arena-opt-btn').forEach(btn=> btn.disabled = false);
+  }
+}
+
+// ---------- Transisi antar-soal (dikendalikan host) ----------
+async function majuTahapArena(){
+  if(!state.duel.isHost) return;
+  try{
+    const ref = doc(db,'rooms',state.duel.roomId);
+    const snap = await getDoc(ref); if(!snap.exists()) return;
+    const d = snap.data(); if(d.status!=='question') return;
+    const idx = d.currentIndex, total = (d.questions||[]).length;
+    await updateDoc(ref, idx+1>=total ? { status:'finished' } : { status:'intermission' });
+  }catch(e){}
+}
+async function lanjutSoalBerikutnya(){
+  if(!state.duel.isHost || !state.duel.roomId) return;
+  try{
+    const ref = doc(db,'rooms',state.duel.roomId);
+    const snap = await getDoc(ref); if(!snap.exists()) return;
+    const d = snap.data(); if(d.status!=='intermission') return;
+    const nextIdx = d.currentIndex+1, total = (d.questions||[]).length;
+    await updateDoc(ref, nextIdx>=total ? { status:'finished' } : { currentIndex: nextIdx, status:'question', questionStartAt: serverTimestamp() });
+  }catch(e){ toast('Gagal melanjutkan ke soal berikutnya.', 'error'); }
+}
+
+// ---------- Leaderboard bersama (dipakai di intermission & selesai) ----------
+function susunLeaderboardArena(d){
+  return Object.entries(d.players||{})
+    .filter(([,p])=> d.settings && d.settings.hostMain ? true : !p.isHost)
+    .map(([pid,p])=>({ pid, ...p }))
+    .sort((a,b)=> (b.score||0)-(a.score||0));
+}
+function renderLeaderboardKe(sel, arr){
+  $(sel).innerHTML = arr.length
+    ? arr.map((p,i)=>`<div class="arena-lb-row ${p.pid===state.duel.pid?'is-me':''}"><span class="arena-lb-rank">${i+1}</span>${renderAvatarPemain(p,p.pid,'sz-lb',{crown:false})}<span class="arena-lb-name">${escapeHtml(p.name)}${p.isHost?' 👑':''}</span><span class="arena-lb-score">${p.score||0}</span></div>`).join('')
+    : '<div class="arena-empty-hint">Belum ada peserta.</div>';
+}
+
+// ---------- Tahap Peringkat Sementara ----------
+function renderIntermissionArena(d){
+  const idx = d.currentIndex, total = (d.questions||[]).length;
+  $('#arenaIntermissionSub').textContent = `Setelah soal ${idx+1} dari ${total}`;
+  renderLeaderboardKe('#arenaIntermissionList', susunLeaderboardArena(d));
+  $('#btnLanjutSoal').style.display = state.duel.isHost ? '' : 'none';
+  $('#arenaWaitHostText').style.display = state.duel.isHost ? 'none' : '';
+}
+
+// ---------- Tahap Selesai (Podium) ----------
+function renderFinishedArena(d){
+  const arr = susunLeaderboardArena(d);
+  const top3 = arr.slice(0,3);
+  const susunanVisual = [1,0,2]; // tampil: peringkat-2, peringkat-1, peringkat-3
+  const kelasPodium = { 0:'p1', 1:'p2', 2:'p3' };
+  const medali = { 0:'🥇', 1:'🥈', 2:'🥉' };
+  $('#arenaPodium').innerHTML = susunanVisual.filter(i=>top3[i]).map(i=>
+    `<div class="podium-col ${kelasPodium[i]}"><div class="podium-medal">${medali[i]}</div>${renderAvatarPemain(top3[i],top3[i].pid,'sz-podium',{crown:false})}<div class="podium-name">${escapeHtml(top3[i].name)}</div><div class="podium-bar">${top3[i].score||0}</div></div>`
+  ).join('');
+
+  const myIdx = arr.findIndex(p=>p.pid===state.duel.pid);
+  $('#arenaPeringkatSaya').textContent = (state.duel.playing && myIdx>=0)
+    ? `Peringkatmu: #${myIdx+1} dari ${arr.length} peserta (Skor ${arr[myIdx].score||0})`
+    : (state.duel.playing ? '' : 'Kamu bertugas sebagai wasit kompetisi ini.');
+  renderLeaderboardKe('#arenaFinishedList', arr);
+
+  if(!state.duel.finishAwarded){
+    state.duel.finishAwarded = true;
+    if(myIdx===0 && arr.length>1){ confetti(); sfx.levelup(); }
+    if(state.duel.playing) tambahPoin(20, null);
+  }
+}
+
+// ---------- Wiring tombol & input ----------
+$('#btnBuatRuangArena') && $('#btnBuatRuangArena').addEventListener('click', buatRuangArena);
+$('#btnGabungRuang') && $('#btnGabungRuang').addEventListener('click', ()=> gabungRuangArena($('#inputKodeRuang').value));
+$('#inputKodeRuang') && $('#inputKodeRuang').addEventListener('keydown', (e)=>{ if(e.key==='Enter') gabungRuangArena($('#inputKodeRuang').value); });
+$('#btnMulaiArena') && $('#btnMulaiArena').addEventListener('click', mulaiKompetisiArena);
+$('#btnKeluarLobby') && $('#btnKeluarLobby').addEventListener('click', ()=> keluarDariArena());
+$('#btnLanjutSoal') && $('#btnLanjutSoal').addEventListener('click', ()=>{ sfx.click(); lanjutSoalBerikutnya(); });
+$('#btnKeluarSelesai') && $('#btnKeluarSelesai').addEventListener('click', ()=> keluarDariArena());
+$('#btnKeluarSaatSoal') && $('#btnKeluarSaatSoal').addEventListener('click', ()=> keluarDariArena());
+$('#btnKeluarSaatIntermission') && $('#btnKeluarSaatIntermission').addEventListener('click', ()=> keluarDariArena());
 
 function initStarfield(){
   const canvas = $('#starCanvas'); if(!canvas) return; const ctx = canvas.getContext('2d');
